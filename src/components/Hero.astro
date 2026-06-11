@@ -48,7 +48,7 @@ const subCycles: SubCycle[] = isZh
     ]
   : [
       { kind: 'wave',  prefix: '',     text: 'Speak,' },
-      { kind: 'type',  prefix: ' ',    text: 'type,',     partial: 'ty',  popupRows: ['type,', 'try,', 'tell,'] },
+      { kind: 'type',  prefix: ' ',    text: 'type,',     partial: 'ty',  popupRows: ['type', 'try', 'tell'] },
       { kind: 'morph', prefix: ' ',    text: 'translate', morphFrom: '翻譯' },
       { kind: 'fog',   prefix: ' — ',  text: 'at your WiLL.' },
     ];
@@ -510,19 +510,22 @@ const subWaveBars = 7;
   .hero-sub-stage.is-done .sub-caret { display: none; }
   @keyframes hero-caret-blink { 50% { opacity: 0; } }
 
-  /* WiLL-style candidate popup — mirrors `DemoType.astro` .candidate-popup
-     styling so the hero animation reads as the same product surface. */
+  /* WiLL-style candidate popup — horizontal pill variant for the hero.
+     Sized to its content (three short candidates) rather than a fixed
+     width column, since stacking three 5-char options into a 320px panel
+     left most of the row blank. Dividers run vertically between items. */
   .hero-candidates {
     position: absolute;
     top: calc(100% + 8px);
     left: 50%;
     transform: translate(-50%, -6px);
-    width: min(320px, calc(100vw - var(--s-5)));
+    display: inline-flex;
     background: var(--bg-primary);
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-md);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);
     overflow: hidden;
+    max-width: calc(100vw - var(--s-5));
     opacity: 0;
     pointer-events: none;
     transition:
@@ -535,18 +538,18 @@ const subWaveBars = 7;
     transform: translate(-50%, 0);
   }
   .cand-row {
-    display: flex;
+    display: inline-flex;
     align-items: center;
-    gap: 10px;
-    padding: 8px var(--s-3);
-    font-size: var(--text-body-s);
-    line-height: 1.5;
-    text-align: left;
+    gap: 8px;
+    padding: 8px 14px;
+    font-size: var(--text-body-l);
+    line-height: 1.4;
+    white-space: nowrap;
     color: var(--text-primary);
-    border-bottom: 1px solid var(--border-subtle);
+    border-right: 1px solid var(--border-subtle);
     transition: background 140ms var(--ease-out-quad), color 140ms var(--ease-out-quad);
   }
-  .cand-row:last-child { border-bottom: none; }
+  .cand-row:last-child { border-right: none; }
   .cand-row[data-cand-row="0"] { background: var(--surface-soft); }
   .cand-row.is-accepting {
     background: var(--signal-blue);
@@ -556,12 +559,12 @@ const subWaveBars = 7;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 18px;
-    height: 18px;
-    border-radius: 4px;
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
     background: var(--surface-soft);
     font-family: var(--font-mono);
-    font-size: var(--text-caption);
+    font-size: var(--text-body-s);
     color: var(--text-tertiary);
     flex-shrink: 0;
   }
@@ -569,7 +572,6 @@ const subWaveBars = 7;
     background: rgba(255, 255, 255, 0.18);
     color: var(--clean-white);
   }
-  .cand-text { flex: 1; }
 
   /* CTA and arrow stay hidden until the sub finishes typing — keeps the
      vertical reveal order title → sub → CTA → arrow. */
@@ -586,14 +588,14 @@ const subWaveBars = 7;
     transform: translateY(0);
     transition-delay: 60ms;
   }
-  /* Arrow is the LAST hero beat — it appears only after the CTA has fully
-     settled (CTA: +60ms start + 500ms transition = +560ms done), with a
-     breath after, so the reveal order reads cleanly as title → sub → CTA
-     → arrow before the below-hero cascade begins. */
+  /* Arrow is the LAST hero beat — it begins just as the CTA finishes its
+     own reveal (CTA: +60ms start + 500ms transition = +560ms done) so the
+     order still reads title → sub → CTA → arrow but without the long
+     breath that previously stalled the cascade. */
   .hero-sub-stage.is-done ~ .hero-arrow {
     opacity: 1;
     transform: translateY(0);
-    transition-delay: 820ms;
+    transition-delay: 560ms;
   }
 
   .hero-cta {
@@ -635,11 +637,11 @@ const subWaveBars = 7;
     overflow: visible;
   }
   /* Chevron drift starts only after the link has finished its own reveal
-     (sub.is-done + 820ms delay + 500ms transition = 1320ms). Driving the
+     (sub.is-done + 560ms delay + 500ms transition = 1060ms). Driving the
      chevron — not the whole link — keeps the label visually anchored and
      reads more refined than a unified bob. */
   .hero-sub-stage.is-done ~ .hero-arrow .hero-arrow-chevron {
-    animation: hero-chevron-drift 2.2s ease-in-out 1320ms infinite;
+    animation: hero-chevron-drift 2.2s ease-in-out 1060ms infinite;
   }
   @keyframes hero-chevron-drift {
     0%, 100% { transform: translateY(-3px); opacity: 0.55; }
@@ -860,9 +862,9 @@ const subWaveBars = 7;
             }
             popupRows.forEach((row, i) => { candTexts[i].textContent = row; });
             candWin!.classList.add('is-visible');
-            await sleep(420);
+            await sleep(700);
             candRows[0].classList.add('is-accepting');
-            await sleep(150);
+            await sleep(220);
             typedEl.textContent = text;
             candWin!.classList.remove('is-visible');
             candRows[0].classList.remove('is-accepting');
@@ -883,15 +885,17 @@ const subWaveBars = 7;
         } else if (kind === 'fog') {
           // Payoff cycle: text is already pre-rendered in the DOM with the
           // blurred initial state — force a layout commit, then add the
-          // reveal class so the filter transition interpolates. The fog
-          // lingers (~1.7s blur clear + 1.9s color shift) so the brand blue
-          // is on screen long enough to register before settling into the
-          // body text color.
+          // reveal class so the filter transition interpolates. The blur
+          // clear (~1.7s) and color shift (~1.9s) continue running in the
+          // background; we only hold long enough for the payoff to be
+          // legible (~700ms) before handing off to the CTA reveal, so the
+          // brand blue settles to text-secondary while the CTA fades in
+          // instead of after.
           const fogEl = cycleEl.querySelector<HTMLElement>('[data-sub-fog]');
           if (fogEl) {
             void fogEl.offsetWidth;
             fogEl.classList.add('is-revealed');
-            await sleep(1500);
+            await sleep(700);
           }
         }
       }
@@ -899,11 +903,11 @@ const subWaveBars = 7;
       subStage!.classList.add('is-done');
 
       // Phase 5 — CTA + arrow fade in (driven by CSS on `.is-done`).
-      // CTA at +60ms (done +560ms), arrow at +820ms (done +1320ms). Hold
+      // CTA at +60ms (done +560ms), arrow at +560ms (done +1060ms). Hold
       // until the arrow has fully settled before starting the below-hero
-      // cascade, so the reveal order reads cleanly as title → sub → CTA
-      // → arrow → sections-below rather than overlapping the cascade.
-      await sleep(1500);
+      // cascade so the reveal order reads cleanly as title → sub → CTA →
+      // arrow → sections-below.
+      await sleep(1060);
       revealBelowHero();
     }
   }
