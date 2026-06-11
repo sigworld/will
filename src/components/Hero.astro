@@ -357,17 +357,33 @@ const subWaveBars = 7;
     transform: translateY(0);
   }
 
-  /* ─── Morph cycle ("translate" / "翻译"): the FROM text (the opposing
-     language) shows briefly, then a blur gradient crossfades it into the TO
-     text. The slot sizes to the TO width — the FROM is absolutely
-     positioned over it, so when ZH morphs the wider "translate" down to the
-     narrower "翻译", the trailing " —— " sits flush against 翻译 instead of
-     across a "translate"-sized gap. For EN (FROM narrower than TO) the FROM
-     fits inside the slot anchored at the left edge. */
+  /* ─── Morph cycle ("translate" / "翻译"): vertical push-up swap. The FROM
+     text (opposing language) fades into the slot, holds, then translates
+     UP and out while the TO simultaneously rises in from below. Reads as
+     the source word being rolled over into its translation — a concrete
+     odometer-style swap, replacing the older blur crossfade. The slot
+     sizes to the TO width and `overflow: hidden` clips the entering /
+     exiting glyphs so they don't bleed into the line above. The TO stays
+     in flow (so the inline-block's baseline = TO's baseline, which keeps
+     the trailing " — " / " —— " flush against the final word); the FROM
+     is absolutely positioned over it. */
   .sub-morph-slot {
     position: relative;
     display: inline-block;
     vertical-align: baseline;
+    /* Clip the entering / exiting glyphs WITHOUT using `overflow: hidden`.
+       Per CSS spec, an inline-block whose overflow is non-`visible` uses
+       its bottom margin edge as its baseline instead of its last text
+       line's baseline — which would float "translate" above the rest of
+       the subtitle line. `clip-path` clips without touching the baseline.
+       The slot is sized to the TO text's width; in zh the FROM
+       ("translate") is wider than the TO ("翻译") and overflows the slot
+       horizontally, so we clip vertically only (top / bottom = 0) and
+       leave horizontal slack (-100vw each side) so the FROM stays
+       readable while the push-up swap clips it vertically. The trailing
+       " —— " in cycle 3 hasn't activated yet during this beat, so the
+       horizontal overflow doesn't collide with downstream text. */
+    clip-path: inset(0 -100vw);
   }
   .sub-morph-from {
     position: absolute;
@@ -376,35 +392,29 @@ const subWaveBars = 7;
     display: inline-block;
     white-space: nowrap;
     opacity: 0;
-    filter: blur(0);
     transform: translateY(0);
     transition:
-      opacity 420ms var(--ease-out-quad),
-      filter 700ms var(--ease-out-expo),
-      transform 700ms var(--ease-out-expo);
+      opacity 360ms var(--ease-out-quad),
+      transform 620ms var(--ease-out-expo);
   }
   .sub-cycle-morph.is-showing-from .sub-morph-from {
     opacity: 1;
   }
   .sub-cycle-morph.is-revealed .sub-morph-from {
     opacity: 0;
-    filter: blur(14px);
-    transform: translateY(-2px);
+    transform: translateY(-100%);
   }
   .sub-morph-to {
     display: inline-block;
     white-space: nowrap;
     opacity: 0;
-    filter: blur(14px);
-    transform: translateY(-3px);
+    transform: translateY(100%);
     transition:
-      opacity 460ms var(--ease-out-quad),
-      filter 900ms var(--ease-out-expo),
-      transform 900ms var(--ease-out-expo);
+      opacity 360ms var(--ease-out-quad),
+      transform 620ms var(--ease-out-expo);
   }
   .sub-cycle-morph.is-revealed .sub-morph-to {
     opacity: 1;
-    filter: blur(0);
     transform: translateY(0);
   }
 
@@ -700,6 +710,51 @@ const subWaveBars = 7;
       document.querySelector<HTMLElement>('[data-below-hero]')?.classList.add('is-revealed');
     }
 
+    // FLIP-style leftward slide for cycles that arrive after the line has
+    // already been populated. The prefix is pre-set in full (rather than
+    // typed char-by-char) so the layout snapshot covers everything that
+    // will be on screen after the slide — without this, the typewriter's
+    // per-char width growth would cause secondary nudges mid-slide.
+    async function activateWithSlide(cycleEl: HTMLElement, prefix: string) {
+      const subP = subStage!.querySelector<HTMLElement>('.hero-sub');
+      const firstActive = cycleEls.find((el) => el.classList.contains('is-active'));
+      const prefixEl = cycleEl.querySelector<HTMLElement>('[data-sub-prefix]');
+      if (prefixEl) prefixEl.textContent = prefix;
+      if (!subP || !firstActive) {
+        cycleEl.classList.add('is-active');
+        void cycleEl.offsetWidth;
+        return;
+      }
+      const beforeLeft = firstActive.getBoundingClientRect().left;
+      cycleEl.classList.add('is-active');
+      void cycleEl.offsetWidth;
+      const afterLeft = firstActive.getBoundingClientRect().left;
+      const deltaX = beforeLeft - afterLeft;
+      if (Math.abs(deltaX) < 0.5) return;
+
+      // ease-out-expo lands ~95% of the motion in the first half of the
+      // duration, so we let the slide keep running for its full ~520ms
+      // while handing control back to the caller at the halfway point.
+      // The remaining glide settles in the background as the new cycle's
+      // own reveal (morph from→to or fog blur-clear) begins — no dead
+      // beat between slide and reveal.
+      const SLIDE_MS = 520;
+      const HANDOFF_MS = 260;
+      subP.style.transition = 'none';
+      subP.style.transform = `translateX(${deltaX}px)`;
+      // Commit the pinned state before swapping in the transition so the
+      // browser interpolates from translateX(deltaX) → translateX(0)
+      // instead of coalescing the two writes into a single jump.
+      void subP.offsetWidth;
+      subP.style.transition = `transform ${SLIDE_MS}ms var(--ease-out-expo)`;
+      subP.style.transform = 'translateX(0)';
+      await sleep(HANDOFF_MS);
+      // Don't clear the inline transform/transition here — that would yank
+      // the still-settling glide mid-animation. The next activateWithSlide
+      // call writes `transition: none` before its own delta, so leaving
+      // translateX(0) in place is a safe no-op until then.
+    }
+
     async function runHeroAnimation() {
       // Phase 1 — phrase 0 waveform plays, then fades while phrase 0 text
       // fog-clears in its place. Phrase 1 cell is laid out but invisible
@@ -752,18 +807,30 @@ const subWaveBars = 7;
         const kind = cycleEl.dataset.cycleKind ?? '';
         const prefix = cycleEl.dataset.cyclePrefix ?? '';
         const text = cycleEl.dataset.cycleText ?? '';
+        const idx = parseInt(cycleEl.dataset.cycleIdx ?? '0', 10);
 
-        cycleEl.classList.add('is-active');
-        // Force a style commit so subsequent class-driven transitions
-        // interpolate from the painted initial state instead of being
-        // coalesced with the activation `display: none → inline` change.
-        void cycleEl.offsetWidth;
+        // Morph ("translate" / "翻译") and the payoff (fog) cycles slide the
+        // leading content leftward via FLIP instead of letting the inline-
+        // flex line jump-recenter. The new slot is pre-laid (still invisible
+        // — morph-to and fog start at opacity 0), then the whole `<p>` is
+        // pinned to its old position and smoothly translated back to 0, so
+        // the visible leading text glides leftward into its new centered
+        // slot. Once the slide completes, the cycle's own reveal kicks in.
+        if (idx >= 2) {
+          await activateWithSlide(cycleEl, prefix);
+        } else {
+          cycleEl.classList.add('is-active');
+          // Force a style commit so subsequent class-driven transitions
+          // interpolate from the painted initial state instead of being
+          // coalesced with the activation `display: none → inline` change.
+          void cycleEl.offsetWidth;
 
-        const prefixEl = cycleEl.querySelector<HTMLElement>('[data-sub-prefix]');
-        if (prefixEl) {
-          for (const ch of prefix) {
-            prefixEl.textContent = (prefixEl.textContent ?? '') + ch;
-            await sleep(30);
+          const prefixEl = cycleEl.querySelector<HTMLElement>('[data-sub-prefix]');
+          if (prefixEl) {
+            for (const ch of prefix) {
+              prefixEl.textContent = (prefixEl.textContent ?? '') + ch;
+              await sleep(30);
+            }
           }
         }
 
