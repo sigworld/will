@@ -6,16 +6,16 @@
         <description>WiLL voice-first input method updates.</description>
         <language>en</language>
         <item>
-            <title>WiLL 1.0.2</title>
-            <pubDate>Thu, 11 Jun 2026 09:46:53 +0800</pubDate>
+            <title>WiLL 1.0.3</title>
+            <pubDate>Thu, 11 Jun 2026 10:19:54 +0800</pubDate>
             
-            <sparkle:version>4</sparkle:version>
-            <sparkle:shortVersionString>1.0.2</sparkle:shortVersionString>
+            <sparkle:version>5</sparkle:version>
+            <sparkle:shortVersionString>1.0.3</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
-            <enclosure url="https://github.com/sigworld/will/releases/download/v1.0.2/WiLL-1.0.2.pkg.zip"
+            <enclosure url="https://github.com/sigworld/will/releases/download/v1.0.3/WiLL-1.0.3.pkg.zip"
                        sparkle:installationType="package"
                        type="application/octet-stream"
-                       sparkle:edSignature="hhFFoI97fB8rMYEu97Y3YSTHh42bnU84taPhSX/y0QTmRyM1B+cU34ndvUCwleqz85lUk51efLdc2Sx+rReODw==" length="64638666" />
+                       sparkle:edSignature="Z7PtcnjMk8n//iNrdTsKUcRQhFzzzIWr4BtdK7ISuaUnSe7JF+SAYtuBy+HaPTqxne2U2JTE61Prw+h11DwBBg==" length="64639033" />
         </item>
     </channel>
 </rss>
