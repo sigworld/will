@@ -1,6 +1,7 @@
 ---
 import type { Locale } from '../i18n';
 import { getCopy } from '../i18n';
+import Wordmark from './Wordmark.astro';
 
 interface Props {
   locale: Locale;
@@ -16,32 +17,57 @@ const isZh = locale === 'zh';
 //   EN: "Your input, refined."   — split on ", " → ["Your input", "refined."]
 //                                   the comma re-attaches to the first phrase
 //                                   and a space joins the two at render
-//   ZH: "让你的表达 更准确"      — split on a single space → ["让你的表达", "更准确"]
+//   ZH: "如你所想 字字达意"      — split on a single space → ["如你所想", "字字达意"]
 //                                   the space rejoins the two at render
 const splitToken = isZh ? ' ' : ', ';
 const appendToFirst = isZh ? '' : ',';
 const phraseJoinSep = isZh ? ' ' : ' ';
 const headlineParts = t.hero.headline.split(splitToken);
-// Per-phrase stagger. EN gives "refined." a long deliberate pause (1500ms);
-// ZH's "更准确" follows "让你的表达" with a tighter breath since the line is
-// shorter and the meaning lands faster.
-const phraseStaggerMs = isZh ? 1000 : 1500;
-const waveformBars = 28;
+// Bars per phrase waveform. Each phrase owns its own waveform sized to
+// its own text width, so the count is per-phrase, not total.
+const waveformBars = 14;
+
+// Sub line is composed of four discrete cycles, each with its own reveal
+// language. Wave: a mini voice waveform plays, then the word fog-clears in
+// its place (the voice-input metaphor). Type: keystrokes + candidate popup
+// (the existing keyboard IME UX). Morph: the word appears in the opposing
+// language (翻譯 ↔ translate) and a blur gradient swaps it for the target —
+// the translation metaphor. Fog: the existing blur-clear payoff tail.
+type SubCycle =
+  | { kind: 'wave'; prefix: string; text: string }
+  | { kind: 'type'; prefix: string; text: string; partial: string; popupRows: [string, string, string] }
+  | { kind: 'morph'; prefix: string; text: string; morphFrom: string }
+  | { kind: 'fog'; prefix: string; text: string };
+
+const subCycles: SubCycle[] = isZh
+  ? [
+      { kind: 'wave',  prefix: '',      text: '语音' },
+      { kind: 'type',  prefix: '、',    text: '键入',    partial: 'jianru', popupRows: ['键入', '渐入', '简入'] },
+      { kind: 'morph', prefix: '、',    text: '翻译',    morphFrom: 'translate' },
+      { kind: 'fog',   prefix: ' —— ',  text: '随心如义' },
+    ]
+  : [
+      { kind: 'wave',  prefix: '',     text: 'Speak,' },
+      { kind: 'type',  prefix: ' ',    text: 'type,',     partial: 'ty',  popupRows: ['type,', 'try,', 'tell,'] },
+      { kind: 'morph', prefix: ' ',    text: 'translate', morphFrom: '翻譯' },
+      { kind: 'fog',   prefix: ' — ',  text: 'at your WiLL.' },
+    ];
+const subWaveBars = 7;
 ---
 
 <section class="hero">
   <div class="container hero-inner">
-    <div class="hero-title-stage" data-hero-title style={`--right-fade-delay: ${phraseStaggerMs}ms;`}>
-      <div class="hero-waveform" aria-hidden="true">
-        {Array.from({ length: waveformBars }).map((_, i) => (
-          <span style={`--bar-delay: ${(i * 47) % 600}ms;`}></span>
-        ))}
-      </div>
+    <div class="hero-title-stage" data-hero-title>
       <h1 class="hero-headline hero-headline-fog">
         {headlineParts.map((part, i) => (
           <>
             {i > 0 && phraseJoinSep}
-            <span class="phrase-cell" style={`--fog-delay: ${i * phraseStaggerMs}ms`}>
+            <span class={`phrase-cell phrase-cell-${i}`} data-phrase-idx={i}>
+              <span class="phrase-waveform" aria-hidden="true">
+                {Array.from({ length: waveformBars }).map((_, j) => (
+                  <span style={`--bar-delay: ${(j * 47) % 600}ms;`}></span>
+                ))}
+              </span>
               <span class="phrase-text">
                 {part}{i < headlineParts.length - 1 ? appendToFirst : ''}
               </span>
@@ -53,7 +79,54 @@ const waveformBars = 28;
 
     <div class="hero-sub-stage" data-hero-sub data-locale={locale} aria-label={t.hero.sub}>
       <p class="hero-sub hero-sub-typewriter">
-        <span class="sub-typed" data-sub-typed></span><span class="sub-fog" data-sub-fog aria-hidden="true"></span><span class="sub-caret" data-sub-caret aria-hidden="true"></span>
+        {subCycles.map((cycle, idx) => {
+          const cycleAttrs = {
+            'data-cycle-idx': idx,
+            'data-cycle-kind': cycle.kind,
+            'data-cycle-prefix': cycle.prefix,
+            'data-cycle-text': cycle.text,
+            ...(cycle.kind === 'type' ? { 'data-cycle-partial': cycle.partial, 'data-cycle-popup': JSON.stringify(cycle.popupRows) } : {}),
+            ...(cycle.kind === 'morph' ? { 'data-cycle-from': cycle.morphFrom } : {}),
+          };
+          return (
+            <span class={`sub-cycle sub-cycle-${cycle.kind}`} {...cycleAttrs}>
+              <span class="sub-prefix" data-sub-prefix></span>
+              {cycle.kind === 'wave' && (
+                <span class="sub-wave-slot">
+                  <span class="sub-waveform" aria-hidden="true">
+                    {Array.from({ length: subWaveBars }).map((_, j) => (
+                      <span style={`--bar-delay: ${(j * 53) % 480}ms;`}></span>
+                    ))}
+                  </span>
+                  <span class="sub-wave-text">{cycle.text}</span>
+                </span>
+              )}
+              {cycle.kind === 'type' && (
+                <span class="sub-typed" data-sub-typed></span>
+              )}
+              {cycle.kind === 'morph' && (
+                <span class="sub-morph-slot">
+                  <span class="sub-morph-from" aria-hidden="true">{cycle.morphFrom}</span>
+                  <span class="sub-morph-to">{cycle.text}</span>
+                </span>
+              )}
+              {cycle.kind === 'fog' && (
+                <span class="sub-fog" data-sub-fog aria-hidden="true">
+                  {cycle.text.includes('WiLL') ? (
+                    <>
+                      {cycle.text.split('WiLL')[0]}<span class="sub-fog-brand"><Wordmark locale="en" asStatic={true} height={20} /></span>{cycle.text.split('WiLL')[1]}
+                    </>
+                  ) : cycle.text.includes('如义') ? (
+                    <>
+                      {cycle.text.split('如义')[0]}<span class="sub-fog-brand-zh">如义</span>{cycle.text.split('如义')[1]}
+                    </>
+                  ) : cycle.text}
+                </span>
+              )}
+            </span>
+          );
+        })}
+        <span class="sub-caret" data-sub-caret aria-hidden="true"></span>
       </p>
       <div class="hero-candidates" data-hero-candidates aria-hidden="true">
         <div class="cand-row" data-cand-row="0">
@@ -106,28 +179,45 @@ const waveformBars = 28;
     gap: var(--s-5);
   }
 
-  /* ─── Title stage: one continuous waveform behind the whole title, with
-     bars split into left/right halves that fade at different stagger times.
-     The headline overlays on top — each phrase's text fog-clears on its own
-     `--fog-delay`, in lockstep with its half of the waveform. */
+  /* ─── Title stage: each phrase owns its own waveform sized to its own
+     text width. Phrase 0 plays first, fades, and the text fog-clears in
+     its place. Then phrase 1's waveform fades in, plays, fades, and its
+     text fog-clears. Two discrete beats instead of one continuous bar. */
   .hero-title-stage {
     position: relative;
-    display: grid;
-    place-items: center;
     width: 100%;
+    display: flex;
+    justify-content: center;
   }
-  .hero-title-stage > * { grid-area: 1 / 1; }
 
-  .hero-waveform {
-    width: min(500px, 100%);
+  .phrase-cell {
+    position: relative;
+    display: inline-block;
+    vertical-align: baseline;
+  }
+
+  /* Per-phrase waveform — absolutely positioned over the phrase text so it
+     occupies the same width as the phrase. Phrase 1's waveform shifts
+     itself right (without affecting layout) so its bars don't crowd
+     "Your input," when they appear; the final assembled headline keeps
+     its natural inter-phrase spacing because the cell itself has no
+     extra margin. */
+  .phrase-waveform {
+    position: absolute;
+    inset: 0;
     height: 100%;
-    min-height: 80px;
+    min-height: 64px;
     display: flex;
     align-items: center;
     justify-content: space-between;
     pointer-events: none;
+    opacity: 0;
+    transition: opacity 190ms var(--ease-out-quad);
   }
-  .hero-waveform span {
+  .phrase-cell-1 .phrase-waveform { left: 0.25em; right: -0.25em; }
+  .phrase-cell.is-wave-on .phrase-waveform { opacity: 1; }
+
+  .phrase-waveform span {
     display: block;
     width: 4px;
     border-radius: 2px;
@@ -136,15 +226,6 @@ const waveformBars = 28;
     transform-origin: center;
     animation: hero-wave 1.05s ease-in-out infinite;
     animation-delay: var(--bar-delay, 0ms);
-    opacity: 1;
-    transition: opacity 300ms var(--ease-out-quad);
-  }
-  .hero-title-stage.is-revealed .hero-waveform span { opacity: 0; }
-  /* Right half of the bars (15..28) wait for the second phrase's stagger
-     before fading — so the left half "recognizes" first, the right keeps
-     vibrating. */
-  .hero-waveform span:nth-child(n+15) {
-    transition-delay: var(--right-fade-delay, 1500ms);
   }
   /* Breathing effect comes from `filter: brightness()` and `transform`, NOT
      from `opacity` — keyframe-animated opacity would block the fade-out
@@ -155,11 +236,11 @@ const waveformBars = 28;
     50%      { transform: scaleY(1.0); filter: brightness(1.05); }
   }
   /* Vary base heights so the row reads as a voice cloud, not an EQ. */
-  .hero-waveform span:nth-child(3n)    { height: 38%; }
-  .hero-waveform span:nth-child(5n+1)  { height: 58%; }
-  .hero-waveform span:nth-child(7n+2)  { height: 28%; }
-  .hero-waveform span:nth-child(11n)   { height: 70%; }
-  .hero-waveform span:nth-child(13n+1) { height: 22%; }
+  .phrase-waveform span:nth-child(3n)    { height: 38%; }
+  .phrase-waveform span:nth-child(5n+1)  { height: 58%; }
+  .phrase-waveform span:nth-child(7n+2)  { height: 28%; }
+  .phrase-waveform span:nth-child(11n)   { height: 70%; }
+  .phrase-waveform span:nth-child(13n+1) { height: 22%; }
 
   .hero-headline {
     position: relative;
@@ -172,27 +253,22 @@ const waveformBars = 28;
     margin: 0 auto;
   }
 
-  .phrase-cell {
-    display: inline-block;
-    vertical-align: baseline;
-  }
-
-  /* The phrase text. Waits 300ms after `--fog-delay` so the waveform
-     underneath has fully faded before the text starts to appear. Opacity
-     rises in 420ms (heavy blur becomes visible quickly), then blur and
-     translate clear slowly over 1400ms so the text resolves out of fog. */
+  /* The phrase text. JS toggles `.is-text-revealed` per phrase. Opacity
+     rises in 380ms (heavy blur becomes visible, but not snappy), then blur
+     and translate clear leisurely over 1250ms so the text genuinely
+     resolves out of fog rather than just appearing. The waveform itself
+     stays brisk (190ms fade) — only the text reveal is unhurried. */
   .phrase-text {
     display: inline-block;
     opacity: 0;
     filter: blur(14px);
     transform: translateY(-6px);
     transition:
-      opacity 420ms var(--ease-out-quad),
-      filter 1400ms var(--ease-out-expo),
-      transform 1400ms var(--ease-out-expo);
-    transition-delay: calc(var(--fog-delay, 0ms) + 300ms);
+      opacity 380ms var(--ease-out-quad),
+      filter 1250ms var(--ease-out-expo),
+      transform 1250ms var(--ease-out-expo);
   }
-  .hero-title-stage.is-revealed .phrase-text {
+  .phrase-cell.is-text-revealed .phrase-text {
     opacity: 1;
     filter: blur(0);
     transform: translateY(0);
@@ -219,7 +295,120 @@ const waveformBars = 28;
     justify-content: center;
   }
   .sub-typed { white-space: pre-wrap; }
-  /* Fog-clearing payoff tail (e.g. "way better." / "变得更好") — mirrors the
+
+  /* ─── Sub cycles: each word is rendered as its own slot, hidden until JS
+     activates it. Hiding via `display: none` (not opacity) keeps the caret
+     positioned at the end of the currently active flow instead of jumping
+     to the end of all reserved widths from the start. */
+  .sub-cycle {
+    display: none;
+  }
+  .sub-cycle.is-active {
+    display: inline;
+  }
+  .sub-prefix { white-space: pre; }
+
+  /* ─── Wave cycle ("Speak," / "语音"): a mini voice waveform plays in the
+     word's slot, then crossfades into the fog-clearing text — the same
+     pattern as the title's per-phrase reveal, scaled down for body type. */
+  .sub-wave-slot {
+    position: relative;
+    display: inline-block;
+    vertical-align: baseline;
+  }
+  .sub-waveform {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 190ms var(--ease-out-quad);
+  }
+  .sub-cycle-wave.is-waving .sub-waveform { opacity: 1; }
+  .sub-waveform span {
+    display: block;
+    width: 3px;
+    border-radius: 1.5px;
+    background: var(--signal-blue);
+    height: 18%;
+    transform-origin: center;
+    animation: hero-wave 1.05s ease-in-out infinite;
+    animation-delay: var(--bar-delay, 0ms);
+  }
+  .sub-waveform span:nth-child(3n)    { height: 44%; }
+  .sub-waveform span:nth-child(5n+1)  { height: 62%; }
+  .sub-waveform span:nth-child(7n+2)  { height: 32%; }
+  .sub-wave-text {
+    display: inline-block;
+    opacity: 0;
+    filter: blur(10px);
+    transform: translateY(-3px);
+    transition:
+      opacity 380ms var(--ease-out-quad),
+      filter 900ms var(--ease-out-expo),
+      transform 900ms var(--ease-out-expo);
+  }
+  .sub-cycle-wave.is-revealed .sub-wave-text {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+
+  /* ─── Morph cycle ("translate" / "翻译"): the FROM text (the opposing
+     language) shows briefly, then a blur gradient crossfades it into the TO
+     text. The slot sizes to the TO width — the FROM is absolutely
+     positioned over it, so when ZH morphs the wider "translate" down to the
+     narrower "翻译", the trailing " —— " sits flush against 翻译 instead of
+     across a "translate"-sized gap. For EN (FROM narrower than TO) the FROM
+     fits inside the slot anchored at the left edge. */
+  .sub-morph-slot {
+    position: relative;
+    display: inline-block;
+    vertical-align: baseline;
+  }
+  .sub-morph-from {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: inline-block;
+    white-space: nowrap;
+    opacity: 0;
+    filter: blur(0);
+    transform: translateY(0);
+    transition:
+      opacity 420ms var(--ease-out-quad),
+      filter 700ms var(--ease-out-expo),
+      transform 700ms var(--ease-out-expo);
+  }
+  .sub-cycle-morph.is-showing-from .sub-morph-from {
+    opacity: 1;
+  }
+  .sub-cycle-morph.is-revealed .sub-morph-from {
+    opacity: 0;
+    filter: blur(14px);
+    transform: translateY(-2px);
+  }
+  .sub-morph-to {
+    display: inline-block;
+    white-space: nowrap;
+    opacity: 0;
+    filter: blur(14px);
+    transform: translateY(-3px);
+    transition:
+      opacity 460ms var(--ease-out-quad),
+      filter 900ms var(--ease-out-expo),
+      transform 900ms var(--ease-out-expo);
+  }
+  .sub-cycle-morph.is-revealed .sub-morph-to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
+  }
+
+  /* Fog-clearing payoff tail (e.g. "at your WiLL." / "变得更好") — mirrors the
      title's `.phrase-text` reveal exactly: pre-rendered in the DOM with the
      blurred initial state so the browser has painted it long before JS adds
      `.is-revealed`. This is the only reliable way to trigger a CSS filter
@@ -231,15 +420,68 @@ const waveformBars = 28;
     filter: blur(14px);
     transform: translateY(-4px);
     transform-origin: left center;
+    /* Brand fog: the payoff word starts as Signal Blue with a soft glow,
+       then resolves to the body text color as the blur clears — the WiLL
+       fog signature condensing into the punchline. */
+    color: var(--signal-blue);
+    text-shadow: 0 0 14px rgba(10, 123, 255, 0.55);
     transition:
-      opacity 420ms var(--ease-out-quad),
-      filter 900ms var(--ease-out-expo),
-      transform 900ms var(--ease-out-expo);
+      opacity 620ms var(--ease-out-quad),
+      filter 1700ms var(--ease-out-expo),
+      transform 1700ms var(--ease-out-expo),
+      color 1900ms var(--ease-out-quad),
+      text-shadow 1900ms var(--ease-out-quad);
   }
   .sub-fog.is-revealed {
     opacity: 1;
     filter: blur(0);
     transform: translateY(0);
+    color: var(--text-secondary);
+    text-shadow: 0 0 0 rgba(10, 123, 255, 0);
+  }
+  /* The "WiLL" inside the payoff is the actual brand wordmark SVG — the
+     left V is fixed Signal Blue, the iLL is currentColor and rides along
+     with the fog's color transition (blue → text-secondary) for free. */
+  .sub-fog-brand {
+    display: inline-block;
+    margin: 0 0.06em;
+  }
+  /* Override the Wordmark component's own rules so the inline glyph tracks
+     the surrounding subtitle exactly:
+       — `color: inherit` defeats `.wordmark { color: var(--text-primary) }`,
+         which would otherwise paint the iLL near-black instead of letting
+         the fog's color transition (blue → text-secondary) carry the iLL
+         along via currentColor.
+       — `height: 0.74em !important` beats the component's inline pixel
+         height. The wordmark's glyphs (W's V and iLL caps) span ~95% of the
+         viewBox; pinning that to ~0.7em puts the iLL strokes at a weight
+         that optically matches Inter's body text. (The wordmark's L's and
+         i are thick rectangular bars — at full cap-height they fill more
+         pixels per glyph than thin Inter strokes and read visually darker
+         even when hex colors match, so the SVG renders a touch smaller to
+         even out optical weight.)
+       — `vertical-align: -0.05em` drops the SVG just enough that the V's
+         tip and L baselines sit on the text baseline rather than floating
+         above it.
+     `:global(.wordmark)` is required because the SVG carries Wordmark's CSS
+     scope hash, not Hero's — without it the selector silently never matches. */
+  .sub-fog-brand :global(.wordmark) {
+    display: inline-block;
+    color: inherit;
+    height: 0.74em !important;
+    vertical-align: -0.05em;
+  }
+  /* ZH counterpart: 如义 is the brand mark in zh-CN. Mirrors `.wordmark-zh-
+     text` exactly — same Signal Blue, heading weight, and 0.04em letter-
+     spacing — so the punchline lands on the brand identity in its native
+     CJK form. `-webkit-text-fill-color` defends against the fog's color
+     transition trying to repaint the glyph through any inherited cascade. */
+  .sub-fog-brand-zh {
+    font-family: var(--font-cjk);
+    font-weight: var(--weight-heading);
+    letter-spacing: 0.04em;
+    color: var(--signal-blue);
+    -webkit-text-fill-color: var(--signal-blue);
   }
   .sub-caret {
     display: inline-block;
@@ -396,13 +638,17 @@ const waveformBars = 28;
 
   @media (prefers-reduced-motion: reduce) {
     .hero-arrow-chevron { animation: none; transform: none; }
-    .hero-waveform { display: none; }
+    .phrase-waveform, .sub-waveform { display: none; }
     .phrase-text {
       opacity: 1; filter: none; transform: none; transition: none;
     }
     .sub-caret { display: none; }
     .hero-candidates { display: none; }
-    .sub-fog { opacity: 1; filter: none; transform: none; transition: none; }
+    .sub-cycle { display: inline; }
+    .sub-wave-text, .sub-morph-to, .sub-fog {
+      opacity: 1; filter: none; transform: none; transition: none;
+    }
+    .sub-morph-from { display: none; }
     .hero-cta,
     .hero-arrow {
       opacity: 1; transform: none; transition: none;
@@ -411,44 +657,39 @@ const waveformBars = 28;
 </style>
 
 <script>
-  type Cycle = {
-    /** Typed verbatim before the partial; NOT replaced on accept (used for
-     *  connectors like 、 or " —— " that the user "types" as keystrokes
-     *  rather than picks from the candidate window). */
-    prefix?: string;
-    /** Pinyin / Latin chars typed; REPLACED with `accept` when the top
-     *  candidate is taken. Ignored when `fog: true`. */
-    partial: string;
-    /** Hanzi / English completion that replaces the partial. */
-    accept: string;
-    /** Three display strings in the candidate window. Ignored when `fog: true`. */
-    popupRows: string[];
-    /** When true, skip the candidate-popup flow: type the prefix, then
-     *  fog-reveal `accept` inline (blur-clearing like the title). Used on the
-     *  final cycle for a more fluent payoff. */
-    fog?: boolean;
-  };
-
-  // Orchestrate waveform → fog-reveal title → typewriter sub with locale-
-  // appropriate candidate cycles. EN cycles type partial English letters and
-  // accept English completions; ZH cycles type pinyin and accept hanzi
-  // (with the leading punctuation 、 / — baked into the accept text).
+  // Orchestrate waveform → fog-reveal title → multi-modal sub cycles. The
+  // sub cycles are pre-rendered as cycle slots in the DOM (see frontmatter
+  // `subCycles`); each slot's `data-cycle-kind` tells this script how to
+  // animate it: wave (voice waveform), type (keystrokes + candidate popup),
+  // morph (blur-gradient swap from the opposing language), fog (blur-clear
+  // payoff). Cycles activate sequentially via `.is-active`; the inline flow
+  // grows as each one materializes so the caret naturally trails behind.
   const titleStage = document.querySelector<HTMLElement>('[data-hero-title]');
+  const phraseCells = titleStage ? Array.from(titleStage.querySelectorAll<HTMLElement>('.phrase-cell')) : [];
   const subStage = document.querySelector<HTMLElement>('[data-hero-sub]');
-  const subTyped = subStage?.querySelector<HTMLElement>('[data-sub-typed]');
-  const subFog = subStage?.querySelector<HTMLElement>('[data-sub-fog]');
+  const cycleEls = subStage ? Array.from(subStage.querySelectorAll<HTMLElement>('[data-cycle-idx]')) : [];
   const candWin = subStage?.querySelector<HTMLElement>('[data-hero-candidates]');
   const candRows = subStage ? Array.from(subStage.querySelectorAll<HTMLElement>('[data-cand-row]')) : [];
   const candTexts = subStage ? Array.from(subStage.querySelectorAll<HTMLElement>('[data-cand-text]')) : [];
 
-  if (titleStage && subStage && subTyped && subFog && candWin && candRows.length === 3 && candTexts.length === 3) {
-    const finalSub = subStage.getAttribute('aria-label') ?? '';
+  if (titleStage && phraseCells.length >= 2 && subStage && cycleEls.length === 4 && candWin && candRows.length === 3 && candTexts.length === 3) {
     const locale = subStage.dataset.locale === 'zh' ? 'zh' : 'en';
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     if (reduced) {
-      titleStage.classList.add('is-revealed');
-      subTyped.textContent = finalSub;
+      phraseCells.forEach((cell) => cell.classList.add('is-text-revealed'));
+      cycleEls.forEach((el) => {
+        const kind = el.dataset.cycleKind ?? '';
+        const prefix = el.dataset.cyclePrefix ?? '';
+        const text = el.dataset.cycleText ?? '';
+        const prefixEl = el.querySelector<HTMLElement>('[data-sub-prefix]');
+        if (prefixEl) prefixEl.textContent = prefix;
+        if (kind === 'type') {
+          const typedEl = el.querySelector<HTMLElement>('[data-sub-typed]');
+          if (typedEl) typedEl.textContent = text;
+        }
+        el.classList.add('is-active', 'is-showing-from', 'is-revealed');
+      });
       subStage.classList.add('is-done');
       revealBelowHero();
     } else {
@@ -460,73 +701,132 @@ const waveformBars = 28;
     }
 
     async function runHeroAnimation() {
-      // Phase 1 — voice waveform.
-      await sleep(800);
+      // Phase 1 — phrase 0 waveform plays, then fades while phrase 0 text
+      // fog-clears in its place. Phrase 1 cell is laid out but invisible
+      // (no waveform yet, text still blurred) so the headline width is
+      // stable from the start. Beat durations are tuned ~40% faster than
+      // the original cadence so the reveal feels brisk, not draggy.
+      const waveDwellMs = locale === 'zh' ? 420 : 480;
+      const phraseCell0 = phraseCells[0];
+      const phraseCell1 = phraseCells[1];
 
-      // Phase 2 — title fog-clears phrase-by-phrase. Per-phrase stagger is
-      // locale-specific (EN 1500ms, ZH 1000ms). The waveform under each
-      // phrase fades over 300ms, then the text begins its reveal (420ms
-      // opacity + 1400ms blur clear). Final phrase fully sharp at
-      // stagger + 300 + 1400 = stagger + 1700 ms.
-      const phraseStaggerMs = locale === 'zh' ? 1000 : 1500;
-      titleStage.classList.add('is-revealed');
-      await sleep(phraseStaggerMs + 1700);
+      phraseCell0.classList.add('is-wave-on');
+      await sleep(waveDwellMs);
 
-      // Phase 3 — caret appears (hidden until the title is fully readable),
-      // holds for a beat, then typing begins.
-      subStage.classList.add('is-ready');
-      await sleep(280);
+      // Waveform fades (190ms) and text begins fog-clear (380ms opacity
+      // + 1250ms blur clear). Drop wave-on at the same beat the text
+      // reveal starts so the two crossfade.
+      phraseCell0.classList.remove('is-wave-on');
+      phraseCell0.classList.add('is-text-revealed');
+      // Phrase 0 text is readable well before its blur fully clears — wait
+      // only ~half of the 1250ms blur transition before phrase 1's waveform
+      // appears, so the two phases overlap slightly instead of leaving a
+      // dead pause between them. The remaining blur on phrase 0 finishes
+      // resolving while phrase 1's bars vibrate.
+      await sleep(600);
 
-      // Phase 4 — typewriter sub with locale-specific cycles.
-      const cycles = parseCycles(finalSub, locale);
+      // Phase 2 — phrase 1 waveform fades in, plays, then crossfades into
+      // the phrase 1 text the same way.
+      phraseCell1.classList.add('is-wave-on');
+      await sleep(waveDwellMs);
 
-      for (const cycle of cycles) {
-        // Type the prefix first — these chars stay (they're the punctuation
-        // separators the user types directly, not picked from a candidate).
-        const prefix = cycle.prefix ?? '';
-        for (const ch of prefix) {
-          subTyped.textContent = (subTyped.textContent ?? '') + ch;
-          await sleep(30);
+      phraseCell1.classList.remove('is-wave-on');
+      phraseCell1.classList.add('is-text-revealed');
+      // Phrase 1 text is readable well before its blur fully clears — let
+      // the sub-stage caret appear while phrase 1's blur is still finishing,
+      // mirroring the phase 0 → phase 1 overlap so the whole reveal flows
+      // without a dead gap.
+      await sleep(550);
+
+      // Phase 3 — short hand-off beat. Title's residual blur finishes
+      // resolving while the sub cycle 0 (wave) starts its waveform. The
+      // caret stays hidden through the wave cycle (voice input doesn't get
+      // a typing cursor) and fades in at the start of the type cycle.
+      await sleep(140);
+
+      // Phase 4 — sub cycles. Each cycle animates with its own reveal
+      // language; `data-cycle-kind` selects the branch.
+      const subWaveDwellMs = locale === 'zh' ? 360 : 400;
+
+      for (const cycleEl of cycleEls) {
+        const kind = cycleEl.dataset.cycleKind ?? '';
+        const prefix = cycleEl.dataset.cyclePrefix ?? '';
+        const text = cycleEl.dataset.cycleText ?? '';
+
+        cycleEl.classList.add('is-active');
+        // Force a style commit so subsequent class-driven transitions
+        // interpolate from the painted initial state instead of being
+        // coalesced with the activation `display: none → inline` change.
+        void cycleEl.offsetWidth;
+
+        const prefixEl = cycleEl.querySelector<HTMLElement>('[data-sub-prefix]');
+        if (prefixEl) {
+          for (const ch of prefix) {
+            prefixEl.textContent = (prefixEl.textContent ?? '') + ch;
+            await sleep(30);
+          }
         }
 
-        if (cycle.fog) {
-          // Payoff cycle: skip the candidate popup. Fill the pre-rendered
-          // `.sub-fog` span and add `.is-revealed` — same mechanism the title
-          // uses on `.phrase-text`. Pre-rendering is essential: the browser
-          // must have painted the blurred initial state before the class
-          // change, otherwise the transition is coalesced away.
-          subFog.textContent = cycle.accept;
-          // Force the browser to commit the new layout (text width) before the
-          // class change, so the transition runs from the fully-laid-out
-          // blurred state rather than from "empty span".
-          void subFog.offsetWidth;
-          subFog.classList.add('is-revealed');
-          // Wait for the slower filter transition (900ms) to mostly clear.
-          await sleep(900);
-          continue;
+        if (kind === 'wave') {
+          cycleEl.classList.add('is-waving');
+          await sleep(subWaveDwellMs);
+          // Crossfade: drop the wave-on and add text-revealed in the same
+          // beat so the waveform fades out as the word fog-clears in its
+          // place — same hand-off pattern the title uses per phrase.
+          cycleEl.classList.remove('is-waving');
+          cycleEl.classList.add('is-revealed');
+          // Text reads well before the 900ms blur fully clears; the residual
+          // blur finishes while the next cycle's prefix is being typed.
+          await sleep(540);
+        } else if (kind === 'type') {
+          // Caret only blinks during the type cycle — voice (wave), morph,
+          // and payoff (fog) cycles have their own visual language and don't
+          // read as keyboard input. Add `is-ready` on entry, drop it on exit.
+          subStage.classList.add('is-ready');
+          const partial = cycleEl.dataset.cyclePartial ?? '';
+          const popupRows = JSON.parse(cycleEl.dataset.cyclePopup ?? '[]') as string[];
+          const typedEl = cycleEl.querySelector<HTMLElement>('[data-sub-typed]');
+          if (typedEl) {
+            for (const ch of partial) {
+              typedEl.textContent = (typedEl.textContent ?? '') + ch;
+              await sleep(30);
+            }
+            popupRows.forEach((row, i) => { candTexts[i].textContent = row; });
+            candWin.classList.add('is-visible');
+            await sleep(420);
+            candRows[0].classList.add('is-accepting');
+            await sleep(150);
+            typedEl.textContent = text;
+            candWin.classList.remove('is-visible');
+            candRows[0].classList.remove('is-accepting');
+            await sleep(180);
+          }
+          subStage.classList.remove('is-ready');
+        } else if (kind === 'morph') {
+          // Show the FROM (e.g. 翻譯) first, hold long enough to read it as
+          // a deliberate source-language form rather than a flicker, then
+          // crossfade through blur into the TO (translate). Both share a
+          // grid cell so the slot stays the same width across the swap.
+          cycleEl.classList.add('is-showing-from');
+          await sleep(460);
+          cycleEl.classList.add('is-revealed');
+          // Most of the 900ms blur-clear hits before we move on, matching
+          // the wave-cycle hand-off cadence.
+          await sleep(700);
+        } else if (kind === 'fog') {
+          // Payoff cycle: text is already pre-rendered in the DOM with the
+          // blurred initial state — force a layout commit, then add the
+          // reveal class so the filter transition interpolates. The fog
+          // lingers (~1.7s blur clear + 1.9s color shift) so the brand blue
+          // is on screen long enough to register before settling into the
+          // body text color.
+          const fogEl = cycleEl.querySelector<HTMLElement>('[data-sub-fog]');
+          if (fogEl) {
+            void fogEl.offsetWidth;
+            fogEl.classList.add('is-revealed');
+            await sleep(1500);
+          }
         }
-
-        // Then type the partial — these chars WILL be replaced on accept.
-        for (let i = 0; i < cycle.partial.length; i++) {
-          subTyped.textContent = (subTyped.textContent ?? '') + cycle.partial[i];
-          await sleep(30);
-        }
-        const beforeAcceptTyped = subTyped.textContent ?? '';
-
-        cycle.popupRows.forEach((text, i) => { candTexts[i].textContent = text; });
-        candWin.classList.add('is-visible');
-        await sleep(420);
-
-        candRows[0].classList.add('is-accepting');
-        await sleep(150);
-
-        const trunkLen = beforeAcceptTyped.length - cycle.partial.length;
-        const trunk = beforeAcceptTyped.slice(0, trunkLen);
-        subTyped.textContent = trunk + cycle.accept;
-
-        candWin.classList.remove('is-visible');
-        candRows[0].classList.remove('is-accepting');
-        await sleep(180);
       }
 
       subStage.classList.add('is-done');
@@ -543,38 +843,5 @@ const waveformBars = 28;
 
   function sleep(ms: number): Promise<void> {
     return new Promise((resolve) => window.setTimeout(resolve, ms));
-  }
-
-  function parseCycles(text: string, locale: 'en' | 'zh'): Cycle[] {
-    // Each cycle's accept-text fully replaces its partial when accepted, so
-    // concatenating the accepts must equal the final sub copy. If they don't
-    // match (e.g. the i18n copy drifts), fall back to typing in one shot.
-    const cycles: Cycle[] = locale === 'zh'
-      ? [
-          // ZH: pinyin → hanzi. Connectors 、 / —— are typed as `prefix` —
-          // they appear as keystrokes the user makes directly, the way a
-          // real Chinese IME treats the 、 key. The pinyin partial is what
-          // gets replaced when a hanzi candidate is accepted.
-          { prefix: '',       partial: 'yuyin',   accept: '语音',  popupRows: ['语音',   '余音',   '雨音'] },
-          { prefix: '、',     partial: 'jianru',  accept: '键入',  popupRows: ['键入',   '渐入',   '简入'] },
-          { prefix: '、',     partial: 'fanyi',   accept: '翻译',  popupRows: ['翻译',   '反义',   '翻意'] },
-          // Payoff: type the connector, then fog-reveal 变得更好 inline —
-          // mirrors the title's blur-clear so the sub lands in one fluid beat
-          // instead of another candidate-popup interruption.
-          { prefix: ' —— ',   partial: '', accept: '变得更好', popupRows: [], fog: true },
-        ]
-      : [
-          { prefix: '',       partial: 'Sp',  accept: 'Speak,',       popupRows: ['Speak,',      'Speech.',     'Special?'] },
-          { prefix: ' ',      partial: 'ty',  accept: 'type,',        popupRows: ['type,',       'try,',        'tell,'] },
-          { prefix: ' ',      partial: 'tra', accept: 'translate',    popupRows: ['translate',   'transcribe',  'transmit'] },
-          { prefix: ' — ',    partial: '',    accept: 'way better.',  popupRows: [], fog: true },
-        ];
-    // Each cycle contributes `prefix + accept` to the final sub copy. The
-    // partial is REPLACED by accept, but the prefix stays as typed.
-    const assembled = cycles.map((c) => (c.prefix ?? '') + c.accept).join('');
-    if (assembled !== text) {
-      return [{ partial: text, accept: text, popupRows: ['', '', ''] }];
-    }
-    return cycles;
   }
 </script>

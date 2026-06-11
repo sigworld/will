@@ -3,18 +3,13 @@
  * Brand wordmark — locale-aware per planning/02-design-system.md.
  *
  * Both locales use the same WiLL SVG (traced 1:1 from /logo/bright.png via
- * potrace). The coloring style is identical too — one accent color for the
- * blue half of the W, currentColor for the rest — only the accent hex differs:
+ * potrace). Both locales use Signal Blue as the brand accent; the structural
+ * difference is which strokes of the W carry it:
  *
- *   EN: Signal Blue      #0A7BFF   (the V, the "Voice" half of V+E=W)
- *   ZH: Underglaze Blue  #234E8C   (both Vs of the W; cultural variant
- *                                    referencing the cobalt pigment painted
- *                                    beneath the glaze in Yuan-Ming blue-
- *                                    and-white porcelain)
- *
- * The ZH treatment colors *both* halves of the W in underglaze blue (not just
- * the left V like the EN treatment) — a deliberate ZH-locale design choice
- * to read as a unified blue mark, paired with 如义 in the same blue.
+ *   EN: only the left V (the "Voice" half of V+E=W) is Signal Blue; the
+ *       right v stays in currentColor.
+ *   ZH: BOTH halves of the W are Signal Blue so the mark reads as a unified
+ *       blue glyph, paired with 如义 rendered in the same blue.
  *
  * The iLL stays in currentColor on both locales so the wordmark inherits the
  * page text color and inverts cleanly in dark mode.
@@ -47,9 +42,9 @@ const pathL2 = "M8070 1795 l0 -1785 373 2 372 3 3 1783 2 1782 -375 0 -375 0 0 -1
 const pathIStem = "M5560 1331 l0 -1319 368 3 367 3 3 1316 2 1316 -370 0 -370 0 0 -1319z";
 
 const isZh = locale === 'zh';
-const accent = isZh ? 'var(--underglaze-blue, #234E8C)' : 'var(--signal-blue, #0A7BFF)';
+const accent = 'var(--signal-blue, #0A7BFF)';
 // ZH locale: the lowercase v (right half of W) ALSO gets the accent, so the
-// whole W reads as a unified underglaze-blue mark. EN: only the left V is accent.
+// whole W reads as a unified Signal Blue mark. EN: only the left V is accent.
 const littleVFill = isZh ? accent : 'currentColor';
 const ariaForSvg = isZh ? '如义' : 'WiLL';
 ---
@@ -129,7 +124,7 @@ const ariaForSvg = isZh ? '如义' : 'WiLL';
     align-items: flex-end;
     gap: 5px;
   }
-  /* 如义 text — solid Underglaze Blue to match the W's accent fill. The
+  /* 如义 text — solid Signal Blue to match the W's accent fill. The
      `text-shadow: none` / `background: none` / `filter: none` triad is
      defensive: it overrides any inherited jade-era glow that might still
      sit in a cached stylesheet or future ancestor selector. Mirrors the
@@ -139,10 +134,10 @@ const ariaForSvg = isZh ? '如义' : 'WiLL';
     font-weight: var(--weight-heading);
     letter-spacing: 0.04em;
     line-height: 1;
-    color: var(--underglaze-blue);
+    color: var(--signal-blue);
     text-shadow: none;
     background: none;
-    -webkit-text-fill-color: var(--underglaze-blue);
+    -webkit-text-fill-color: var(--signal-blue);
     filter: none;
   }
 </style>

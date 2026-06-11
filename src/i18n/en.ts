@@ -13,7 +13,7 @@ export const en: Copy = {
   },
   hero: {
     headline: 'Your input, refined.',
-    sub: 'Speak, type, translate — way better.',
+    sub: 'Speak, type, translate — at your WiLL.',
     cta: 'Download for macOS',
     ctaSub: 'Free. No account needed.',
     seeHow: 'see how it feels',
@@ -229,7 +229,7 @@ export const en: Copy = {
     ],
   },
   footer: {
-    formula: 'Voice + Execution = Will.',
+    formula: 'Speak, type, translate, at your WiLL.',
     productHeader: 'Product',
     pricingHeader: 'Pricing',
     resourcesHeader: 'Resources',

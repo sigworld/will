@@ -12,8 +12,8 @@ export const zh: Copy = {
     download: '下载',
   },
   hero: {
-    headline: '让你的表达 更准确',
-    sub: '语音、键入、翻译 —— 变得更好',
+    headline: '如你所想 字字达意',
+    sub: '语音、键入、翻译 —— 随心如义',
     cta: '下载 macOS 版',
     ctaSub: '免费。无需注册。',
     seeHow: '亲身感受',
@@ -230,7 +230,7 @@ export const zh: Copy = {
     ],
   },
   footer: {
-    formula: '声音 + 执行 = 如义。',
+    formula: '语音、键入、翻译 —— 随心如义',
     productHeader: '产品',
     pricingHeader: '定价',
     resourcesHeader: '资源',
