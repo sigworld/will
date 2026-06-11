@@ -393,6 +393,12 @@ const schematics: Record<string, string> = {
     font-weight: var(--weight-heading);
     font-family: var(--font-cjk);
   }
+  /* On a Signal Blue background (.btn-primary), the brand color collides
+     with the button fill and "如义" disappears. Fall back to the button's
+     own text color; weight + CJK font still carry the brand cue. */
+  :global(.btn-primary .brand-zh) {
+    color: inherit;
+  }
   .feature-prose :global(mark.hl) {
     background: transparent;
     color: inherit;
