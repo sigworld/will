@@ -168,15 +168,7 @@ export interface Copy {
   };
   footer: {
     formula: string;
-    productHeader: string;
-    pricingHeader: string;
-    resourcesHeader: string;
-    companyHeader: string;
-    languageHeader: string;
     productItems: NavItem[];
-    pricingItems: NavItem[];
-    resourcesItems: NavItem[];
-    companyItems: NavItem[];
     copyright: string;
   };
   /** Page-level copy for the secondary routes. Shape mirrors planning/05-other-pages.md. */

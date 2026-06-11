@@ -230,31 +230,13 @@ export const en: Copy = {
   },
   footer: {
     formula: 'Speak, type, translate, at your WiLL.',
-    productHeader: 'Product',
-    pricingHeader: 'Pricing',
-    resourcesHeader: 'Resources',
-    companyHeader: 'Company',
-    languageHeader: 'Language',
     productItems: [
       { label: 'Home', href: '/' },
       { label: 'Features', href: '/features' },
+      { label: 'Pricing', href: '/pricing' },
       { label: 'Download', href: '/download' },
     ],
-    pricingItems: [
-      { label: 'Free', href: '/pricing#free' },
-      { label: 'Pro', href: '/pricing#pro' },
-      { label: 'BYOK', href: '/pricing#byok' },
-    ],
-    resourcesItems: [
-      { label: 'Docs', href: '/docs' },
-      { label: 'Changelog', href: '/changelog' },
-      { label: 'Privacy', href: '/privacy' },
-    ],
-    companyItems: [
-      { label: 'About', href: '/about' },
-      { label: 'Contact', href: 'mailto:hello@will.app' },
-    ],
-    copyright: '© 2026 WiLL. Built in Swift.',
+    copyright: '© 2026 WiLL.',
   },
   pages: {
     features: {

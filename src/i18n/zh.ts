@@ -231,31 +231,13 @@ export const zh: Copy = {
   },
   footer: {
     formula: '语音、键入、翻译 —— 随心如义',
-    productHeader: '产品',
-    pricingHeader: '定价',
-    resourcesHeader: '资源',
-    companyHeader: '关于',
-    languageHeader: '语言',
     productItems: [
       { label: '主页', href: '/zh' },
       { label: '功能', href: '/zh/features' },
+      { label: '定价', href: '/zh/pricing' },
       { label: '下载', href: '/zh/download' },
     ],
-    pricingItems: [
-      { label: '免费版', href: '/zh/pricing#free' },
-      { label: 'Pro 版', href: '/zh/pricing#pro' },
-      { label: 'BYOK', href: '/zh/pricing#byok' },
-    ],
-    resourcesItems: [
-      { label: '文档', href: '/zh/docs' },
-      { label: '更新日志', href: '/zh/changelog' },
-      { label: '隐私', href: '/zh/privacy' },
-    ],
-    companyItems: [
-      { label: '关于', href: '/zh/about' },
-      { label: '联系', href: 'mailto:hello@will.app' },
-    ],
-    copyright: '© 2026 如义 (WiLL). Built in Swift.',
+    copyright: '© 2026 如义 (WiLL).',
   },
   pages: {
     features: {
