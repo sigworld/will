@@ -136,7 +136,7 @@ export const en: Copy = {
     play: 'Play',
     replay: 'Replay',
     next: 'Next example',
-    after: 'Meetings, foreign-language videos with no subtitle support, songs, voice messages. Source: EN, 中, 日, FR, ES. Target: EN, 中, 日.',
+    after: 'Meetings, foreign-language videos with no subtitle support, songs, voice messages.',
     shortcutHint: { key: '⌃⌥⇧C', label: 'Caption Mode' },
   },
   translate: {

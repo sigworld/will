@@ -136,7 +136,7 @@ export const zh: Copy = {
     play: '播放',
     replay: '重放',
     next: '下一个示例',
-    after: '会议、没有字幕的外语视频、外语歌曲、外语语音消息,都行。源语言:英文 · 中文 · 日文 · 法文 · 西班牙文。目标语言:英文 · 中文 · 日文。',
+    after: '会议、没有字幕的外语视频、外语歌曲、外语语音消息,都行。',
     shortcutHint: { key: '⌃⌥⇧C', label: 'AI 字幕' },
   },
   translate: {
