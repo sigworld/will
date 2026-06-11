@@ -1,0 +1,689 @@
+---
+import type { Locale } from '../i18n';
+import { getCopy } from '../i18n';
+import Keycaps from './Keycaps.astro';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = getCopy(locale);
+const targetFlag = locale === 'zh' ? '🇺🇸' : '🇨🇳';
+const sourceLangLabel = locale === 'zh' ? '中' : 'EN';
+const targetLangLabel = locale === 'zh' ? 'EN' : '中';
+---
+
+<section class="section section-tight" id="translate">
+  <div class="container">
+    <div class="section-header">
+      <h2>{t.translate.title}</h2>
+      <p class="lede">{t.translate.lede}</p>
+    </div>
+
+    <div class="demo-container demo-translate" data-demo-translate data-locale={locale}>
+      <div class="app-frame">
+        <div class="app-titlebar">
+          <span class="app-dot app-dot-r"></span>
+          <span class="app-dot app-dot-y"></span>
+          <span class="app-dot app-dot-g"></span>
+          <span class="app-title">
+            {t.translate.chromeApp} <span class="app-title-channel">— {t.translate.chromeChannel}</span>
+          </span>
+        </div>
+        <div class="app-body">
+          <!-- The other person's message + your translated reply once sent. -->
+          <div class="thread">
+            <div class="msg msg-in">
+              <div class="msg-avatar">{locale === 'zh' ? 'M' : '王'}</div>
+              <div class="msg-body">
+                <div class="msg-name">{t.translate.incomingName}</div>
+                <div class="msg-text">
+                  <span class="selectable" data-incoming-selectable>{t.translate.incomingText}</span>
+                  <span class="select-chip" data-select-chip aria-hidden="true">
+                    <span class="select-chip-glyph">↧</span>
+                    {t.translate.selectChip}
+                  </span>
+                </div>
+                <div class="msg-translation" data-incoming-translation aria-hidden="true">
+                  <span class="lang-tag">{sourceLangLabel}</span>
+                  <span class="msg-translation-text" data-incoming-translation-text></span>
+                </div>
+              </div>
+            </div>
+            <div class="msg msg-out" data-outgoing aria-hidden="true">
+              <div class="msg-avatar msg-avatar-you">{locale === 'zh' ? '你' : 'You'}</div>
+              <div class="msg-body">
+                <div class="msg-name">{locale === 'zh' ? '你' : 'You'}</div>
+                <div class="msg-text" data-outgoing-text></div>
+                <div class="msg-original" data-outgoing-original>
+                  <span class="lang-tag">{sourceLangLabel}</span>
+                  <span class="msg-original-text" data-outgoing-original-text></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Composer with the mode bar floating top-right. -->
+          <div class="composer" data-composer>
+            <div class="mode-bar" data-modebar>
+              <span class="mode-bar-dot"></span>
+              <span class="mode-bar-text">{t.translate.modeBar} 🌐 {targetFlag}</span>
+            </div>
+            <div class="composer-prompt" data-prompt>{t.translate.placeholder}</div>
+            <div class="composer-waveform" data-waveform aria-hidden="true">
+              <div class="waveform-bars">
+                <span></span><span></span><span></span><span></span><span></span>
+                <span></span><span></span><span></span><span></span><span></span>
+                <span></span><span></span><span></span><span></span><span></span>
+                <span></span><span></span><span></span><span></span><span></span>
+              </div>
+              <div class="waveform-label">
+                <span class="waveform-label-dot"></span>
+                {t.translate.translationOn}
+              </div>
+            </div>
+            <div class="composer-text" data-composer-text>
+              <span class="lang-tag composer-lang-tag" data-target-tag aria-hidden="true">{targetLangLabel}</span>
+              <span class="composer-text-body" data-composer-text-body></span>
+            </div>
+            <div class="composer-source" data-source>
+              <span class="lang-tag" aria-hidden="true">{sourceLangLabel}</span>
+              <span class="composer-source-body" data-source-body></span>
+            </div>
+            <div class="composer-actions">
+              <button class="send-btn" data-send type="button" aria-label="Send" disabled>
+                <svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true">
+                  <path d="M2 10 L18 2 L11 18 L9 11 Z" fill="currentColor" />
+                </svg>
+                <span data-send-label>{t.translate.send}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="gesture-row">
+        <button class="replay-pill" data-replay type="button">↻ {t.translate.replay}</button>
+      </div>
+
+      <div class="demo-hint demo-hint-left" aria-hidden="true">
+        <span class="demo-shortcut-label">{t.translate.shortcutHint.turnOn}</span>
+      </div>
+      <div class="demo-shortcut" aria-hidden="true" data-shortcut-hint>
+        <Keycaps shortcut={t.translate.shortcutHint.selectKey} />
+        <span class="demo-shortcut-label">{t.translate.shortcutHint.selectLabel}</span>
+      </div>
+    </div>
+
+    <p class="after">{t.translate.after}</p>
+  </div>
+</section>
+
+<script
+  is:inline
+  type="application/json"
+  data-translate-sample
+  set:html={JSON.stringify({
+    spoken: t.translate.sample.spoken,
+    output: t.translate.sample.output,
+    incomingTranslation: t.translate.incomingTranslation,
+  })}
+/>
+<style>
+  .demo-translate { position: relative; }
+
+  /* Thread + incoming message */
+  .thread {
+    margin-bottom: var(--s-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-3);
+  }
+  .msg {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  .msg-out {
+    opacity: 0;
+    transform: translateY(6px);
+    transition:
+      opacity var(--dur-base) var(--ease-out-expo),
+      transform var(--dur-base) var(--ease-out-expo);
+  }
+  .msg-out.is-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .msg-avatar-you {
+    background: linear-gradient(135deg, #5C5C5C, #3B3B3B);
+    font-size: 13px;
+  }
+  .msg-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #4A6FA5, #2C4670);
+    color: var(--clean-white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: var(--weight-heading);
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .msg-body { flex: 1; }
+  .msg-name {
+    font-size: var(--text-body-s);
+    font-weight: var(--weight-heading);
+    color: var(--text-primary);
+  }
+  .msg-text {
+    margin-top: 2px;
+    font-size: var(--text-body);
+    color: var(--text-primary);
+    line-height: 1.5;
+  }
+  .msg-original {
+    margin-top: 6px;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    font-size: var(--text-body-s);
+    color: var(--text-tertiary);
+    font-style: italic;
+    line-height: 1.4;
+  }
+
+  /* Select-to-translate: highlight, floating chip, inline translation row. */
+  .msg-in .msg-text { position: relative; }
+  .selectable {
+    background: transparent;
+    border-radius: 3px;
+    padding: 0 1px;
+    transition: background var(--dur-fast) var(--ease-out-quad);
+  }
+  .selectable.is-selected {
+    background: rgba(10, 123, 255, 0.22);
+    box-shadow: 0 0 0 1px rgba(10, 123, 255, 0.18);
+  }
+  .select-chip {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--onyx);
+    color: var(--clean-white);
+    font-size: var(--text-caption);
+    font-weight: var(--weight-ui);
+    letter-spacing: 0.02em;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+    opacity: 0;
+    transform: translateY(-4px) scale(0.96);
+    pointer-events: none;
+    transition:
+      opacity var(--dur-fast) var(--ease-out-quad),
+      transform var(--dur-base) var(--ease-out-expo);
+    z-index: 2;
+  }
+  .select-chip.is-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  .select-chip-glyph {
+    font-size: 11px;
+    opacity: 0.7;
+  }
+  .msg-translation {
+    margin-top: 6px;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    font-size: var(--text-body-s);
+    color: var(--text-secondary);
+    line-height: 1.45;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition:
+      max-height var(--dur-base) var(--ease-out-expo),
+      opacity var(--dur-base) var(--ease-out-expo),
+      margin-top var(--dur-base) var(--ease-out-expo);
+  }
+  .msg-translation.is-visible {
+    max-height: 6em;
+    opacity: 1;
+  }
+  .msg-translation-text {
+    font-style: italic;
+  }
+
+  /* Small monospace-feel language tag, used in composer + outgoing bubble. */
+  .lang-tag {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: rgba(10, 123, 255, 0.10);
+    color: var(--signal-blue);
+    font-size: 10px;
+    font-weight: var(--weight-heading);
+    font-style: normal;
+    letter-spacing: 0.04em;
+    line-height: 1.4;
+    flex-shrink: 0;
+  }
+  .composer-lang-tag {
+    margin-right: 6px;
+    vertical-align: 2px;
+    opacity: 0;
+    transition: opacity var(--dur-fast) var(--ease-out-quad);
+  }
+  .composer.has-translation .composer-lang-tag { opacity: 1; }
+
+  /* Composer */
+  .composer {
+    position: relative;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: var(--s-4) var(--s-4) var(--s-3);
+    min-height: 110px;
+    font-size: var(--text-body);
+    line-height: 1.55;
+    background: var(--bg-primary);
+    transition: border-color var(--dur-fast) var(--ease-out-quad);
+  }
+  .composer.is-listening { border-color: var(--signal-blue); }
+  .composer-prompt {
+    color: var(--text-tertiary);
+    transition: opacity var(--dur-fast) var(--ease-out-quad);
+  }
+  .composer.has-content .composer-prompt { opacity: 0; position: absolute; pointer-events: none; }
+
+  /* Voice waveform — Siri-style ribbon visible while the composer is listening. */
+  .composer-waveform {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--s-3);
+    height: 0;
+    margin: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition:
+      height var(--dur-base) var(--ease-out-expo),
+      margin var(--dur-base) var(--ease-out-expo),
+      opacity var(--dur-base) var(--ease-out-expo);
+  }
+  .composer.is-listening .composer-waveform {
+    height: 32px;
+    margin-bottom: var(--s-2);
+    opacity: 1;
+  }
+  .waveform-bars {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .waveform-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: var(--text-caption);
+    font-weight: var(--weight-ui);
+    color: var(--signal-blue);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .waveform-label-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--signal-blue);
+    box-shadow: 0 0 0 0 rgba(10, 123, 255, 0.6);
+    animation: dot-breathe 1.1s ease-in-out infinite;
+    animation-play-state: paused;
+  }
+  .composer.is-listening .waveform-label-dot { animation-play-state: running; }
+  .waveform-bars span {
+    width: 3px;
+    height: 14px;
+    background: var(--signal-blue);
+    border-radius: 1.5px;
+    transform-origin: center;
+    animation: composer-wave 0.85s ease-in-out infinite;
+    animation-play-state: paused;
+  }
+  .composer.is-listening .waveform-bars span { animation-play-state: running; }
+  .waveform-bars span:nth-child(2n)   { height: 22px; }
+  .waveform-bars span:nth-child(3n)   { height: 10px; }
+  .waveform-bars span:nth-child(5n)   { height: 18px; }
+  .waveform-bars span:nth-child(5n+1) { animation-delay: 0.00s; }
+  .waveform-bars span:nth-child(5n+2) { animation-delay: 0.12s; }
+  .waveform-bars span:nth-child(5n+3) { animation-delay: 0.24s; }
+  .waveform-bars span:nth-child(5n+4) { animation-delay: 0.36s; }
+  .waveform-bars span:nth-child(5n+5) { animation-delay: 0.48s; }
+  @keyframes composer-wave {
+    0%, 100% { transform: scaleY(0.35); opacity: 0.55; }
+    50%      { transform: scaleY(1.0);  opacity: 1; }
+  }
+
+  .composer-text {
+    color: var(--text-primary);
+    min-height: 1.5em;
+  }
+  .composer-text .refined { display: inline; }
+  .composer-source {
+    margin-top: var(--s-3);
+    padding-top: var(--s-2);
+    border-top: 1px dashed var(--border-subtle);
+    font-size: var(--text-body-s);
+    color: var(--text-tertiary);
+    font-style: italic;
+    display: none;
+    align-items: baseline;
+    gap: 6px;
+  }
+  .composer-source.is-visible { display: flex; }
+
+  /* Send button row inside the composer. */
+  .composer-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: var(--s-3);
+  }
+  .send-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 999px;
+    background: rgba(10, 123, 255, 0.10);
+    color: var(--signal-blue);
+    font-size: var(--text-body-s);
+    font-weight: var(--weight-ui);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition:
+      background var(--dur-fast) var(--ease-out-quad),
+      color var(--dur-fast) var(--ease-out-quad),
+      transform var(--dur-fast) var(--ease-out-quad),
+      box-shadow var(--dur-base) var(--ease-out-expo);
+  }
+  .send-btn[disabled] {
+    background: var(--bg-secondary, rgba(0, 0, 0, 0.04));
+    color: var(--text-tertiary);
+    cursor: default;
+  }
+  .send-btn:not([disabled]):hover {
+    background: var(--signal-blue);
+    color: var(--clean-white);
+  }
+  .send-btn.is-ready {
+    background: var(--signal-blue);
+    color: var(--clean-white);
+    animation: send-pulse 1.2s ease-in-out infinite;
+  }
+  .send-btn.is-pressed {
+    transform: scale(0.94);
+    animation: none;
+    box-shadow: 0 0 0 6px rgba(10, 123, 255, 0.18);
+  }
+  @keyframes send-pulse {
+    0%, 100% { box-shadow: 0 0 0 0   rgba(10, 123, 255, 0.45); }
+    50%      { box-shadow: 0 0 0 8px rgba(10, 123, 255, 0); }
+  }
+
+  /* Mode bar (floats inside composer top-right, like the real product) */
+  .mode-bar {
+    position: absolute;
+    top: -10px;
+    right: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: var(--onyx);
+    color: var(--clean-white);
+    font-size: var(--text-caption);
+    font-weight: var(--weight-ui);
+    letter-spacing: 0.02em;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  }
+  .mode-bar-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--signal-blue);
+    box-shadow: 0 0 0 0 rgba(10, 123, 255, 0.6);
+  }
+  .composer.is-listening .mode-bar-dot {
+    animation: dot-breathe 1.1s ease-in-out infinite;
+  }
+  @keyframes dot-breathe {
+    0%, 100% { box-shadow: 0 0 0 0   rgba(10, 123, 255, 0.6); }
+    50%      { box-shadow: 0 0 0 5px rgba(10, 123, 255, 0); }
+  }
+
+  .after {
+    margin-top: var(--s-5);
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: var(--text-body-s);
+    max-width: 64ch;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .composer.is-listening .mode-bar-dot,
+    .composer.is-listening .waveform-label-dot,
+    .send-btn.is-ready,
+    .waveform-bars span { animation: none; }
+  }
+</style>
+
+<script>
+  type Sample = { spoken: string; output: string; incomingTranslation: string };
+
+  const root = document.querySelector<HTMLElement>('[data-demo-translate]');
+  if (root) {
+    const sample: Sample = JSON.parse(
+      document.querySelector('[data-translate-sample]')?.textContent || '{}'
+    );
+
+    const composer = root.querySelector<HTMLElement>('[data-composer]')!;
+    const textBody = root.querySelector<HTMLElement>('[data-composer-text-body]')!;
+    const sourceEl = root.querySelector<HTMLElement>('[data-source]')!;
+    const sourceBody = root.querySelector<HTMLElement>('[data-source-body]')!;
+    const sendBtn = root.querySelector<HTMLButtonElement>('[data-send]')!;
+    const replayBtn = root.querySelector<HTMLButtonElement>('[data-replay]')!;
+    const outgoing = root.querySelector<HTMLElement>('[data-outgoing]')!;
+    const outgoingText = root.querySelector<HTMLElement>('[data-outgoing-text]')!;
+    const outgoingOriginal = root.querySelector<HTMLElement>('[data-outgoing-original-text]')!;
+    const incomingSelectable = root.querySelector<HTMLElement>('[data-incoming-selectable]')!;
+    const selectChip = root.querySelector<HTMLElement>('[data-select-chip]')!;
+    const incomingTranslation = root.querySelector<HTMLElement>('[data-incoming-translation]')!;
+    const incomingTranslationText = root.querySelector<HTMLElement>('[data-incoming-translation-text]')!;
+    const shortcutChips = Array.from(
+      root.querySelectorAll<HTMLElement>('[data-shortcut-hint] [data-kbd-token]')
+    );
+
+    let timers: number[] = [];
+    let inflight = false;
+    let sendArmed = false;
+    let cycleTimer: number | undefined;
+    let isVisible = false;
+    const CYCLE_DELAY = 2500;
+
+    function clear() {
+      timers.forEach((id) => window.clearTimeout(id));
+      timers = [];
+      if (cycleTimer !== undefined) {
+        window.clearTimeout(cycleTimer);
+        cycleTimer = undefined;
+      }
+    }
+    function after(ms: number, fn: () => void) {
+      const id = window.setTimeout(fn, ms);
+      timers.push(id);
+    }
+    function scheduleNextCycle() {
+      if (cycleTimer !== undefined) {
+        window.clearTimeout(cycleTimer);
+        cycleTimer = undefined;
+      }
+      if (!isVisible) return;
+      cycleTimer = window.setTimeout(() => {
+        cycleTimer = undefined;
+        play();
+      }, CYCLE_DELAY);
+    }
+
+    function reset() {
+      composer.classList.remove('is-listening', 'has-content', 'has-translation');
+      textBody.textContent = '';
+      sourceBody.textContent = '';
+      sourceEl.classList.remove('is-visible');
+      sendBtn.classList.remove('is-ready', 'is-pressed');
+      sendBtn.disabled = true;
+      sendArmed = false;
+      outgoing.classList.remove('is-visible');
+      outgoingText.textContent = '';
+      outgoingOriginal.textContent = '';
+      incomingSelectable.classList.remove('is-selected');
+      selectChip.classList.remove('is-visible');
+      incomingTranslation.classList.remove('is-visible');
+      incomingTranslationText.textContent = '';
+      shortcutChips.forEach((c) => c.classList.remove('is-pressed'));
+    }
+
+    function commit() {
+      if (!sendArmed) return;
+      sendArmed = false;
+      sendBtn.classList.remove('is-ready');
+      sendBtn.classList.add('is-pressed');
+
+      after(220, () => {
+        outgoingText.textContent = sample.output;
+        outgoingOriginal.textContent = sample.spoken;
+        outgoing.classList.add('is-visible');
+        composer.classList.remove('has-content', 'has-translation');
+        textBody.textContent = '';
+        sourceBody.textContent = '';
+        sourceEl.classList.remove('is-visible');
+        sendBtn.classList.remove('is-pressed');
+        sendBtn.disabled = true;
+      });
+
+      after(900, () => {
+        inflight = false;
+        scheduleNextCycle();
+      });
+    }
+
+    function play() {
+      if (inflight) return;
+      inflight = true;
+      clear();
+      reset();
+
+      // --- Phase 1: select-to-translate on the incoming message ---
+      after(500, () => incomingSelectable.classList.add('is-selected'));
+      after(1200, () => selectChip.classList.add('is-visible'));
+      // ⌃⌥⇧T fires — chord-style flash of all four chips just before the
+      // translation appears.
+      after(1850, () => shortcutChips.forEach((c) => c.classList.add('is-pressed')));
+      after(2000, () => {
+        selectChip.classList.remove('is-visible');
+        incomingTranslationText.textContent = sample.incomingTranslation;
+        incomingTranslation.classList.add('is-visible');
+      });
+      after(2200, () => shortcutChips.forEach((c) => c.classList.remove('is-pressed')));
+      after(3300, () => incomingSelectable.classList.remove('is-selected'));
+
+      // --- Phase 2: voice reply (mic + auto-translate + send) ---
+      const voiceStart = 3700;
+
+      // Voice phase starts → composer listens, waveform animates, mode-bar dot pulses.
+      after(voiceStart, () => {
+        composer.classList.add('is-listening', 'has-content');
+      });
+
+      // Stream the spoken source as a live preview (raw, italic) into the source area.
+      const spoken = sample.spoken;
+      const cjk = /[一-鿿]/.test(spoken);
+      const charDelay = cjk ? 75 : 32;
+      const speakStart = voiceStart + 300;
+      after(speakStart, () => sourceEl.classList.add('is-visible'));
+      for (let i = 1; i <= spoken.length; i++) {
+        after(speakStart + i * charDelay, () => {
+          sourceBody.textContent = spoken.slice(0, i);
+        });
+      }
+      const speakEnd = speakStart + spoken.length * charDelay;
+
+      // Release: listening stops, waveform fades; original stays in the source area.
+      after(speakEnd + 200, () => {
+        composer.classList.remove('is-listening');
+      });
+
+      // Auto-translation fog-reveals into the main text area (above the source).
+      after(speakEnd + 700, () => {
+        composer.classList.add('has-translation');
+        textBody.replaceChildren();
+        const span = document.createElement('span');
+        span.className = 'refined fog-reveal';
+        span.textContent = sample.output;
+        textBody.appendChild(span);
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => span.classList.add('is-revealed'));
+        });
+      });
+
+      // Send button becomes ready + pulses.
+      after(speakEnd + 1300, () => {
+        sendBtn.disabled = false;
+        sendBtn.classList.add('is-ready');
+        sendArmed = true;
+      });
+
+      // Auto-click the send button after a beat (user can also click manually).
+      after(speakEnd + 2300, () => {
+        if (sendArmed) commit();
+      });
+    }
+
+    sendBtn.addEventListener('click', () => {
+      if (sendArmed) commit();
+    });
+    replayBtn.addEventListener('click', play);
+
+    let firstView = true;
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        isVisible = e.isIntersecting;
+        if (e.isIntersecting) {
+          if (firstView) {
+            firstView = false;
+            after(400, play);
+          } else if (!inflight && cycleTimer === undefined) {
+            scheduleNextCycle();
+          }
+        } else if (cycleTimer !== undefined) {
+          window.clearTimeout(cycleTimer);
+          cycleTimer = undefined;
+        }
+      }
+    }, { threshold: 0.4 });
+    io.observe(root);
+  }
+</script>

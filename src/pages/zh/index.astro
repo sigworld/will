@@ -1,0 +1,22 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Hero from '../../components/Hero.astro';
+import DemoSpeak from '../../components/DemoSpeak.astro';
+import DemoType from '../../components/DemoType.astro';
+import DemoCaption from '../../components/DemoCaption.astro';
+import DemoTranslate from '../../components/DemoTranslate.astro';
+import Privacy from '../../components/Privacy.astro';
+import Pricing from '../../components/Pricing.astro';
+---
+
+<BaseLayout locale="zh" hideHeaderUntilHero={true}>
+  <Hero locale="zh" />
+  <div class="below-hero" data-below-hero>
+    <DemoSpeak locale="zh" />
+    <DemoType locale="zh" />
+    <DemoCaption locale="zh" />
+    <DemoTranslate locale="zh" />
+    <Privacy locale="zh" />
+    <Pricing locale="zh" />
+  </div>
+</BaseLayout>

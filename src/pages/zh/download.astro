@@ -1,0 +1,9 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PageDownload from '../../components/PageDownload.astro';
+import { getCopy } from '../../i18n';
+const t = getCopy('zh');
+---
+<BaseLayout locale="zh" title={`${t.pages.download.title} — 如义`} description={t.pages.download.lede}>
+  <PageDownload locale="zh" />
+</BaseLayout>

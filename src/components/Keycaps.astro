@@ -1,0 +1,49 @@
+---
+/*
+ * Keycaps — render a shortcut string as individual key chips connected by "+".
+ *
+ *   "⌃⌥⇧C"  →  [⌃] + [⌥] + [⇧] + [C]
+ *   "⌥ ⌥"   →  [⌥] + [⌥]
+ *   "⌥`"    →  [⌥] + [`]
+ *   "Tab"   →  [Tab]
+ *
+ * Each chip carries `data-kbd-token` so a demo's animation script can find
+ * a specific key and flash `.is-pressed` on it at the moment the feature
+ * activates. Multi-character keys ("Tab", "Enter", "Esc"...) stay grouped
+ * as a single chip; single-glyph modifiers (⌃ ⌥ ⇧ ⌘) and literal keys
+ * become their own chips.
+ */
+
+interface Props {
+  /** Raw shortcut string, e.g. "⌃⌥⇧C". */
+  shortcut: string;
+}
+
+const { shortcut } = Astro.props;
+
+const multiCharKeys = ['Tab', 'Enter', 'Return', 'Escape', 'Esc', 'Space', 'Cmd', 'Shift'];
+
+function tokenize(input: string): string[] {
+  const tokens: string[] = [];
+  let i = 0;
+  while (i < input.length) {
+    const ch = input[i];
+    if (ch === ' ') { i++; continue; }
+    const multi = multiCharKeys.find((m) => input.startsWith(m, i));
+    if (multi) { tokens.push(multi); i += multi.length; }
+    else { tokens.push(ch); i++; }
+  }
+  return tokens;
+}
+
+const tokens = tokenize(shortcut);
+---
+
+<span class="kbd-group" data-shortcut-keys>
+  {tokens.map((token, i) => (
+    <>
+      {i > 0 && <span class="kbd-plus" aria-hidden="true">+</span>}
+      <kbd class="kbd" data-kbd-token={token}>{token}</kbd>
+    </>
+  ))}
+</span>

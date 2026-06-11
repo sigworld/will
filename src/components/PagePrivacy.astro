@@ -1,0 +1,205 @@
+---
+import type { Locale } from '../i18n';
+import { getCopy } from '../i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = getCopy(locale);
+const p = t.pages.privacy;
+---
+
+<section class="page-hero">
+  <div class="container">
+    <h1>{p.title}</h1>
+    <p class="lede">{p.lede}</p>
+  </div>
+</section>
+
+<div class="container privacy-body">
+  <section class="priv-block" id="stays">
+    <h2>{p.stays.title}</h2>
+    <ul class="priv-list">
+      {p.stays.items.map((it) => <li>{it}</li>)}
+    </ul>
+    <p class="priv-aside">{p.stays.note}</p>
+  </section>
+
+  <section class="priv-block" id="leaves">
+    <h2>{p.leaves.title}</h2>
+    <div class="prose">
+      {p.leaves.items.map((it) => (
+        <div class="named-item">
+          <h3>{it.name}</h3>
+          <p>{it.body}</p>
+        </div>
+      ))}
+    </div>
+    <figure class="diagram" aria-label={p.leaves.diagramCaption}>
+      <div class="diagram-row">
+        {p.leaves.diagramSteps.map((step, i) => (
+          <>
+            <div class="diagram-box">{step}</div>
+            {i < p.leaves.diagramSteps.length - 1 && <div class="diagram-arrow" aria-hidden="true">→</div>}
+          </>
+        ))}
+      </div>
+      <figcaption>{p.leaves.diagramCaption}</figcaption>
+    </figure>
+  </section>
+
+  <section class="priv-block" id="paths">
+    <h2>{p.paths.title}</h2>
+    <div class="paths-grid">
+      {p.paths.items.map((it) => (
+        <div class="path-card">
+          <h3>{it.name}</h3>
+          <p>{it.body}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="priv-block" id="never">
+    <h2>{p.never.title}</h2>
+    <ul class="priv-list never-list">
+      {p.never.items.map((it) => <li>{it}</li>)}
+    </ul>
+  </section>
+
+  <p class="priv-footnote">{p.footerNote}</p>
+</div>
+
+<style>
+  .privacy-body {
+    max-width: var(--prose-max);
+    padding-top: var(--s-6);
+    padding-bottom: var(--s-8);
+  }
+  .priv-block {
+    padding: var(--s-6) 0;
+    border-top: 1px solid var(--border-subtle);
+  }
+  .priv-block:first-child {
+    border-top: none;
+    padding-top: var(--s-2);
+  }
+  .priv-block h2 {
+    margin-bottom: var(--s-4);
+  }
+  .priv-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-2);
+  }
+  .priv-list li {
+    font-size: var(--text-body);
+    color: var(--text-primary);
+    padding-left: var(--s-4);
+    position: relative;
+    line-height: var(--leading-body);
+  }
+  .priv-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 11px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--signal-blue);
+    opacity: 0.6;
+  }
+  .priv-aside {
+    margin-top: var(--s-4);
+    padding: var(--s-3) var(--s-4);
+    background: var(--surface-soft);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-size: var(--text-body-s);
+    line-height: var(--leading-body);
+  }
+  .named-item {
+    margin-bottom: var(--s-4);
+  }
+  .named-item h3 {
+    font-size: var(--text-body-l);
+    font-weight: var(--weight-heading);
+    margin-bottom: var(--s-1);
+  }
+  .named-item p {
+    color: var(--text-secondary);
+    line-height: var(--leading-body);
+  }
+  .diagram {
+    margin: var(--s-5) 0 0;
+    padding: var(--s-4);
+    background: var(--surface-soft);
+    border-radius: var(--radius-md);
+    text-align: center;
+  }
+  .diagram-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--s-2);
+    margin-bottom: var(--s-3);
+  }
+  .diagram-box {
+    padding: 8px 14px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-body-s);
+    font-weight: var(--weight-ui);
+    color: var(--text-primary);
+  }
+  .diagram-arrow {
+    color: var(--text-tertiary);
+    font-size: 18px;
+  }
+  .diagram figcaption {
+    font-size: var(--text-caption);
+    color: var(--text-tertiary);
+  }
+  .paths-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s-3);
+  }
+  @media (min-width: 768px) {
+    .paths-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .path-card {
+    padding: var(--s-4);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+  }
+  .path-card h3 {
+    font-size: var(--text-body-l);
+    font-weight: var(--weight-heading);
+    margin-bottom: var(--s-2);
+  }
+  .path-card p {
+    color: var(--text-secondary);
+    font-size: var(--text-body-s);
+    line-height: var(--leading-body);
+  }
+  .never-list li::before {
+    background: var(--onyx);
+    opacity: 0.5;
+  }
+  .priv-footnote {
+    margin-top: var(--s-6);
+    padding-top: var(--s-4);
+    border-top: 1px solid var(--border-subtle);
+    font-size: var(--text-body-s);
+    color: var(--text-tertiary);
+    font-style: italic;
+  }
+</style>

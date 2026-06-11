@@ -1,0 +1,485 @@
+---
+import type { Locale } from '../i18n';
+import { getCopy } from '../i18n';
+import Keycaps from './Keycaps.astro';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = getCopy(locale);
+---
+
+<section class="section section-tight" id="type">
+  <div class="container">
+    <div class="section-header">
+      <h2>{t.type.title}</h2>
+      <p class="lede">{t.type.lede}</p>
+    </div>
+
+    <div
+      class="demo-container demo-type"
+      data-demo-type
+      data-locale={locale}
+      data-tab-hint={t.type.tabHint}
+      data-alt-hint={t.type.altHint}
+    >
+      <div class="app-frame">
+        <div class="app-titlebar">
+          <span class="app-dot app-dot-r"></span>
+          <span class="app-dot app-dot-y"></span>
+          <span class="app-dot app-dot-g"></span>
+          <span class="app-title">
+            {t.type.chromeApp} <span class="app-title-channel">— {t.type.chromeChannel}</span>
+          </span>
+        </div>
+        <div class="app-body">
+          <div class="editor" data-editor>
+            <span class="typed" data-typed></span><span class="ghost" data-ghost></span><span class="caret" data-caret aria-hidden="true"></span>
+          </div>
+
+          <!-- Candidate popup — anchored to caret like a real IME candidate window. -->
+          <div class="candidate-popup" data-popup hidden>
+            <div class="popup-header">⌥`</div>
+            <button class="alt-row" data-alt="0" type="button">
+              <span class="alt-num">1</span><span class="alt-text"></span>
+            </button>
+            <button class="alt-row" data-alt="1" type="button">
+              <span class="alt-num">2</span><span class="alt-text"></span>
+            </button>
+            <button class="alt-row" data-alt="2" type="button">
+              <span class="alt-num">3</span><span class="alt-text"></span>
+            </button>
+          </div>
+
+          <!-- Transient shortcut tip — pops near the caret when Tab / ⌥` fire. -->
+          <div class="editor-tip" data-tip hidden aria-hidden="true">
+            <span class="editor-tip-inner">
+              <span class="editor-tip-key" data-tip-key></span>
+              <span class="editor-tip-label" data-tip-label></span>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <div class="gesture-row">
+        <button class="replay-pill" data-replay type="button">↻ {t.type.replay}</button>
+        <button class="replay-pill" data-next type="button">→ {t.type.next}</button>
+      </div>
+
+      <div class="demo-shortcut" aria-hidden="true">
+        <span class="demo-shortcut-segment" data-shortcut-accept>
+          <Keycaps shortcut={t.type.shortcutHint.accept} />
+          <span class="demo-shortcut-label">{t.type.shortcutHint.acceptLabel}</span>
+        </span>
+        <span class="demo-shortcut-sep" aria-hidden="true">·</span>
+        <span class="demo-shortcut-segment" data-shortcut-alts>
+          <Keycaps shortcut={t.type.shortcutHint.alts} />
+          <span class="demo-shortcut-label">{t.type.shortcutHint.altsLabel}</span>
+        </span>
+      </div>
+    </div>
+
+    <p class="after">{t.type.note}</p>
+  </div>
+</section>
+
+<script
+  is:inline
+  type="application/json"
+  data-type-samples
+  set:html={JSON.stringify(t.type.samples)}
+/>
+
+<style>
+  .demo-type { position: relative; }
+
+  .editor {
+    position: relative;
+    min-height: 110px;
+    font-size: var(--text-body-l);
+    line-height: 1.6;
+    color: var(--text-primary);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: var(--s-4);
+    background: var(--bg-primary);
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .typed { color: var(--text-primary); }
+  .ghost {
+    color: var(--text-tertiary);
+    font-style: italic;
+    transition: opacity var(--dur-fast) var(--ease-out-quad);
+  }
+  .ghost.is-fading { opacity: 0; }
+
+  .caret {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    vertical-align: -0.18em;
+    margin-left: 1px;
+    background: var(--signal-blue);
+    animation: caret-blink 1.1s steps(2, end) infinite;
+  }
+  @keyframes caret-blink { 50% { opacity: 0; } }
+
+  /* Candidate popup, anchored to .editor (absolutely positioned via JS). */
+  .candidate-popup {
+    position: absolute;
+    z-index: 5;
+    min-width: 280px;
+    max-width: 420px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10);
+    overflow: hidden;
+    transform-origin: top left;
+    animation: popup-in var(--dur-fast) var(--ease-out-expo);
+  }
+  @keyframes popup-in {
+    from { opacity: 0; transform: translateY(-4px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0)    scale(1.00); }
+  }
+  .popup-header {
+    padding: 6px var(--s-3);
+    font-family: var(--font-mono);
+    font-size: var(--text-caption);
+    color: var(--text-tertiary);
+    background: var(--surface-soft);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .alt-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    width: 100%;
+    text-align: left;
+    padding: 10px var(--s-3);
+    font-size: var(--text-body);
+    line-height: 1.5;
+    border-bottom: 1px solid var(--border-subtle);
+    transition: background var(--dur-fast) var(--ease-out-quad);
+  }
+  .alt-row:last-child { border-bottom: none; }
+  .alt-row:hover,
+  .alt-row:focus-visible,
+  .alt-row.is-highlight {
+    background: var(--surface-soft);
+  }
+  .alt-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    background: var(--surface-soft);
+    font-family: var(--font-mono);
+    font-size: var(--text-caption);
+    color: var(--text-tertiary);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .alt-text { flex: 1; }
+
+  .after {
+    margin-top: var(--s-5);
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: var(--text-body-s);
+    max-width: 60ch;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Transient shortcut tip — pops above caret when Tab / ⌥` fire. */
+  .editor-tip {
+    position: absolute;
+    z-index: 6;
+    pointer-events: none;
+    transform: translateY(-100%);
+    padding-bottom: 8px;
+  }
+  .editor-tip-inner {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-subtle);
+    border-radius: 999px;
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.12);
+    font-size: var(--text-body-s);
+    color: var(--text-secondary);
+    white-space: nowrap;
+    transform-origin: bottom left;
+    animation: tip-in var(--dur-fast) var(--ease-out-expo);
+  }
+  .editor-tip.is-leaving .editor-tip-inner {
+    animation: tip-out var(--dur-fast) var(--ease-out-quad) forwards;
+  }
+  .editor-tip-key {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 22px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 4px;
+    background: var(--signal-blue);
+    color: var(--clean-white);
+    font-family: var(--font-mono);
+    font-size: var(--text-caption);
+    font-weight: var(--weight-ui);
+  }
+  @keyframes tip-in {
+    from { opacity: 0; transform: translateY(4px) scale(0.96); }
+    to   { opacity: 1; transform: translateY(0)   scale(1.00); }
+  }
+  @keyframes tip-out {
+    from { opacity: 1; transform: translateY(0); }
+    to   { opacity: 0; transform: translateY(-4px); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .caret { animation: none; }
+    .candidate-popup { animation: none; }
+    .editor-tip-inner { animation: none; }
+  }
+</style>
+
+<script>
+  type Sample = { typed: string; ghost: string; alts: string[] };
+
+  const root = document.querySelector<HTMLElement>('[data-demo-type]');
+  if (root) {
+    const samples: Sample[] = JSON.parse(
+      document.querySelector('[data-type-samples]')?.textContent || '[]'
+    );
+
+    const editor = root.querySelector<HTMLElement>('[data-editor]')!;
+    const typedEl = root.querySelector<HTMLElement>('[data-typed]')!;
+    const ghostEl = root.querySelector<HTMLElement>('[data-ghost]')!;
+    const caret = root.querySelector<HTMLElement>('[data-caret]')!;
+    const popup = root.querySelector<HTMLElement>('[data-popup]')!;
+    const altBtns = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-alt]'));
+    const tip = root.querySelector<HTMLElement>('[data-tip]')!;
+    const tipInner = tip.querySelector<HTMLElement>('.editor-tip-inner')!;
+    const tipKeyEl = root.querySelector<HTMLElement>('[data-tip-key]')!;
+    const tipLabelEl = root.querySelector<HTMLElement>('[data-tip-label]')!;
+    const tabHintLabel = root.dataset.tabHint || 'to accept';
+    const altHintLabel = root.dataset.altHint || 'for alternatives';
+    const replayBtn = root.querySelector<HTMLButtonElement>('[data-replay]')!;
+    const nextBtn = root.querySelector<HTMLButtonElement>('[data-next]')!;
+    const tabChips = Array.from(
+      root.querySelectorAll<HTMLElement>('[data-shortcut-accept] [data-kbd-token]')
+    );
+    const altChips = Array.from(
+      root.querySelectorAll<HTMLElement>('[data-shortcut-alts] [data-kbd-token]')
+    );
+    function flashChips(chips: HTMLElement[], holdMs = 280) {
+      chips.forEach((c) => c.classList.add('is-pressed'));
+      window.setTimeout(() => chips.forEach((c) => c.classList.remove('is-pressed')), holdMs);
+    }
+
+    let timers: number[] = [];
+    let index = 0;
+    let inflight = false;
+    let cycleTimer: number | undefined;
+    let isVisible = false;
+    const CYCLE_DELAY = 2500;
+
+    function clear() {
+      timers.forEach((id) => window.clearTimeout(id));
+      timers = [];
+      if (cycleTimer !== undefined) {
+        window.clearTimeout(cycleTimer);
+        cycleTimer = undefined;
+      }
+    }
+    function after(ms: number, fn: () => void) {
+      const id = window.setTimeout(fn, ms);
+      timers.push(id);
+    }
+    function scheduleNextCycle() {
+      if (cycleTimer !== undefined) {
+        window.clearTimeout(cycleTimer);
+        cycleTimer = undefined;
+      }
+      if (!isVisible) return;
+      cycleTimer = window.setTimeout(() => {
+        cycleTimer = undefined;
+        playNext();
+      }, CYCLE_DELAY);
+    }
+
+    function reset() {
+      hidePopup();
+      hideTip(true);
+      typedEl.textContent = '';
+      ghostEl.textContent = '';
+      ghostEl.classList.remove('is-fading');
+    }
+
+    function setGhost(text: string) {
+      ghostEl.textContent = text;
+    }
+    function hidePopup() {
+      popup.hidden = true;
+      altBtns.forEach((b) => b.classList.remove('is-highlight'));
+    }
+    function showPopup(alts: string[]) {
+      alts.forEach((alt, i) => {
+        const span = altBtns[i]?.querySelector<HTMLElement>('.alt-text');
+        if (span) span.textContent = alt.replace(/^[  ]+/, '');
+      });
+      // Position popup near the caret.
+      const editorRect = editor.getBoundingClientRect();
+      const caretRect = caret.getBoundingClientRect();
+      const left = caretRect.left - editorRect.left;
+      const top = caretRect.bottom - editorRect.top + 8;
+      popup.style.left = left + 'px';
+      popup.style.top = top + 'px';
+      popup.hidden = false;
+    }
+
+    function showTip(keyText: string, labelText: string) {
+      tipKeyEl.textContent = keyText;
+      tipLabelEl.textContent = labelText;
+      // Mirror the popup's anchoring math (relative to .editor's origin).
+      const editorRect = editor.getBoundingClientRect();
+      const caretRect = caret.getBoundingClientRect();
+      const left = caretRect.left - editorRect.left;
+      const top = caretRect.top - editorRect.top;
+      tip.style.left = left + 'px';
+      tip.style.top = top + 'px';
+      tip.classList.remove('is-leaving');
+      tip.hidden = false;
+      // Restart enter animation each time.
+      tipInner.style.animation = 'none';
+      void tipInner.offsetHeight;
+      tipInner.style.animation = '';
+    }
+    function hideTip(immediate = false) {
+      if (tip.hidden) return;
+      if (immediate) {
+        tip.classList.remove('is-leaving');
+        tip.hidden = true;
+        return;
+      }
+      tip.classList.add('is-leaving');
+      after(200, () => {
+        tip.hidden = true;
+        tip.classList.remove('is-leaving');
+      });
+    }
+
+    function play(sample: Sample) {
+      if (inflight) return;
+      inflight = true;
+      clear();
+      reset();
+
+      // Type the prefix character by character.
+      const typed = sample.typed;
+      const cjk = /[一-鿿]/.test(typed);
+      const charDelay = cjk ? 90 : 45;
+      for (let i = 1; i <= typed.length; i++) {
+        after(i * charDelay, () => {
+          typedEl.textContent = typed.slice(0, i);
+        });
+      }
+      const typeEnd = typed.length * charDelay;
+
+      // Show ghost continuation.
+      after(typeEnd + 400, () => setGhost(sample.ghost));
+
+      // Tab tip pops near caret, dwells long enough to read, then ghost is accepted.
+      after(typeEnd + 1100, () => showTip('Tab', tabHintLabel));
+      after(typeEnd + 2300, () => {
+        typedEl.textContent = typed + sample.ghost;
+        ghostEl.classList.add('is-fading');
+        flashChips(tabChips);
+      });
+      after(typeEnd + 2700, () => hideTip());
+      after(typeEnd + 2900, () => {
+        ghostEl.classList.remove('is-fading');
+        setGhost('');
+      });
+
+      // ⌥` tip pops near caret, dwells, then alternatives appear.
+      after(typeEnd + 3700, () => showTip('⌥`', altHintLabel));
+      after(typeEnd + 4900, () => {
+        showPopup(sample.alts);
+        flashChips(altChips);
+      });
+      after(typeEnd + 5100, () => hideTip());
+
+      // Let the user read all three options before the highlight settles on #2.
+      after(typeEnd + 5800, () => altBtns[1]?.classList.add('is-highlight'));
+
+      // Pick alternative #2 to show the swap.
+      after(typeEnd + 7000, () => {
+        const alt = sample.alts[1] ?? sample.alts[0];
+        typedEl.textContent = typed + alt;
+        hidePopup();
+      });
+
+      after(typeEnd + 7800, () => {
+        inflight = false;
+        scheduleNextCycle();
+      });
+    }
+
+    function playCurrent() { play(samples[index]); }
+    function playNext() {
+      index = (index + 1) % samples.length;
+      play(samples[index]);
+    }
+
+    altBtns.forEach((btn, i) => {
+      btn.addEventListener('click', () => {
+        const sample = samples[index];
+        if (!sample) return;
+        const alt = sample.alts[i] ?? sample.alts[0];
+        typedEl.textContent = sample.typed + alt;
+        hidePopup();
+      });
+    });
+
+    replayBtn.addEventListener('click', playCurrent);
+    nextBtn.addEventListener('click', playNext);
+
+    // Auto-play when in view; pause the cycle when out of view.
+    let firstView = true;
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        isVisible = e.isIntersecting;
+        if (e.isIntersecting) {
+          if (firstView) {
+            firstView = false;
+            after(400, playCurrent);
+          } else if (!inflight && cycleTimer === undefined) {
+            scheduleNextCycle();
+          }
+        } else if (cycleTimer !== undefined) {
+          window.clearTimeout(cycleTimer);
+          cycleTimer = undefined;
+        }
+      }
+    }, { threshold: 0.4 });
+    io.observe(root);
+
+    // Click-outside dismiss.
+    document.addEventListener('click', (e) => {
+      if (!popup.hidden && !popup.contains(e.target as Node)) {
+        hidePopup();
+      }
+    });
+  }
+</script>

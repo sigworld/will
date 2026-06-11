@@ -1,0 +1,121 @@
+---
+import type { Locale } from '../i18n';
+import { getCopy } from '../i18n';
+import Wordmark from './Wordmark.astro';
+import LangToggle from './LangToggle.astro';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = getCopy(locale);
+---
+
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <Wordmark locale={locale} height={32} pairZhName={locale === 'zh'} />
+        <p class="formula">{t.footer.formula}</p>
+      </div>
+      <div class="footer-col">
+        <h4>{t.footer.productHeader}</h4>
+        <ul>
+          {t.footer.productItems.map((it) => (
+            <li><a href={it.href}>{it.label}</a></li>
+          ))}
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>{t.footer.pricingHeader}</h4>
+        <ul>
+          {t.footer.pricingItems.map((it) => (
+            <li><a href={it.href}>{it.label}</a></li>
+          ))}
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>{t.footer.resourcesHeader}</h4>
+        <ul>
+          {t.footer.resourcesItems.map((it) => (
+            <li><a href={it.href}>{it.label}</a></li>
+          ))}
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>{t.footer.companyHeader}</h4>
+        <ul>
+          {t.footer.companyItems.map((it) => (
+            <li><a href={it.href}>{it.label}</a></li>
+          ))}
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>{t.footer.languageHeader}</h4>
+        <LangToggle locale={locale} />
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>{t.footer.copyright}</span>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    background: var(--surface-soft);
+    padding: var(--s-8) 0 var(--s-6);
+    margin-top: var(--s-9);
+  }
+  .footer-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s-6);
+  }
+  @media (min-width: 640px) {
+    .footer-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  @media (min-width: 960px) {
+    .footer-grid {
+      grid-template-columns: 2fr repeat(5, 1fr);
+    }
+  }
+  .footer-brand .formula {
+    margin-top: var(--s-2);
+    font-size: var(--text-caption);
+    color: var(--text-secondary);
+  }
+  .footer-col h4 {
+    font-size: var(--text-caption);
+    font-weight: var(--weight-ui);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-tertiary);
+    margin-bottom: var(--s-3);
+  }
+  .footer-col ul {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-2);
+  }
+  .footer-col a {
+    font-size: var(--text-body-s);
+    color: var(--text-secondary);
+    border-bottom: none;
+    transition: color var(--dur-fast) var(--ease-out-quad);
+  }
+  .footer-col a:hover {
+    color: var(--text-primary);
+    border-bottom: none;
+  }
+  .footer-bottom {
+    margin-top: var(--s-6);
+    padding-top: var(--s-5);
+    border-top: 1px solid var(--border-subtle);
+    font-size: var(--text-caption);
+    color: var(--text-tertiary);
+  }
+</style>

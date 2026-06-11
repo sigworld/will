@@ -1,0 +1,9 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PagePrivacy from '../components/PagePrivacy.astro';
+import { getCopy } from '../i18n';
+const t = getCopy('en');
+---
+<BaseLayout locale="en" title={`${t.pages.privacy.title} — WiLL`} description={t.pages.privacy.lede}>
+  <PagePrivacy locale="en" />
+</BaseLayout>

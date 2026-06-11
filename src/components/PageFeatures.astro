@@ -1,0 +1,153 @@
+---
+import type { Locale } from '../i18n';
+import { getCopy } from '../i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = getCopy(locale);
+const f = t.pages.features;
+const base = locale === 'zh' ? '/zh' : '';
+const downloadHref = `${base}/download`;
+
+// In zh, every "如义" mention on this page renders in brand color/weight so
+// the product name stays visually anchored across long-form copy. Strings
+// that already contain HTML (the body paragraphs) are processed as-is —
+// "如义" never appears inside an attribute, so a blanket string replace is
+// safe. The wrapper only sets color + weight, so nesting inside an existing
+// <mark class="hl"> underline coexists cleanly.
+const brandify = (s: string) =>
+  locale === 'zh' ? s.replace(/如义/g, '<span class="brand-zh">如义</span>') : s;
+---
+
+<section class="page-hero">
+  <div class="container">
+    <h1 set:html={brandify(f.title)} />
+    <p class="lede" set:html={brandify(f.lede)} />
+  </div>
+</section>
+
+<section class="features-toc">
+  <div class="container">
+    <h2 class="toc-label">{f.tocLabel}</h2>
+    <ul class="toc-list">
+      {f.sections.map((s) => (
+        <li><a href={`#${s.id}`} set:html={brandify(s.title)} /></li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<div class="container features-body">
+  {f.sections.map((s, i) => (
+    <section class={`feature-section ${i === 0 ? 'is-first' : ''}`} id={s.id}>
+      <h2 set:html={brandify(s.title)} />
+      <p class="feature-lede" set:html={brandify(s.lede)} />
+      <div class="prose feature-prose">
+        {s.body.map((p) => <p set:html={brandify(p)} />)}
+      </div>
+      <div class="feature-specs">
+        {s.specs.map((spec) => <span class="chip spec-chip" set:html={brandify(spec)} />)}
+      </div>
+    </section>
+  ))}
+</div>
+
+<section class="features-cta">
+  <div class="container">
+    <h2 set:html={brandify(f.ctaTitle)} />
+    <a class="btn btn-primary" href={downloadHref} set:html={brandify(f.ctaButton)} />
+  </div>
+</section>
+
+<style>
+  .features-toc {
+    padding: var(--s-4) 0 var(--s-6);
+    border-bottom: 1px solid var(--border-subtle);
+  }
+  .toc-label {
+    font-size: var(--text-caption);
+    font-weight: var(--weight-ui);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-tertiary);
+    margin-bottom: var(--s-3);
+  }
+  .toc-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2) var(--s-4);
+  }
+  .toc-list a {
+    color: var(--text-secondary);
+    font-size: var(--text-body-s);
+    font-weight: var(--weight-ui);
+    border-bottom: none;
+    transition: color var(--dur-fast) var(--ease-out-quad);
+  }
+  .toc-list a:hover {
+    color: var(--text-primary);
+    border-bottom: none;
+  }
+  .features-body {
+    padding-top: var(--s-7);
+  }
+  .feature-section {
+    padding: var(--s-7) 0;
+    border-top: 1px solid var(--border-subtle);
+  }
+  .feature-section.is-first {
+    border-top: none;
+    padding-top: var(--s-2);
+  }
+  .feature-section h2 {
+    font-size: clamp(28px, 3.5vw, 36px);
+    margin-bottom: var(--s-2);
+  }
+  .feature-lede {
+    font-size: var(--text-body-l);
+    color: var(--text-secondary);
+    max-width: var(--prose-max);
+    margin-bottom: var(--s-4);
+  }
+  .feature-prose p {
+    font-size: var(--text-body);
+    line-height: var(--leading-body);
+    color: var(--text-primary);
+  }
+  :global(.brand-zh) {
+    color: var(--signal-blue);
+    font-weight: var(--weight-heading);
+    font-family: var(--font-cjk);
+  }
+  .feature-prose :global(mark.hl) {
+    background: transparent;
+    color: inherit;
+    text-decoration: underline;
+    text-decoration-color: var(--signal-blue);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+    text-decoration-skip-ink: none;
+  }
+  .feature-specs {
+    margin-top: var(--s-4);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-2);
+  }
+  .spec-chip {
+    background: var(--surface-soft);
+    color: var(--text-secondary);
+  }
+  .features-cta {
+    margin-top: var(--s-8);
+    padding: var(--s-7) 0;
+    background: var(--surface-soft);
+    text-align: center;
+  }
+  .features-cta h2 {
+    margin-bottom: var(--s-4);
+  }
+</style>

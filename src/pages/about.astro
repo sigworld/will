@@ -1,0 +1,9 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PageAbout from '../components/PageAbout.astro';
+import { getCopy } from '../i18n';
+const t = getCopy('en');
+---
+<BaseLayout locale="en" title={`${t.pages.about.title} — WiLL`} description={t.pages.about.paragraphs[0]}>
+  <PageAbout locale="en" />
+</BaseLayout>

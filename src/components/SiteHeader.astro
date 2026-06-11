@@ -1,0 +1,179 @@
+---
+import type { Locale } from '../i18n';
+import { getCopy } from '../i18n';
+import Wordmark from './Wordmark.astro';
+import LangToggle from './LangToggle.astro';
+
+interface Props {
+  locale: Locale;
+  /** When true, the nav + right-side actions stay hidden until the Hero
+   *  sequence dispatches `is-revealed` on [data-below-hero]. */
+  hideUntilHero?: boolean;
+}
+
+const { locale, hideUntilHero = false } = Astro.props;
+const t = getCopy(locale);
+const base = locale === 'zh' ? '/zh' : '';
+const downloadHref = `${base}/download`;
+const headerClass = `site-header${hideUntilHero ? ' is-hero-deferred' : ''}`;
+
+// Normalize the current path so a trailing slash and the /zh prefix don't
+// interfere with active-state matching. "/zh/features/" → "/features".
+const rawPath = Astro.url.pathname.replace(/\/$/, '') || '/';
+const currentPath = rawPath.startsWith('/zh') ? (rawPath.slice(3) || '/') : rawPath;
+const isActive = (slug: string) => currentPath === `/${slug}`;
+const ariaCurrent = (slug: string) => (isActive(slug) ? 'page' : undefined);
+const navClass = (slug: string) => (isActive(slug) ? 'is-active' : undefined);
+---
+
+<header class={headerClass} data-site-header>
+  <div class="container header-inner">
+    <div class="header-left">
+      <Wordmark locale={locale} height={24} pairZhName={locale === 'zh'} />
+    </div>
+    <nav class="header-nav" aria-label={locale === 'zh' ? '主导航' : 'Primary'}>
+      <a href={`${base}/features`} class={navClass('features')} aria-current={ariaCurrent('features')}>{t.nav.features}</a>
+      <a href={`${base}/pricing`} class={navClass('pricing')} aria-current={ariaCurrent('pricing')}>{t.nav.pricing}</a>
+      <a href={`${base}/privacy`} class={navClass('privacy')} aria-current={ariaCurrent('privacy')}>{t.nav.privacy}</a>
+      <a href={downloadHref} class={navClass('download')} aria-current={ariaCurrent('download')}>{t.nav.download}</a>
+    </nav>
+    <div class="header-right">
+      <LangToggle locale={locale} />
+      <a class="btn btn-primary header-cta" href={downloadHref}>{t.nav.download}</a>
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--bg-primary);
+    border-bottom: 1px solid transparent;
+    transition: border-color var(--dur-fast) var(--ease-out-quad);
+  }
+  .site-header.is-stuck {
+    border-bottom-color: var(--border-subtle);
+  }
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-4);
+    height: 64px;
+  }
+  .header-left { flex: 0 0 auto; }
+  .header-nav {
+    display: none;
+    flex: 1 1 auto;
+    justify-content: center;
+    gap: var(--s-5);
+  }
+  @media (min-width: 768px) {
+    .header-nav { display: flex; }
+  }
+  .header-nav a {
+    color: var(--text-secondary);
+    font-size: var(--text-body-s);
+    font-weight: var(--weight-ui);
+    border-bottom: none;
+    transition: color var(--dur-fast) var(--ease-out-quad);
+  }
+  .header-nav a:hover {
+    color: var(--text-primary);
+    border-bottom: none;
+  }
+  .header-nav a {
+    position: relative;
+    padding-bottom: 6px;
+  }
+  .header-nav a.is-active {
+    color: var(--text-primary);
+    font-weight: var(--weight-heading);
+  }
+  .header-nav a.is-active::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 2px;
+    border-radius: 1px;
+    background: var(--signal-blue);
+  }
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: var(--s-4);
+    flex: 0 0 auto;
+  }
+  .header-cta {
+    display: none;
+  }
+  @media (min-width: 640px) {
+    .header-cta {
+      display: inline-flex;
+      padding: 8px 16px;
+      font-size: var(--text-body-s);
+    }
+  }
+
+  /* When the page sets `hideUntilHero`, only the logo is shown at first.
+   * The nav and right-side actions fade in once the Hero sequence completes
+   * (signaled by `is-revealed` on [data-below-hero], mirrored here as
+   * `is-hero-revealed` on the header). */
+  .site-header.is-hero-deferred .header-nav,
+  .site-header.is-hero-deferred .header-right {
+    opacity: 0;
+    transform: translateY(-4px);
+    pointer-events: none;
+    transition:
+      opacity var(--dur-base) var(--ease-out-expo),
+      transform var(--dur-base) var(--ease-out-expo);
+  }
+  .site-header.is-hero-deferred.is-hero-revealed .header-nav,
+  .site-header.is-hero-deferred.is-hero-revealed .header-right {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .site-header.is-hero-deferred .header-nav,
+    .site-header.is-hero-deferred .header-right { transition: none; }
+  }
+</style>
+
+<script>
+  // Sticky-header border appears after 200px scroll, per planning/02-design-system.md.
+  const header = document.querySelector<HTMLElement>('[data-site-header]');
+  if (header) {
+    const onScroll = () => {
+      header.classList.toggle('is-stuck', window.scrollY > 200);
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    // On pages that defer the header (hero pages), wait for Hero to mark
+    // `[data-below-hero]` as `is-revealed`, then fade in nav + right-side.
+    if (header.classList.contains('is-hero-deferred')) {
+      const below = document.querySelector<HTMLElement>('[data-below-hero]');
+      const reveal = () => header.classList.add('is-hero-revealed');
+      if (!below) {
+        // Hero markup unexpectedly missing — don't strand the header.
+        reveal();
+      } else if (below.classList.contains('is-revealed')) {
+        // Reduced-motion path: Hero reveals immediately, so we're already late.
+        reveal();
+      } else {
+        const mo = new MutationObserver(() => {
+          if (below.classList.contains('is-revealed')) {
+            reveal();
+            mo.disconnect();
+          }
+        });
+        mo.observe(below, { attributes: true, attributeFilter: ['class'] });
+      }
+    }
+  }
+</script>

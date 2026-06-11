@@ -1,0 +1,148 @@
+---
+/*
+ * Brand wordmark — locale-aware per planning/02-design-system.md.
+ *
+ * Both locales use the same WiLL SVG (traced 1:1 from /logo/bright.png via
+ * potrace). The coloring style is identical too — one accent color for the
+ * blue half of the W, currentColor for the rest — only the accent hex differs:
+ *
+ *   EN: Signal Blue      #0A7BFF   (the V, the "Voice" half of V+E=W)
+ *   ZH: Underglaze Blue  #234E8C   (both Vs of the W; cultural variant
+ *                                    referencing the cobalt pigment painted
+ *                                    beneath the glaze in Yuan-Ming blue-
+ *                                    and-white porcelain)
+ *
+ * The ZH treatment colors *both* halves of the W in underglaze blue (not just
+ * the left V like the EN treatment) — a deliberate ZH-locale design choice
+ * to read as a unified blue mark, paired with 如义 in the same blue.
+ *
+ * The iLL stays in currentColor on both locales so the wordmark inherits the
+ * page text color and inverts cleanly in dark mode.
+ */
+
+interface Props {
+  locale?: 'en' | 'zh';
+  height?: number;
+  /** Disable the link wrapper — used when the wordmark is already inside an <a>. */
+  asStatic?: boolean;
+  /**
+   * ZH only: pair the wordmark with the 如义 text as an inline subscript
+   * sitting at the W's baseline. Same layout in header and footer — only
+   * the wordmark `height` changes between the two.
+   */
+  pairZhName?: boolean;
+}
+
+const { locale = 'en', height = 24, asStatic = false, pairZhName = false } = Astro.props;
+
+const homeHref = locale === 'zh' ? '/zh' : '/';
+const ariaLabel = locale === 'zh' ? '如义 (WiLL) — 主页' : 'WiLL — home';
+
+// Shared SVG path constants — same data for both locales.
+const pathV = "M10 3576 c0 -8 18 -70 39 -138 22 -67 54 -170 71 -228 17 -58 55 -181 85 -275 29 -93 90 -291 134 -440 45 -148 92 -304 106 -345 13 -41 74 -239 135 -440 62 -201 159 -516 215 -700 57 -184 107 -347 111 -362 3 -16 10 -28 16 -28 5 0 7 -4 4 -8 -6 -10 28 -125 35 -118 2 2 4 -8 5 -22 1 -32 85 -296 96 -300 4 -2 4 -10 1 -18 -3 -8 0 -14 6 -14 6 0 8 -7 5 -15 -4 -8 -1 -15 6 -15 7 0 9 -8 5 -20 -4 -11 -2 -20 4 -20 6 0 7 -7 4 -17 -4 -11 -3 -14 5 -9 7 4 12 2 12 -3 0 -6 8 -11 18 -11 14 0 15 -2 2 -10 -10 -6 120 -10 377 -10 449 0 398 -12 432 106 10 38 46 159 79 269 33 110 115 382 181 605 199 668 289 970 322 1075 31 101 35 112 64 220 9 33 41 139 71 235 31 96 62 198 69 225 8 28 23 79 34 115 108 355 138 454 177 574 24 76 42 142 38 145 -9 9 -727 12 -742 2 -13 -8 -111 -338 -186 -626 -21 -77 -52 -192 -71 -255 -18 -63 -47 -164 -64 -225 -16 -60 -66 -238 -109 -395 -102 -364 -226 -807 -248 -888 -22 -81 -27 -74 -70 94 -19 76 -68 261 -109 409 -40 149 -97 358 -126 465 -28 107 -87 326 -129 485 -43 160 -101 378 -130 485 -28 107 -68 254 -88 325 l-37 130 -427 3 c-365 2 -428 0 -428 -12z";
+const pathIDot = "M5783 3720 c-298 -97 -354 -504 -95 -677 310 -206 718 61 627 411 -57 218 -302 341 -532 266z";
+const pathLittleV = "M4753 3582 l-401 -2 -15 -48 c-15 -48 -66 -237 -132 -487 -20 -77 -48 -180 -61 -230 -14 -49 -34 -121 -44 -160 -33 -126 -159 -597 -197 -735 -20 -74 -51 -189 -68 -255 -123 -460 -149 -554 -152 -551 -4 4 -43 138 -72 246 -39 149 -111 410 -180 660 -40 140 -87 309 -105 375 -18 66 -56 201 -84 300 -28 99 -70 249 -93 333 -23 84 -45 150 -49 145 -3 -4 -19 -48 -33 -98 -15 -49 -43 -144 -63 -210 -20 -66 -60 -199 -89 -295 -45 -148 -88 -286 -172 -550 -18 -56 -17 -59 47 -265 29 -93 67 -222 85 -285 18 -63 99 -333 179 -600 81 -267 169 -559 197 -650 27 -91 54 -175 59 -188 l10 -22 390 1 391 1 10 21 c5 12 38 117 73 232 171 566 200 660 241 785 54 167 189 607 220 715 13 44 50 166 83 270 33 105 104 334 157 510 53 176 111 367 130 425 18 58 52 168 75 245 23 77 57 188 76 247 40 126 40 123 12 123 -13 0 -204 -1 -425 -3z";
+const pathL1 = "M6810 1795 l0 -1785 370 2 370 3 3 1783 2 1782 -372 0 -373 0 0 -1785z";
+const pathL2 = "M8070 1795 l0 -1785 373 2 372 3 3 1783 2 1782 -375 0 -375 0 0 -1785z";
+const pathIStem = "M5560 1331 l0 -1319 368 3 367 3 3 1316 2 1316 -370 0 -370 0 0 -1319z";
+
+const isZh = locale === 'zh';
+const accent = isZh ? 'var(--underglaze-blue, #234E8C)' : 'var(--signal-blue, #0A7BFF)';
+// ZH locale: the lowercase v (right half of W) ALSO gets the accent, so the
+// whole W reads as a unified underglaze-blue mark. EN: only the left V is accent.
+const littleVFill = isZh ? accent : 'currentColor';
+const ariaForSvg = isZh ? '如义' : 'WiLL';
+---
+
+{(() => {
+  const svg = (
+    <svg
+      class={`wordmark ${isZh ? 'wordmark-zh-svg' : 'wordmark-en'}`}
+      style={`height: ${height}px;`}
+      viewBox="0 0 883 375"
+      xmlns="http://www.w3.org/2000/svg"
+      role="img"
+      aria-label={ariaForSvg}
+    >
+      <g transform="translate(0,375) scale(0.1,-0.1)">
+        <g fill={accent}>
+          <path d={pathV} />
+        </g>
+        <g fill={littleVFill}>
+          <path d={pathLittleV} />
+        </g>
+        <g fill="currentColor">
+          <path d={pathIDot} />
+          <path d={pathL1} />
+          <path d={pathL2} />
+          <path d={pathIStem} />
+        </g>
+      </g>
+    </svg>
+  );
+
+  // 如义 sits as a subscript at the W's baseline at 45% of the wordmark
+  // height — so it scales proportionally as the wordmark grows (header 24 →
+  // 11px; footer 32 → 14px).
+  const ruyiSize = Math.round(height * 0.45);
+
+  const pair = isZh && pairZhName ? (
+    <span class="wordmark-zh-text" style={`font-size: ${ruyiSize}px;`} aria-hidden="true">如义</span>
+  ) : null;
+
+  const inner = pair ? (
+    <span class="wordmark-pair wordmark-pair-inline">
+      {svg}
+      {pair}
+    </span>
+  ) : svg;
+
+  return asStatic ? inner : (
+    <a class="wordmark-link" href={homeHref} aria-label={ariaLabel}>
+      {inner}
+    </a>
+  );
+})()}
+
+<style>
+  .wordmark-link {
+    display: inline-flex;
+    align-items: center;
+    color: var(--text-primary);
+    border-bottom: none;
+  }
+  .wordmark-link:hover {
+    border-bottom: none;
+  }
+  .wordmark {
+    display: inline-block;
+    color: var(--text-primary);
+    width: auto;
+  }
+  .wordmark-pair {
+    display: inline-flex;
+    line-height: 1;
+  }
+  .wordmark-pair-inline {
+    flex-direction: row;
+    /* Baseline of 如义 lines up with bottom of W — subscript behavior. */
+    align-items: flex-end;
+    gap: 5px;
+  }
+  /* 如义 text — solid Underglaze Blue to match the W's accent fill. The
+     `text-shadow: none` / `background: none` / `filter: none` triad is
+     defensive: it overrides any inherited jade-era glow that might still
+     sit in a cached stylesheet or future ancestor selector. Mirrors the
+     clean, restrained EN logo style. */
+  .wordmark-zh-text {
+    font-family: var(--font-cjk);
+    font-weight: var(--weight-heading);
+    letter-spacing: 0.04em;
+    line-height: 1;
+    color: var(--underglaze-blue);
+    text-shadow: none;
+    background: none;
+    -webkit-text-fill-color: var(--underglaze-blue);
+    filter: none;
+  }
+</style>

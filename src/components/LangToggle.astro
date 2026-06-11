@@ -1,0 +1,45 @@
+---
+import type { Locale } from '../i18n';
+import { alternateHref } from '../i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const path = Astro.url.pathname;
+const enHref = alternateHref(path, 'en');
+const zhHref = alternateHref(path, 'zh');
+---
+
+<div class="lang-toggle">
+  <a class={locale === 'en' ? 'is-active' : ''} href={enHref}>EN</a>
+  <span class="sep" aria-hidden="true">/</span>
+  <a class={locale === 'zh' ? 'is-active' : ''} href={zhHref}>中</a>
+</div>
+
+<style>
+  .lang-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: var(--text-caption);
+    font-weight: var(--weight-ui);
+  }
+  .lang-toggle a {
+    color: var(--text-tertiary);
+    padding: 4px 6px;
+    border-bottom: none;
+    transition: color var(--dur-fast) var(--ease-out-quad);
+  }
+  .lang-toggle a:hover {
+    color: var(--text-primary);
+    border-bottom: none;
+  }
+  .lang-toggle a.is-active {
+    color: var(--text-primary);
+  }
+  .lang-toggle .sep {
+    color: var(--text-tertiary);
+  }
+</style>

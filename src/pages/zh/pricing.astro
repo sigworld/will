@@ -1,0 +1,9 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PagePricing from '../../components/PagePricing.astro';
+import { getCopy } from '../../i18n';
+const t = getCopy('zh');
+---
+<BaseLayout locale="zh" title={`${t.pages.pricing.title} — 如义`} description={t.pages.pricing.lede}>
+  <PagePricing locale="zh" />
+</BaseLayout>

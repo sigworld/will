@@ -1,0 +1,219 @@
+---
+import type { Locale } from '../i18n';
+import { getCopy } from '../i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = getCopy(locale);
+const p = t.pages.pricing;
+const base = locale === 'zh' ? '/zh' : '';
+const downloadHref = `${base}/download`;
+---
+
+<section class="page-hero">
+  <div class="container">
+    <h1>{p.title}</h1>
+    <p class="lede">{p.lede}</p>
+  </div>
+</section>
+
+<section class="pricing-grid-section">
+  <div class="container">
+    <div class="tiles">
+      {p.tiles.map((tile) => (
+        <article class={`tile tile-${tile.id}`} id={tile.id}>
+          <header class="tile-header">
+            <h2>{tile.name}</h2>
+            <p class="price">{tile.price}</p>
+            <p class="tile-lede">{tile.lede}</p>
+          </header>
+          <div class="tile-body">
+            <h3 class="tile-section-label">{p.includedHeader}</h3>
+            <ul class="tile-list">
+              {tile.included.map((it) => <li>{it}</li>)}
+            </ul>
+            <h3 class="tile-section-label note-label">{p.notIncludedHeader}</h3>
+            <p class="tile-note">{tile.notIncluded}</p>
+          </div>
+          <a class={`btn ${tile.id === 'pro' ? 'btn-primary' : 'btn-secondary'} tile-cta`} href={tile.href === '/download' || tile.href === '/zh/download' ? downloadHref : tile.href}>{tile.cta}</a>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<section class="faq-section">
+  <div class="container">
+    <h2 class="faq-title">{p.faqTitle}</h2>
+    <div class="faq-list">
+      {p.faq.map((item, i) => (
+        <details class="faq-item" open={i === 0}>
+          <summary>{item.q}</summary>
+          <p>{item.a}</p>
+        </details>
+      ))}
+    </div>
+  </div>
+</section>
+
+<section class="pricing-cta">
+  <div class="container">
+    <h2>{p.ctaTitle}</h2>
+    <a class="btn btn-primary" href={downloadHref}>{p.ctaButton}</a>
+  </div>
+</section>
+
+<style>
+  .pricing-grid-section {
+    padding: var(--s-6) 0 var(--s-8);
+  }
+  .tiles {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s-4);
+  }
+  @media (min-width: 768px) {
+    .tiles {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+  .tile {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-4);
+    padding: var(--s-5);
+    background: var(--bg-primary);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+    transition: border-color var(--dur-fast) var(--ease-out-quad);
+  }
+  .tile:hover {
+    border-color: var(--border-strong);
+  }
+  .tile-pro {
+    border-color: var(--signal-blue);
+  }
+  .tile-header h2 {
+    font-size: var(--text-h3);
+    margin-bottom: var(--s-1);
+  }
+  .price {
+    font-size: var(--text-body-s);
+    color: var(--text-secondary);
+    font-weight: var(--weight-ui);
+    margin-bottom: var(--s-3);
+  }
+  .tile-lede {
+    font-size: var(--text-body);
+    color: var(--text-primary);
+  }
+  .tile-body {
+    flex: 1;
+  }
+  .tile-section-label {
+    font-size: var(--text-caption);
+    font-weight: var(--weight-ui);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--text-tertiary);
+    margin-bottom: var(--s-2);
+  }
+  .note-label {
+    margin-top: var(--s-4);
+  }
+  .tile-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-1);
+  }
+  .tile-list li {
+    font-size: var(--text-body-s);
+    color: var(--text-primary);
+    padding-left: var(--s-3);
+    position: relative;
+    line-height: var(--leading-body);
+  }
+  .tile-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 10px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--signal-blue);
+    opacity: 0.6;
+  }
+  .tile-note {
+    font-size: var(--text-body-s);
+    color: var(--text-secondary);
+    line-height: var(--leading-body);
+  }
+  .tile-cta {
+    align-self: stretch;
+  }
+  .faq-section {
+    padding: var(--s-8) 0;
+    background: var(--surface-soft);
+  }
+  .faq-section .container {
+    max-width: var(--prose-max);
+  }
+  .faq-title {
+    margin-bottom: var(--s-5);
+    text-align: center;
+  }
+  .faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-2);
+  }
+  .faq-item {
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    background: var(--bg-primary);
+    padding: var(--s-3) var(--s-4);
+    transition: border-color var(--dur-fast) var(--ease-out-quad);
+  }
+  .faq-item[open] {
+    border-color: var(--border-strong);
+  }
+  .faq-item summary {
+    cursor: pointer;
+    font-weight: var(--weight-ui);
+    font-size: var(--text-body);
+    list-style: none;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--s-3);
+  }
+  .faq-item summary::-webkit-details-marker { display: none; }
+  .faq-item summary::after {
+    content: '+';
+    color: var(--text-tertiary);
+    font-weight: var(--weight-body);
+    font-size: 20px;
+    line-height: 1;
+    transition: transform var(--dur-fast) var(--ease-out-quad);
+  }
+  .faq-item[open] summary::after {
+    content: '−';
+  }
+  .faq-item p {
+    margin-top: var(--s-3);
+    color: var(--text-secondary);
+    line-height: var(--leading-body);
+    font-size: var(--text-body-s);
+  }
+  .pricing-cta {
+    padding: var(--s-8) 0;
+    text-align: center;
+  }
+  .pricing-cta h2 {
+    margin-bottom: var(--s-4);
+  }
+</style>

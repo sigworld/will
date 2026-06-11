@@ -1,0 +1,523 @@
+/* Base styles. Tokens come from tokens.css. */
+
+html, body {
+  font-family: var(--font-sans), var(--font-cjk);
+  font-size: var(--text-body);
+  font-weight: var(--weight-body);
+  color: var(--text-primary);
+  background: var(--bg-primary);
+}
+
+html[lang^="zh"] body {
+  font-family: var(--font-cjk), var(--font-sans);
+}
+
+/* Headings — weight 600 per brand spec. */
+h1, h2, h3, h4 {
+  font-weight: var(--weight-heading);
+  letter-spacing: -0.01em;
+}
+h1 {
+  font-size: var(--text-h1);
+  line-height: var(--leading-h1);
+  letter-spacing: -0.02em;
+}
+h2 {
+  font-size: var(--text-h2);
+  line-height: var(--leading-h2);
+}
+h3 {
+  font-size: var(--text-h3);
+  line-height: var(--leading-h3);
+  font-weight: var(--weight-ui);
+}
+
+p { max-width: var(--prose-max); }
+
+/* Links — underline on hover only. Signal Blue. */
+a {
+  color: var(--signal-blue);
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--dur-fast) var(--ease-out-quad);
+}
+a:hover {
+  border-bottom-color: currentColor;
+}
+
+/* Focus ring — Signal Blue, 2px offset. */
+:focus-visible {
+  outline: 2px solid var(--signal-blue);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ─── Layout ─── */
+.container {
+  max-width: var(--content-max);
+  margin: 0 auto;
+  padding: 0 var(--s-4);
+}
+@media (min-width: 768px) {
+  .container { padding: 0 var(--s-6); }
+}
+@media (min-width: 1024px) {
+  .container { padding: 0 var(--s-7); }
+}
+
+/* ─── Atoms ─── */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2);
+  padding: 12px 22px;
+  border-radius: var(--radius-sm);
+  font-weight: var(--weight-ui);
+  font-size: var(--text-body);
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition:
+    transform var(--dur-fast) var(--ease-out-quad),
+    background var(--dur-fast) var(--ease-out-quad),
+    border-color var(--dur-fast) var(--ease-out-quad);
+}
+.btn:hover { border-bottom-color: transparent; }
+.btn-primary {
+  background: var(--signal-blue);
+  color: var(--clean-white);
+}
+.btn-primary:hover {
+  background: var(--signal-blue-hover);
+}
+.btn-secondary {
+  background: transparent;
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+}
+.btn-secondary:hover {
+  border-color: var(--text-primary);
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--text-primary);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--surface-soft);
+  font-size: var(--text-caption);
+  font-weight: var(--weight-ui);
+  color: var(--text-primary);
+  border: 1px solid transparent;
+  transition:
+    transform var(--dur-fast) var(--ease-out-quad),
+    border-color var(--dur-fast) var(--ease-out-quad);
+}
+.chip:hover {
+  transform: translateY(-2px);
+  border-color: var(--border-subtle);
+}
+.chip.is-active {
+  border-color: var(--signal-blue);
+  color: var(--signal-blue);
+}
+
+.kbd {
+  display: inline-block;
+  padding: 2px 6px;
+  border-radius: 6px;
+  border: 1px solid var(--border-subtle);
+  font-family: var(--font-mono);
+  font-size: var(--text-mono);
+}
+
+/* ─── Sections ─── */
+
+.section {
+  padding: var(--s-9) 0 var(--s-8);
+}
+.section-tight {
+  padding: var(--s-7) 0;
+}
+
+.section-header {
+  max-width: var(--prose-max);
+  margin: 0 auto var(--s-6);
+  text-align: center;
+}
+.section-header .lede {
+  margin-top: var(--s-3);
+  color: var(--text-secondary);
+  font-size: var(--text-body-l);
+}
+
+/* ─── Secondary-page hero (Features / Pricing / Privacy / Download / About) ─── */
+
+.page-hero {
+  padding: var(--s-8) 0 var(--s-6);
+}
+.page-hero .container {
+  max-width: var(--prose-max);
+}
+.page-hero h1 {
+  margin: 0;
+}
+.page-hero .lede {
+  margin-top: var(--s-3);
+  font-size: var(--text-body-l);
+  color: var(--text-secondary);
+  max-width: var(--prose-max);
+}
+
+/* Prose blocks within secondary pages keep a comfortable measure. */
+.prose {
+  max-width: var(--prose-max);
+}
+.prose p + p {
+  margin-top: var(--s-3);
+}
+
+/* Anchor offset so deep-linked sections aren't hidden under the sticky header. */
+[id] {
+  scroll-margin-top: 80px;
+}
+
+/* ─── Cards ─── */
+
+.card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--s-5);
+  transition: border-color var(--dur-fast) var(--ease-out-quad), transform var(--dur-fast) var(--ease-out-quad);
+}
+.card:hover {
+  border-color: var(--border-strong);
+  transform: translateY(-2px);
+}
+
+/* ─── Demo container ─── */
+
+.demo-container {
+  max-width: var(--demo-max);
+  margin: 0 auto;
+  background: var(--surface-soft);
+  border-radius: var(--radius-lg);
+  padding: var(--s-5);
+}
+@media (min-width: 768px) {
+  .demo-container { padding: var(--s-6); }
+}
+
+/* ─── App chrome — mac-window frame for immersive demos ─── */
+
+.app-frame {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.02), 0 12px 32px rgba(0, 0, 0, 0.06);
+}
+.app-titlebar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px var(--s-4);
+  background: var(--surface-soft);
+  border-bottom: 1px solid var(--border-subtle);
+}
+.app-dot {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.app-dot-r { background: #FF5F57; }
+.app-dot-y { background: #FEBC2E; }
+.app-dot-g { background: #28C840; }
+.app-title {
+  margin-left: var(--s-3);
+  font-size: var(--text-body-s);
+  color: var(--text-secondary);
+  font-weight: var(--weight-ui);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.app-title-channel {
+  color: var(--text-tertiary);
+  font-weight: var(--weight-body);
+}
+.app-body {
+  padding: var(--s-5);
+  position: relative;
+}
+@media (min-width: 768px) {
+  .app-body { padding: var(--s-6); }
+}
+
+/* ─── Animated key glyph (Option, Tab, ⌥`, etc.) ─── */
+
+.key-glyph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px;
+  height: 28px;
+  padding: 0 8px;
+  border-radius: 6px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  border-bottom-width: 2px;
+  font-family: var(--font-mono);
+  font-size: var(--text-body-s);
+  color: var(--text-secondary);
+  font-weight: var(--weight-ui);
+  transition:
+    transform var(--dur-fast) var(--ease-out-quad),
+    background var(--dur-fast) var(--ease-out-quad),
+    color var(--dur-fast) var(--ease-out-quad),
+    border-color var(--dur-fast) var(--ease-out-quad),
+    box-shadow var(--dur-fast) var(--ease-out-quad);
+}
+.key-glyph.is-pressed {
+  transform: translateY(1px);
+  border-bottom-width: 1px;
+  background: var(--signal-blue);
+  color: var(--clean-white);
+  border-color: var(--signal-blue);
+  box-shadow: 0 0 0 4px rgba(10, 123, 255, 0.18);
+}
+
+/* Inline gesture hint row used under demos */
+.gesture-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-2) var(--s-4);
+  margin-top: var(--s-4);
+  font-size: var(--text-body-s);
+  color: var(--text-secondary);
+}
+.gesture-row .gesture {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Replay/cycle pill — same affordance across demos */
+.replay-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  font-size: var(--text-body-s);
+  font-weight: var(--weight-ui);
+  color: var(--text-secondary);
+  transition:
+    border-color var(--dur-fast) var(--ease-out-quad),
+    color var(--dur-fast) var(--ease-out-quad);
+}
+.replay-pill:hover {
+  border-color: var(--border-strong);
+  color: var(--text-primary);
+  border-bottom-color: var(--border-strong);
+}
+.replay-pill[disabled] {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Live underline used to mimic SFSpeech preview */
+.live-preview {
+  text-decoration: underline;
+  text-decoration-color: var(--border-strong);
+  text-decoration-style: dotted;
+  text-underline-offset: 4px;
+  color: var(--text-secondary);
+}
+
+/* ─── Below-hero cascade — everything after the hero stays hidden until the
+   hero's animation completes, then reveals top-down with a stagger so the
+   visitor's eye is led down the page section by section. */
+
+.below-hero > * {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 600ms var(--ease-out-quad),
+    transform 600ms var(--ease-out-quad);
+}
+.below-hero.is-revealed > * {
+  opacity: 1;
+  transform: translateY(0);
+}
+.below-hero.is-revealed > *:nth-child(1) { transition-delay:   0ms; }
+.below-hero.is-revealed > *:nth-child(2) { transition-delay: 180ms; }
+.below-hero.is-revealed > *:nth-child(3) { transition-delay: 360ms; }
+.below-hero.is-revealed > *:nth-child(4) { transition-delay: 540ms; }
+.below-hero.is-revealed > *:nth-child(5) { transition-delay: 720ms; }
+.below-hero.is-revealed > *:nth-child(6) { transition-delay: 900ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .below-hero > * {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* ─── Fog reveal — the brand's one signature motion ─── */
+
+.fog-reveal {
+  opacity: 0.7;
+  filter: blur(8px);
+  transform: translateY(-4px);
+  transition:
+    opacity var(--dur-fog) var(--ease-out-expo),
+    filter var(--dur-fog) var(--ease-out-expo),
+    transform var(--dur-fog) var(--ease-out-expo);
+}
+.fog-reveal.is-revealed {
+  opacity: 1;
+  filter: blur(0);
+  transform: translateY(0);
+}
+
+/* Hero-scale Fog Reveal — longer duration. */
+.fog-reveal-hero {
+  opacity: 0.6;
+  filter: blur(14px);
+  transform: translateY(-6px);
+  transition:
+    opacity var(--dur-hero) var(--ease-out-expo),
+    filter var(--dur-hero) var(--ease-out-expo),
+    transform var(--dur-hero) var(--ease-out-expo);
+}
+.fog-reveal-hero.is-revealed {
+  opacity: 1;
+  filter: blur(0);
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fog-reveal,
+  .fog-reveal-hero {
+    opacity: 1;
+    filter: none;
+    transform: none;
+    transition: opacity var(--dur-fast) var(--ease-out-quad);
+  }
+}
+
+/* ─── Demo shortcut badge — consistent bottom-right hint on every demo. */
+
+.demo-shortcut {
+  position: absolute;
+  bottom: var(--s-3);
+  right: var(--s-3);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--text-body-s);
+  color: var(--text-tertiary);
+  opacity: 0.85;
+  pointer-events: none;
+  user-select: none;
+}
+/* Physical-key chip group — used by Keycaps.astro. The chips render like
+   Mac keycaps (rounded, subtle bottom border for depth) and connect with
+   "+" separators. Demo animation scripts can flash any chip by adding
+   `.is-pressed` to its element. */
+.kbd-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  border-radius: 5px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-subtle);
+  border-bottom-width: 2px;
+  box-shadow: 0 1px 0 rgba(22, 24, 26, 0.04);
+  font-family: var(--font-mono);
+  font-size: var(--text-caption);
+  font-weight: 500;
+  color: var(--text-secondary);
+  line-height: 1;
+  transition:
+    background 130ms var(--ease-out-quad),
+    color 130ms var(--ease-out-quad),
+    border-color 130ms var(--ease-out-quad),
+    transform 80ms var(--ease-out-quad),
+    box-shadow 80ms var(--ease-out-quad);
+}
+.kbd.is-pressed {
+  background: var(--signal-blue);
+  color: var(--clean-white);
+  border-color: var(--signal-blue);
+  border-bottom-width: 1px;
+  transform: translateY(1px);
+  box-shadow: 0 0 0 3px rgba(10, 123, 255, 0.18);
+}
+.kbd-plus {
+  color: var(--text-tertiary);
+  font-size: var(--text-caption);
+  user-select: none;
+}
+.demo-shortcut-segment {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.demo-shortcut-sep {
+  color: var(--text-tertiary);
+}
+/* Bottom-left hint — same visual weight as .demo-shortcut, anchored opposite. */
+.demo-hint-left {
+  position: absolute;
+  bottom: var(--s-3);
+  left: var(--s-3);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--text-body-s);
+  color: var(--text-tertiary);
+  opacity: 0.85;
+  pointer-events: none;
+  user-select: none;
+  max-width: 60%;
+}
+@media (max-width: 600px) {
+  .demo-hint-left {
+    font-size: var(--text-caption);
+    bottom: var(--s-2);
+    left: var(--s-2);
+  }
+}
+.demo-shortcut-label {
+  color: var(--text-tertiary);
+}
+
+@media (max-width: 600px) {
+  .demo-shortcut {
+    font-size: var(--text-caption);
+    bottom: var(--s-2);
+    right: var(--s-2);
+    gap: 6px;
+  }
+}

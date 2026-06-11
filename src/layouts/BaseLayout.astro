@@ -1,0 +1,90 @@
+---
+import type { Locale } from '../i18n';
+import { getCopy, alternateHref } from '../i18n';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import '../styles/tokens.css';
+import '../styles/reset.css';
+import '../styles/global.css';
+
+interface Props {
+  locale: Locale;
+  title?: string;
+  description?: string;
+  /** Index pages set this so the header's nav/right-side stay hidden until
+   *  the Hero reveal sequence finishes. Logo stays visible from page load. */
+  hideHeaderUntilHero?: boolean;
+}
+
+const { locale, title, description, hideHeaderUntilHero = false } = Astro.props;
+const t = getCopy(locale);
+
+const pageTitle = title ?? t.meta.title;
+const pageDescription = description ?? t.meta.description;
+const lang = locale === 'zh' ? 'zh-CN' : 'en';
+const path = Astro.url.pathname;
+const enHref = new URL(alternateHref(path, 'en'), Astro.site || 'https://will.app').toString();
+const zhHref = new URL(alternateHref(path, 'zh'), Astro.site || 'https://will.app').toString();
+const canonical = new URL(path, Astro.site || 'https://will.app').toString();
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDescription} />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="en" href={enHref} />
+    <link rel="alternate" hreflang="zh" href={zhHref} />
+    <link rel="alternate" hreflang="x-default" href={enHref} />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+
+    <!-- Open Graph -->
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:locale" content={locale === 'zh' ? 'zh_CN' : 'en_US'} />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={pageTitle} />
+    <meta name="twitter:description" content={pageDescription} />
+
+    <!-- Structured data -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": locale === 'zh' ? '如义 (WiLL)' : 'WiLL',
+      "operatingSystem": "macOS",
+      "applicationCategory": "ProductivityApplication",
+      "description": pageDescription,
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" }
+    })} />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <SiteHeader locale={locale} hideUntilHero={hideHeaderUntilHero} />
+    <main id="main">
+      <slot />
+    </main>
+    <SiteFooter locale={locale} />
+
+    <style>
+      .skip-link {
+        position: absolute;
+        left: -10000px;
+        top: 0;
+        background: var(--onyx);
+        color: var(--clean-white);
+        padding: 8px 16px;
+        border-radius: 0 0 8px 0;
+        z-index: 100;
+      }
+      .skip-link:focus { left: 0; }
+    </style>
+  </body>
+</html>

@@ -1,0 +1,174 @@
+---
+import type { Locale } from '../i18n';
+import { getCopy } from '../i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = getCopy(locale);
+const d = t.pages.download;
+
+const dmgVersion = '1.0.2';
+const dmgFile = `WiLL-${dmgVersion}.dmg`;
+const dmgHref = `https://github.com/sigworld/will/releases/download/v${dmgVersion}/${dmgFile}`;
+---
+
+<section class="page-hero">
+  <div class="container">
+    <h1>{d.title}</h1>
+    <p class="lede">{d.lede}</p>
+  </div>
+</section>
+
+<section class="dl-block">
+  <div class="container">
+    <div class="dl-card">
+      <a class="btn btn-primary dl-btn" href={dmgHref} download>
+        {d.button}
+      </a>
+      <p class="dl-availability">{d.buttonAvailability}</p>
+      <p class="dl-meta">{d.fileMeta}</p>
+      <p class="dl-checksum">{d.checksumLabel}</p>
+    </div>
+  </div>
+</section>
+
+<section class="dl-section">
+  <div class="container">
+    <h2>{d.requirementsTitle}</h2>
+    <ul class="dl-list">
+      {d.requirements.map((r) => <li>{r}</li>)}
+    </ul>
+  </div>
+</section>
+
+<section class="dl-section">
+  <div class="container">
+    <h2>{d.installTitle}</h2>
+    <ol class="dl-steps">
+      {d.steps.map((step, i) => (
+        <li>
+          <span class="step-num">{i + 1}</span>
+          <div class="step-body">
+            <h3>{step.title}</h3>
+            <p>{step.body}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+    <p class="dl-footnote">{d.footerNote}</p>
+  </div>
+</section>
+
+<style>
+  .dl-block {
+    padding: var(--s-6) 0 var(--s-8);
+  }
+  .dl-card {
+    max-width: 540px;
+    margin: 0 auto;
+    padding: var(--s-6);
+    background: var(--surface-soft);
+    border-radius: var(--radius-lg);
+    text-align: center;
+  }
+  .dl-btn {
+    font-size: var(--text-body-l);
+    padding: 14px 28px;
+  }
+  .dl-availability {
+    margin-top: var(--s-3);
+    font-size: var(--text-caption);
+    font-weight: var(--weight-ui);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--signal-blue);
+  }
+  .dl-meta {
+    margin-top: var(--s-3);
+    font-size: var(--text-body-s);
+    color: var(--text-secondary);
+  }
+  .dl-checksum {
+    margin-top: var(--s-2);
+    font-family: var(--font-mono);
+    font-size: var(--text-caption);
+    color: var(--text-tertiary);
+  }
+  .dl-section {
+    padding: var(--s-6) 0;
+    border-top: 1px solid var(--border-subtle);
+  }
+  .dl-section .container {
+    max-width: var(--prose-max);
+  }
+  .dl-section h2 {
+    margin-bottom: var(--s-4);
+  }
+  .dl-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-2);
+  }
+  .dl-list li {
+    font-size: var(--text-body);
+    color: var(--text-primary);
+    padding-left: var(--s-4);
+    position: relative;
+    line-height: var(--leading-body);
+  }
+  .dl-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 11px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--signal-blue);
+    opacity: 0.6;
+  }
+  .dl-steps {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-4);
+  }
+  .dl-steps li {
+    display: flex;
+    gap: var(--s-4);
+    align-items: flex-start;
+  }
+  .step-num {
+    flex: 0 0 32px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--signal-blue);
+    color: var(--clean-white);
+    font-weight: var(--weight-heading);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--text-body);
+  }
+  .step-body h3 {
+    font-size: var(--text-body-l);
+    font-weight: var(--weight-heading);
+    margin-bottom: var(--s-1);
+  }
+  .step-body p {
+    color: var(--text-secondary);
+    line-height: var(--leading-body);
+  }
+  .dl-footnote {
+    margin-top: var(--s-5);
+    padding-top: var(--s-4);
+    border-top: 1px solid var(--border-subtle);
+    font-size: var(--text-body-s);
+    color: var(--text-secondary);
+    font-style: italic;
+  }
+</style>

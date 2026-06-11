@@ -1,0 +1,328 @@
+---
+import type { Locale } from '../i18n';
+import { getCopy } from '../i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = getCopy(locale);
+const p = t.privacy;
+const privacyHref = locale === 'zh' ? '/zh/privacy' : '/privacy';
+---
+
+<section class="section section-privacy" id="privacy">
+  <div class="container">
+    <div class="section-header">
+      <span class="eyebrow">{p.eyebrow}</span>
+      <h2>{p.title}</h2>
+      <p class="lede">{p.lede}</p>
+    </div>
+
+    <div class="flows">
+      <div class="flow-col flow-stays">
+        <h3 class="flow-label">{p.stays.label}</h3>
+        <ul class="priv-list">
+          {p.stays.items.map((it) => <li>{it}</li>)}
+        </ul>
+      </div>
+      <div class="flow-divider" aria-hidden="true"></div>
+      <div class="flow-col flow-leaves">
+        <h3 class="flow-label">{p.leaves.label}</h3>
+        <ul class="priv-list">
+          {p.leaves.items.map((it) => <li>{it}</li>)}
+        </ul>
+        <p class="flow-note">{p.leaves.note}</p>
+      </div>
+    </div>
+
+    <div class="killswitch" data-killswitch>
+      <div class="killswitch-control" aria-hidden="true">
+        <span class="toggle" data-toggle>
+          <span class="toggle-thumb"></span>
+        </span>
+        <span class="toggle-label">{p.killSwitch.toggleLabel}</span>
+      </div>
+      <div class="killswitch-copy">
+        <h3>{p.killSwitch.headline}</h3>
+        <p>{p.killSwitch.body}</p>
+      </div>
+    </div>
+
+    <div class="paths">
+      <h3 class="paths-label">{p.paths.label}</h3>
+      <div class="paths-grid">
+        {p.paths.items.map((it) => (
+          <div class="path-card">
+            <h4>{it.name}</h4>
+            <p>{it.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <p class="full-story">
+      <a href={privacyHref}>{p.fullStory}</a>
+    </p>
+  </div>
+</section>
+
+<style>
+  .section-privacy .section-header {
+    text-align: center;
+    max-width: var(--prose-max);
+    margin: 0 auto var(--s-6);
+  }
+  .eyebrow {
+    display: inline-block;
+    font-size: var(--text-caption);
+    font-weight: var(--weight-ui);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--signal-blue);
+    margin-bottom: var(--s-3);
+  }
+  .section-privacy h2 {
+    margin-bottom: var(--s-3);
+  }
+  .section-privacy .lede {
+    font-size: var(--text-body-l);
+    color: var(--text-secondary);
+    max-width: 52ch;
+    margin: 0 auto;
+  }
+
+  /* ─── Flows: stays / leaves columns ────────────────────────────── */
+  .flows {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s-5);
+    max-width: var(--demo-max);
+    margin: 0 auto;
+    padding: var(--s-5);
+    background: var(--bg-primary);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+  }
+  .flow-divider { display: none; }
+  @media (min-width: 768px) {
+    .flows {
+      grid-template-columns: 1fr 1px 1fr;
+      gap: var(--s-6);
+      padding: var(--s-6);
+    }
+    .flow-divider {
+      display: block;
+      width: 1px;
+      background: var(--border-subtle);
+    }
+  }
+  .flow-label {
+    font-size: var(--text-body-s);
+    font-weight: var(--weight-ui);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-bottom: var(--s-3);
+  }
+  .priv-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--s-2);
+  }
+  .priv-list li {
+    font-size: var(--text-body);
+    color: var(--text-primary);
+    padding-left: var(--s-4);
+    position: relative;
+    line-height: var(--leading-body);
+  }
+  .priv-list li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 11px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--signal-blue);
+    opacity: 0.6;
+  }
+  .flow-leaves .priv-list li::before {
+    background: var(--text-tertiary);
+    opacity: 0.8;
+  }
+  .flow-note {
+    margin-top: var(--s-3);
+    padding: var(--s-3) var(--s-3);
+    background: var(--surface-soft);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    font-size: var(--text-body-s);
+    line-height: var(--leading-body);
+    max-width: none;
+  }
+
+  /* ─── Kill-switch card ──────────────────────────────────────────
+     Soft-surface card with a macOS-style toggle. The toggle is purely
+     decorative (aria-hidden) — it animates off → on when the card
+     scrolls into view, mirroring the demos' "live product" treatment. */
+  .killswitch {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s-4);
+    align-items: center;
+    max-width: var(--demo-max);
+    margin: var(--s-5) auto 0;
+    padding: var(--s-5);
+    background: var(--surface-soft);
+    border-radius: var(--radius-lg);
+  }
+  @media (min-width: 768px) {
+    .killswitch {
+      grid-template-columns: auto 1fr;
+      gap: var(--s-6);
+      padding: var(--s-6);
+    }
+  }
+  .killswitch-control {
+    display: flex;
+    align-items: center;
+    gap: var(--s-3);
+  }
+  /* macOS-style switch. Track + thumb proportions match Apple's
+     System Settings control (51 × 31 with a 27 thumb). */
+  .toggle {
+    position: relative;
+    display: inline-block;
+    width: 51px;
+    height: 31px;
+    border-radius: 999px;
+    background: var(--border-strong);
+    transition: background 320ms var(--ease-out-quad);
+    flex-shrink: 0;
+  }
+  .toggle-thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 27px;
+    height: 27px;
+    border-radius: 50%;
+    background: var(--clean-white);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18), 0 2px 6px rgba(0, 0, 0, 0.08);
+    transition: transform 320ms var(--ease-out-expo);
+  }
+  .toggle.is-on {
+    background: var(--signal-blue);
+  }
+  .toggle.is-on .toggle-thumb {
+    transform: translateX(20px);
+  }
+  .toggle-label {
+    font-family: var(--font-mono);
+    font-size: var(--text-mono);
+    color: var(--text-primary);
+    white-space: nowrap;
+  }
+  .killswitch-copy h3 {
+    font-size: var(--text-h3);
+    font-weight: var(--weight-heading);
+    margin-bottom: var(--s-2);
+  }
+  .killswitch-copy p {
+    color: var(--text-secondary);
+    line-height: var(--leading-body);
+    max-width: 60ch;
+  }
+
+  /* ─── Three paths grid ──────────────────────────────────────────
+     Mirrors the structure on /privacy so the two surfaces feel like
+     one story. Compressed copy here; the long version lives there. */
+  .paths {
+    max-width: var(--demo-max);
+    margin: var(--s-6) auto 0;
+  }
+  .paths-label {
+    font-size: var(--text-body-s);
+    font-weight: var(--weight-ui);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-tertiary);
+    margin-bottom: var(--s-3);
+    text-align: center;
+  }
+  .paths-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s-3);
+  }
+  @media (min-width: 768px) {
+    .paths-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+  .path-card {
+    padding: var(--s-4);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    background: var(--bg-primary);
+  }
+  .path-card h4 {
+    font-size: var(--text-body-l);
+    font-weight: var(--weight-heading);
+    margin-bottom: var(--s-2);
+  }
+  .path-card p {
+    color: var(--text-secondary);
+    font-size: var(--text-body-s);
+    line-height: var(--leading-body);
+    max-width: none;
+  }
+
+  .full-story {
+    text-align: center;
+    margin-top: var(--s-5);
+    max-width: none;
+  }
+  .full-story a {
+    font-size: var(--text-body-s);
+    color: var(--signal-blue);
+    border-bottom: none;
+  }
+  .full-story a:hover { border-bottom: 1px solid currentColor; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .toggle, .toggle-thumb { transition: none; }
+  }
+</style>
+
+<script>
+  // Animate the kill-switch from off → on when the card first scrolls
+  // into view. Once flipped, stay on — the user should see the meaning
+  // (cloud is OFF) without the animation looping or resetting on scroll.
+  const card = document.querySelector<HTMLElement>('[data-killswitch]');
+  const toggle = card?.querySelector<HTMLElement>('[data-toggle]');
+
+  if (card && toggle) {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduced) {
+      toggle.classList.add('is-on');
+    } else {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) {
+              // Brief delay so the user perceives the flip happening
+              // rather than it being on by the time they look at it.
+              window.setTimeout(() => toggle.classList.add('is-on'), 360);
+              observer.disconnect();
+              return;
+            }
+          }
+        },
+        { threshold: 0.5 }
+      );
+      observer.observe(card);
+    }
+  }
+</script>

@@ -1,0 +1,9 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PagePrivacy from '../../components/PagePrivacy.astro';
+import { getCopy } from '../../i18n';
+const t = getCopy('zh');
+---
+<BaseLayout locale="zh" title={`${t.pages.privacy.title} — 如义`} description={t.pages.privacy.lede}>
+  <PagePrivacy locale="zh" />
+</BaseLayout>
