@@ -849,7 +849,7 @@ const subWaveBars = 7;
           // Caret only blinks during the type cycle — voice (wave), morph,
           // and payoff (fog) cycles have their own visual language and don't
           // read as keyboard input. Add `is-ready` on entry, drop it on exit.
-          subStage.classList.add('is-ready');
+          subStage!.classList.add('is-ready');
           const partial = cycleEl.dataset.cyclePartial ?? '';
           const popupRows = JSON.parse(cycleEl.dataset.cyclePopup ?? '[]') as string[];
           const typedEl = cycleEl.querySelector<HTMLElement>('[data-sub-typed]');
@@ -859,16 +859,16 @@ const subWaveBars = 7;
               await sleep(30);
             }
             popupRows.forEach((row, i) => { candTexts[i].textContent = row; });
-            candWin.classList.add('is-visible');
+            candWin!.classList.add('is-visible');
             await sleep(420);
             candRows[0].classList.add('is-accepting');
             await sleep(150);
             typedEl.textContent = text;
-            candWin.classList.remove('is-visible');
+            candWin!.classList.remove('is-visible');
             candRows[0].classList.remove('is-accepting');
             await sleep(180);
           }
-          subStage.classList.remove('is-ready');
+          subStage!.classList.remove('is-ready');
         } else if (kind === 'morph') {
           // Show the FROM (e.g. 翻譯) first, hold long enough to read it as
           // a deliberate source-language form rather than a flicker, then
@@ -896,7 +896,7 @@ const subWaveBars = 7;
         }
       }
 
-      subStage.classList.add('is-done');
+      subStage!.classList.add('is-done');
 
       // Phase 5 — CTA + arrow fade in (driven by CSS on `.is-done`).
       // CTA at +60ms (done +560ms), arrow at +820ms (done +1320ms). Hold
