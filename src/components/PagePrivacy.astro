@@ -74,13 +74,21 @@ const p = t.pages.privacy;
 
 <style>
   .privacy-body {
-    max-width: var(--prose-max);
     padding-top: var(--s-6);
     padding-bottom: var(--s-8);
   }
   .priv-block {
     padding: var(--s-6) 0;
     border-top: 1px solid var(--border-subtle);
+  }
+  .priv-block > h2,
+  .priv-block > .prose,
+  .priv-list,
+  .priv-aside,
+  .priv-footnote {
+    max-width: var(--prose-max);
+    margin-left: auto;
+    margin-right: auto;
   }
   .priv-block:first-child {
     border-top: none;

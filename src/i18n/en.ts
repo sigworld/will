@@ -258,8 +258,8 @@ export const en: Copy = {
   },
   pages: {
     features: {
-      title: 'Features',
-      lede: 'WiLL is a voice and keyboard input method for macOS. It listens locally, refines in the cloud when it helps, and shapes its output to where you’re typing — Slack, Mail, Cursor, Notes, anywhere your cursor blinks.',
+      title: 'A Voice and Keyboard Input Method',
+      lede: 'WiLL listens locally, refines in the cloud when it helps, and shapes its output to wherever you’re typing.',
       tocLabel: 'On this page',
       sections: [
         {
