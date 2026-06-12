@@ -712,6 +712,39 @@ const subWaveBars = 7;
       document.querySelector<HTMLElement>('[data-below-hero]')?.classList.add('is-revealed');
     }
 
+    function readTranslateX(el: HTMLElement): number {
+      const m = /translateX\(([-\d.]+)px\)/.exec(el.style.transform || '');
+      return m ? parseFloat(m[1]) : 0;
+    }
+
+    // Activate a cycle in place while pinning the leading content so it
+    // doesn't shift leftward when the new slot claims its width. Reads the
+    // FLIP delta and offsets `<p>` by that amount (added to any prior
+    // pin), holding it as a static offset — the next activateWithSlide call
+    // will pick this offset up as part of its own start state and glide it
+    // back to translateX(0) in a single continuous motion.
+    function activatePinned(cycleEl: HTMLElement, prefix: string) {
+      const subP = subStage!.querySelector<HTMLElement>('.hero-sub');
+      const firstActive = cycleEls.find((el) => el.classList.contains('is-active'));
+      const prefixEl = cycleEl.querySelector<HTMLElement>('[data-sub-prefix]');
+      if (prefixEl) prefixEl.textContent = prefix;
+      if (!subP || !firstActive) {
+        cycleEl.classList.add('is-active');
+        void cycleEl.offsetWidth;
+        return;
+      }
+      const currentX = readTranslateX(subP);
+      const beforeLeft = firstActive.getBoundingClientRect().left;
+      cycleEl.classList.add('is-active');
+      void cycleEl.offsetWidth;
+      const afterLeft = firstActive.getBoundingClientRect().left;
+      const deltaX = beforeLeft - afterLeft;
+      if (Math.abs(deltaX) < 0.5) return;
+      subP.style.transition = 'none';
+      subP.style.transform = `translateX(${currentX + deltaX}px)`;
+      void subP.offsetWidth;
+    }
+
     // FLIP-style leftward slide for cycles that arrive after the line has
     // already been populated. The prefix is pre-set in full (rather than
     // typed char-by-char) so the layout snapshot covers everything that
@@ -727,25 +760,31 @@ const subWaveBars = 7;
         void cycleEl.offsetWidth;
         return;
       }
+      // Inherit any prior pin (e.g. from a previous activatePinned call):
+      // the slide pre-state must be `currentX + thisDelta` so the glide
+      // back to translateX(0) absorbs both the prior pin and this cycle's
+      // own recenter shift in a single continuous motion.
+      const currentX = readTranslateX(subP);
       const beforeLeft = firstActive.getBoundingClientRect().left;
       cycleEl.classList.add('is-active');
       void cycleEl.offsetWidth;
       const afterLeft = firstActive.getBoundingClientRect().left;
       const deltaX = beforeLeft - afterLeft;
-      if (Math.abs(deltaX) < 0.5) return;
+      const startX = currentX + deltaX;
+      if (Math.abs(startX) < 0.5) return;
 
       // ease-out-expo lands ~95% of the motion in the first half of the
       // duration, so we let the slide keep running for its full ~520ms
       // while handing control back to the caller at the halfway point.
       // The remaining glide settles in the background as the new cycle's
-      // own reveal (morph from→to or fog blur-clear) begins — no dead
-      // beat between slide and reveal.
+      // own reveal (fog blur-clear) begins — no dead beat between slide
+      // and reveal.
       const SLIDE_MS = 520;
       const HANDOFF_MS = 260;
       subP.style.transition = 'none';
-      subP.style.transform = `translateX(${deltaX}px)`;
+      subP.style.transform = `translateX(${startX}px)`;
       // Commit the pinned state before swapping in the transition so the
-      // browser interpolates from translateX(deltaX) → translateX(0)
+      // browser interpolates from translateX(startX) → translateX(0)
       // instead of coalescing the two writes into a single jump.
       void subP.offsetWidth;
       subP.style.transition = `transform ${SLIDE_MS}ms var(--ease-out-expo)`;
@@ -811,14 +850,25 @@ const subWaveBars = 7;
         const text = cycleEl.dataset.cycleText ?? '';
         const idx = parseInt(cycleEl.dataset.cycleIdx ?? '0', 10);
 
-        // Morph ("translate" / "翻译") and the payoff (fog) cycles slide the
-        // leading content leftward via FLIP instead of letting the inline-
-        // flex line jump-recenter. The new slot is pre-laid (still invisible
-        // — morph-to and fog start at opacity 0), then the whole `<p>` is
-        // pinned to its old position and smoothly translated back to 0, so
-        // the visible leading text glides leftward into its new centered
-        // slot. Once the slide completes, the cycle's own reveal kicks in.
-        if (idx >= 2) {
+        // The morph cycle ("translate" / "翻译") activates pinned: the slot
+        // claims its width, but `<p>` is offset rightward by the recenter
+        // delta so the leading "Speak, type," stays exactly where it was.
+        // The vertical FROM→TO swap (翻譯 sliding up out, translate sliding
+        // up in) then plays in place, with no horizontal motion competing
+        // for attention.
+        //
+        // The payoff (fog) cycle inherits that pin and folds it into its
+        // own FLIP slide — `<p>` glides from (morph pin + fog delta) back
+        // to translateX(0) in one continuous motion, so the leading text
+        // makes a single leftward sweep covering both the held-back morph
+        // recenter and the fog recenter. The fog blur-reveal kicks in at
+        // the slide handoff (~halfway through the slide's wall-clock,
+        // which is ~95% of its perceived motion under ease-out-expo) so
+        // the reveal begins just before the slide visually settles —
+        // slide-and-reveal read as a single beat, not two.
+        if (idx === 2) {
+          activatePinned(cycleEl, prefix);
+        } else if (idx >= 3) {
           await activateWithSlide(cycleEl, prefix);
         } else {
           cycleEl.classList.add('is-active');
