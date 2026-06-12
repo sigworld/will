@@ -371,19 +371,19 @@ const subWaveBars = 7;
     position: relative;
     display: inline-block;
     vertical-align: baseline;
-    /* Clip the entering / exiting glyphs WITHOUT using `overflow: hidden`.
+    /* Clip the entering glyph WITHOUT using `overflow: hidden`.
        Per CSS spec, an inline-block whose overflow is non-`visible` uses
        its bottom margin edge as its baseline instead of its last text
        line's baseline — which would float "translate" above the rest of
        the subtitle line. `clip-path` clips without touching the baseline.
        The slot is sized to the TO text's width; in zh the FROM
        ("translate") is wider than the TO ("翻译") and overflows the slot
-       horizontally, so we clip vertically only (top / bottom = 0) and
-       leave horizontal slack (-100vw each side) so the FROM stays
-       readable while the push-up swap clips it vertically. The trailing
-       " —— " in cycle 3 hasn't activated yet during this beat, so the
-       horizontal overflow doesn't collide with downstream text. */
-    clip-path: inset(0 -100vw);
+       horizontally, so we leave horizontal slack (-100vw each side) and
+       only clip the bottom (so TO is hidden below the slot before its
+       reveal). The top is left open — the FROM settles as a dimmed ghost
+       *above* the line after the swap, and needs to render above the
+       slot's natural top edge to read as "behind and above" the TO. */
+    clip-path: inset(-100vw -100vw 0 -100vw);
   }
   .sub-morph-from {
     position: absolute;
@@ -392,17 +392,51 @@ const subWaveBars = 7;
     display: inline-block;
     white-space: nowrap;
     opacity: 0;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
+    /* Scale + lift originate from the bottom-left corner so the ghost
+       anchors to the translated word's top-left as it recedes — its left
+       edge stays flush with the slot's left edge (which is also the TO's
+       left edge) instead of drifting toward its own center over the wider
+       TO. Reads as the source word hovering just above-left of the
+       translated word, the natural "where it came from" position for an
+       LTR reader. */
+    transform-origin: 0 100%;
+    filter: blur(0);
     transition:
       opacity 360ms var(--ease-out-quad),
-      transform 620ms var(--ease-out-expo);
+      transform 620ms var(--ease-out-expo),
+      filter 620ms var(--ease-out-expo);
   }
   .sub-cycle-morph.is-showing-from .sub-morph-from {
     opacity: 1;
   }
+  /* Persistent ghost: after the swap, FROM doesn't disappear — it shrinks,
+     dims, blurs, and lifts above the line, reading as the source language
+     receding into 3D space behind the translated word. The whole
+     composition becomes a tiny visual metaphor for translation rather
+     than relying on the user to catch the sub-second push-up swap. The
+     ghost is also a hit target — hover (desktop) or tap (mobile) peeks it
+     forward to full readability for a short beat, then it eases back to
+     its ghost state. The peek is timer-driven (not sticky to :hover) so
+     the source word always rests behind the translated one. */
   .sub-cycle-morph.is-revealed .sub-morph-from {
-    opacity: 0;
-    transform: translateY(-100%);
+    opacity: 0.18;
+    transform: translateY(-1.35em) scale(0.78);
+    filter: blur(0.4px);
+    cursor: pointer;
+  }
+  .sub-cycle-morph.is-revealed.is-peeking .sub-morph-from {
+    opacity: 0.92;
+    transform: translateY(-1.35em) scale(0.86);
+    filter: blur(0);
+    /* Faster easings when entering peek so the surface beat feels snappy;
+       leaving peek uses the base rule's slower easings (set above) so the
+       dim-back glides gently and reinforces the "settles back into the
+       background" read. */
+    transition:
+      opacity 220ms var(--ease-out-quad),
+      transform 320ms var(--ease-out-expo),
+      filter 220ms var(--ease-out-quad);
   }
   .sub-morph-to {
     display: inline-block;
@@ -660,7 +694,14 @@ const subWaveBars = 7;
     .sub-wave-text, .sub-morph-to, .sub-fog {
       opacity: 1; filter: none; transform: none; transition: none;
     }
-    .sub-morph-from { display: none; }
+    /* Static ghost: skip the swap motion but keep the dimmed source word
+       above the line so the translation metaphor still reads. */
+    .sub-morph-from {
+      opacity: 0.18;
+      filter: blur(0.4px);
+      transform: translateY(-1.35em) scale(0.78);
+      transition: none;
+    }
     .hero-cta,
     .hero-arrow {
       opacity: 1; transform: none; transition: none;
@@ -687,6 +728,27 @@ const subWaveBars = 7;
   if (titleStage && phraseCells.length >= 2 && subStage && cycleEls.length === 4 && candWin && candRows.length === 3 && candTexts.length === 3) {
     const locale = subStage.dataset.locale === 'zh' ? 'zh' : 'en';
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // Source-text peek on hover/tap: the dimmed ghost FROM lifts forward
+    // briefly when the user touches or hovers it (or "translate" / "翻译"
+    // beneath it), then eases back to its 3D-distant ghost state. Listener
+    // installed once on the cycle element — pointerenter bubbles up from
+    // descendants (the ghost is absolutely positioned outside the slot's
+    // normal box, but still a DOM descendant), so a single binding covers
+    // both the floating ghost and the translated word.
+    const morphCycle = subStage.querySelector<HTMLElement>('.sub-cycle-morph');
+    if (morphCycle) {
+      let peekTimer: number | undefined;
+      const triggerPeek = () => {
+        morphCycle.classList.add('is-peeking');
+        if (peekTimer !== undefined) window.clearTimeout(peekTimer);
+        peekTimer = window.setTimeout(() => {
+          morphCycle.classList.remove('is-peeking');
+        }, 1500);
+      };
+      morphCycle.addEventListener('pointerenter', triggerPeek);
+      morphCycle.addEventListener('click', triggerPeek);
+    }
 
     if (reduced) {
       phraseCells.forEach((cell) => cell.classList.add('is-text-revealed'));
