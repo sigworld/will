@@ -1,0 +1,319 @@
+---
+// 隐私政策 — 与英文版 PagePrivacyPolicy.astro 镜像。
+const LEGAL_NAME = 'WiLL Labs';
+
+const toc = [
+  { id: 'summary', title: '摘要' },
+  { id: 'data-controller', title: '数据控制者 / 处理者' },
+  { id: 'data-we-process', title: '我们处理的数据' },
+  { id: 'purposes', title: '我们如何使用这些数据' },
+  { id: 'legal-bases', title: '法律依据 (EEA / UK)' },
+  { id: 'retention', title: '数据保留期' },
+  { id: 'sharing', title: '数据共享' },
+  { id: 'sub-processors', title: '次级处理方' },
+  { id: 'your-rights', title: '您的权利' },
+  { id: 'security', title: '安全' },
+  { id: 'transfers', title: '跨境传输' },
+  { id: 'children', title: '儿童' },
+  { id: 'changes', title: '政策变更' },
+  { id: 'contact', title: '联系我们' },
+];
+---
+
+<section class="page-hero">
+  <div class="container">
+    <h1>隐私政策</h1>
+    <p class="lede">2026 年 6 月 12 日起生效。本页为正式约束版本,通俗叙述版本见<a href="/zh/privacy">隐私页面</a>。</p>
+  </div>
+</section>
+
+<div class="container legal-shell">
+  <aside class="legal-toc-side" aria-label="本页目录">
+    <p class="toc-label">本页目录</p>
+    <ol>
+      {toc.map((s, i) => (
+        <li>
+          <a href={`#${s.id}`} data-legal-toc>
+            <span class="toc-num">{String(i + 1).padStart(2, '0')}</span>
+            <span>{s.title}</span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </aside>
+
+  <div class="legal-prose">
+  <p>
+    本隐私政策说明 {LEGAL_NAME}（"<strong>如义</strong>"、"<strong>我们</strong>"）
+    在您使用如义 macOS 应用、如义服务器 API、<a href="https://will.sigworld.io">will.sigworld.io</a>
+    及相关服务（统称"<strong>本服务</strong>"）时,如何收集、使用、共享和保护与您有关的信息。
+    本政策未定义的术语,以<a href="/zh/terms">服务条款</a>中的定义为准。
+  </p>
+
+  <h2 id="summary">1. 摘要</h2>
+  <p>
+    如义在设计上默认让您所说和所输入的大多数内容仅留在您的 Mac 上。
+    云端功能 —— 云端润色口述、翻译模式、字幕模式 —— 仅在您主动使用时,
+    才会将数据发送至我们的服务器(在 BYOK 模式下则直接发送至您选择的服务商)。
+    我们不出售个人数据,不展示广告,也不会以您的内容训练模型。
+  </p>
+
+  <h2 id="data-controller">2. 数据控制者 / 处理者</h2>
+  <p>
+    对欧洲经济区、英国和瑞士的用户而言,本政策所述个人数据的控制者为 {LEGAL_NAME}。
+    对中国大陆用户而言,我们依《个人信息保护法》("PIPL")作为"个人信息处理者"。
+    对加州用户而言,我们依《加州消费者隐私法》("CCPA/CPRA")作为"企业"。
+  </p>
+
+  <h2 id="data-we-process">3. 我们处理的数据</h2>
+
+  <h3>3.1 仅留在您 Mac 上的数据</h3>
+  <p>
+    以下数据存储在您设备本地的 SQLite 数据库
+    <code>~/Library/Application Support/WiLL/</code> 内,不会传输至我们:
+  </p>
+  <ul>
+    <li>您的本机语音转写(Apple 本机 SFSpeech 实时预览);</li>
+    <li>您的词汇表、文本展开模板与缩写词典;</li>
+    <li>您的修订历史与按应用归类的风格特征;</li>
+    <li>您屏幕文字的 OCR 结果(用于组装润色提示词,使用后立即丢弃);</li>
+    <li>您的拼音 / CJK 输入状态。</li>
+  </ul>
+  <p>
+    您可随时在<em>偏好设置 → 记忆库</em>中浏览、导出、导入或删除上述数据。
+    卸载应用而未导出时,该数据库会留在您的用户目录下;您可手动删除。
+  </p>
+
+  <h3>3.2 账号数据</h3>
+  <p>
+    若您登录以使用云端功能,我们会收集:您所选身份提供方(Apple、Google 等)的账号标识符;
+    您选择共享给我们的电子邮件地址(Sign in with Apple 允许使用私密中转地址);
+    您的订阅套餐和权益状态;用于绑定会话的伪匿名设备标识符;
+    以及账号创建日期和最近活跃时间。
+  </p>
+
+  <h3>3.3 账单数据</h3>
+  <p>
+    付款由 Apple、Google 或我们指定的销售代理方(Merchant of Record)处理。我们<strong>不会</strong>
+    收到或存储您的完整卡号、银行账号或同等信息。我们会收到:订阅标识符、交易状态、
+    计费周期日期、所付金额与币种、账单地址所在国家/地区、(若处理方提供)卡号或钱包品牌的后四位,
+    以及任何退款或拒付事件。我们利用这些数据为您开通权益、防范欺诈,并履行会计与税务义务。
+  </p>
+
+  <h3>3.4 因云端功能而传输的内容</h3>
+  <p>
+    当您主动使用云端功能时,以下内容会从您的 Mac 发出:
+  </p>
+  <ul>
+    <li><strong>云端润色口述。</strong>您所说的音频(或视服务商配置,改为 SFSpeech 转写文本)
+      被发送至我们的服务器,再转发给我们的 ASR 模型合作方(目前为阿里云 DashScope / 通义千问)。
+      润色后的文本返回至您的 Mac。光标附近的上下文文本(一小段窗口)、在相应权限已授予时屏幕的 OCR 文本,
+      以及您选定的语言一并作为提示词上下文发送。</li>
+    <li><strong>翻译模式。</strong>待翻译的源文本被发送至 chat-completions 端点 ——
+      默认为我们的端点,或您配置的 BYOK 服务商 —— 译文随后返回。</li>
+    <li><strong>字幕模式。</strong>由 macOS ScreenCaptureKit 采集的系统音频帧,
+      通过流式传输发送至我们的实时中继以进行转写与翻译。字幕模式仅在付费套餐中可用,
+      因为整条管线由我们运营。</li>
+    <li><strong>智能输入云端操作(⌥`、⌃⌥R)。</strong>您正在编辑的少量上下文文本片段被发送至
+      chat-completions 端点,用于生成续写或风格变体。</li>
+  </ul>
+  <p>
+    我们不在产生该次请求之外的时间存储上述内容。我们的模型合作方对"不留存、不训练"的合同承诺,
+    详见<a href="#sub-processors">第 8 节</a>。若您配置了 BYOK,这些内容将直接从您的 Mac 发往
+    您所选服务商,我们不会看到这些内容。
+  </p>
+
+  <h3>3.5 用量与诊断数据</h3>
+  <p>
+    对使用云端功能的账号,我们会收集计费所需的计量数据 —— Token 计数、音频秒数、请求次数、
+    错误率、请求延迟以及按功能维度的聚合 —— 与您的账号标识符关联。
+    当如义遇到错误时,我们会收集崩溃报告和基本技术诊断(操作系统版本、应用版本、语言),
+    并对敏感内容进行脱敏。我们不会收集任何未发送至云端功能的内容。
+  </p>
+
+  <h3>3.6 网站数据</h3>
+  <p>
+    will.sigworld.io 不使用任何第三方分析、广告追踪或跨站 Cookie。
+    我们的服务器为安全和反滥用目的,保存标准 HTTP 请求日志(IP 地址、User-Agent、请求 URL、时间戳)
+    最长 30 天。
+  </p>
+
+  <h2 id="purposes">4. 我们如何使用这些数据</h2>
+  <p>我们使用上述数据,以:</p>
+  <ul>
+    <li>提供您所请求的服务,包括完成每一次云端功能请求;</li>
+    <li>运行账号、订阅与权益系统;</li>
+    <li>通过我们的销售代理方、Apple 或 Google 代收款项并提供收据;</li>
+    <li>按配额对用量进行计量;</li>
+    <li>防范欺诈、滥用与安全事件;</li>
+    <li>诊断与修复缺陷,改善产品质量;</li>
+    <li>就服务相关事项与您沟通(安全通知、计费通知、重大政策变更);</li>
+    <li>履行法律义务,包括税务、会计以及对主管机关合法请求的回应。</li>
+  </ul>
+  <p>
+    我们<strong>不会</strong>使用您的内容训练、微调或评估机器学习模型。
+    我们<strong>不会</strong>出售个人数据。我们<strong>不会</strong>将您的数据用于广告。
+  </p>
+
+  <h2 id="legal-bases">5. 法律依据(EEA / UK)</h2>
+  <p>在 GDPR 或 UK GDPR 适用的范围内,我们处理数据的法律依据包括:</p>
+  <ul>
+    <li><strong>履行合同</strong> —— 向您提供所请求的服务、代收款项、为账号开通权益。</li>
+    <li><strong>正当利益</strong> —— 保障服务安全、防范欺诈、调试与改善产品质量。
+      当我们以正当利益为依据处理数据时,您有权依<a href="#your-rights">第 9 节</a>所述提出反对。</li>
+    <li><strong>法律义务</strong> —— 税务、会计以及对合法请求的回应。</li>
+    <li><strong>同意</strong> —— 适用范围内需要同意的可选处理,
+      包括语音输入中偶然出现的敏感类别内容(若适用)。</li>
+  </ul>
+
+  <h2 id="retention">6. 数据保留期</h2>
+  <ul>
+    <li><strong>因云端功能而传输的内容:</strong>不在请求周期之外保留。</li>
+    <li><strong>计量计数:</strong>保留至当前与上一个计费周期结束后,聚合并删除按请求行,
+      在任何情况下不超过 18 个月。</li>
+    <li><strong>账号数据:</strong>账号有效期间保留;账号删除后 90 天内删除,法律要求更长时间者除外。</li>
+    <li><strong>账单与税务记录:</strong>按适用会计与税法规定的期限保留(通常为 7–10 年)。</li>
+    <li><strong>HTTP 服务器日志:</strong>最长 30 天。</li>
+    <li><strong>本机数据(您的 Mac):</strong>保留时长由您决定;
+      <em>偏好设置 → 记忆库</em>支持按时长清理或删除单条记录。默认会清理 90 天以前的条目。</li>
+  </ul>
+
+  <h2 id="sharing">7. 数据共享</h2>
+  <p>我们仅在为下述目的所必要的范围内,与以下方共享个人数据:</p>
+  <ul>
+    <li><strong>我们的 ASR 模型合作方</strong> —— 接收用于润色和字幕模式的音频或转写文本,
+      返回文本。合同上须遵守"不留存、不训练"承诺。</li>
+    <li><strong>我们指定的销售代理方</strong> —— 接收代收款项与结算所需的账单信息。
+      销售代理方作为您账单数据的独立控制者,其自身的隐私政策适用于其处理行为。</li>
+    <li><strong>Apple 与 Google</strong> —— 您通过 Apple 应用内购买或 Google Play Billing 订阅时,
+      相应平台作为独立控制者处理您的付款;其自身的隐私政策适用。</li>
+    <li><strong>身份提供方</strong>(Apple、Google 等) —— 在您登录时接收认证请求。</li>
+    <li><strong>基础设施提供方</strong> —— 托管、数据库、邮件投递等供应商,
+      作为我们的处理方,依据书面协议提供服务。</li>
+    <li><strong>主管机关</strong> —— 在有效法律程序要求时;
+      我们将就我们认为不当的请求提出抗辩,并在法律允许时通知您。</li>
+    <li><strong>收购方</strong> —— 在合并、收购或资产出售情形下,
+      届时该收购方将受本政策或具备同等保护水平的后续政策约束。</li>
+  </ul>
+  <p>
+    若您配置了 BYOK,您的内容将<em>直接</em>从您的 Mac 发往您所选服务商。
+    我们与该服务商之间不存在代表您的合同关系,其条款与隐私政策直接适用。
+  </p>
+
+  <h2 id="sub-processors">8. 次级处理方</h2>
+  <p>当前我们为运营本服务而使用的次级处理方:</p>
+  <ul>
+    <li><strong>阿里云 —— DashScope / 通义千问 ASR。</strong>ASR 与 chat-completions;
+      合同上承诺"不留存、不训练"。处理区域:可配置;国际用户默认新加坡,中国大陆用户默认北京。</li>
+    <li><strong>我们指定的销售代理方。</strong>作为桌面端直接下载订阅的销售方,代为收款并向我们结算。</li>
+    <li><strong>Apple Inc.</strong>Sign in with Apple、应用内购买、App Store 分发。</li>
+    <li><strong>Google LLC。</strong>Sign in with Google(如使用)、Play Billing(如使用)。</li>
+    <li><strong>托管服务商。</strong>运营如义中继服务器。</li>
+  </ul>
+  <p>
+    当次级处理方发生变更时,我们会更新本清单。重大新增将在此处披露,
+    并在适用法律要求时事先合理通知。
+  </p>
+
+  <h2 id="your-rights">9. 您的权利</h2>
+  <p>视您所在地,您对您的个人数据可能享有以下部分或全部权利:</p>
+  <ul>
+    <li>访问我们就您所持个人数据的副本;</li>
+    <li>更正不准确的数据;</li>
+    <li>删除您的个人数据("被遗忘权");</li>
+    <li>对特定处理活动予以限制或反对;</li>
+    <li>以结构化、机器可读的格式获取您向我们提供的数据(可携性);</li>
+    <li>撤回您此前给予的任何同意(不影响撤回前合法处理的效力);</li>
+    <li>向您当地的数据保护机关投诉的权利(EEA:您所在国 DPA;英国:ICO;中国大陆:网信办);</li>
+    <li>依 PIPL:要求我们就个人信息处理活动作出说明,
+      并指定他人在您去世后行使上述权利的权利;</li>
+    <li>依 CCPA/CPRA:知情、删除、更正,以及反对个人信息"共享"或"出售"的权利
+      (我们不进行出售或为跨场景行为广告而共享),并就行使任何上述权利免受歧视的权利。</li>
+  </ul>
+  <p>
+    如需行使任何上述权利,请联系 <a href="mailto:legal@will.sigworld.io">legal@will.sigworld.io</a>。
+    大多数数据可直接在应用内删除 —— 本机记忆库见<em>偏好设置 → 记忆库</em>,
+    账号信息见账户标签页。
+  </p>
+
+  <h2 id="security">10. 安全</h2>
+  <p>
+    传输中数据由 TLS 保护;账号与计量数据存储于加密卷;管理访问权限限制为必要人员。
+    服务器全程使用参数化语句以防止 SQL 注入,所有 Webhook 均按发起方公钥校验签名,
+    并定期轮换服务商凭据。没有任何系统是完全安全的;
+    若发生影响您个人数据的安全事件,我们将依适用法律向您及相关主管机关通报。
+  </p>
+
+  <h2 id="transfers">11. 跨境传输</h2>
+  <p>
+    由于本服务由香港特别行政区运营,而我们的 ASR 合作方可能在新加坡或中国大陆境内处理数据,
+    您的个人数据可能被传输至您所在地以外的国家/地区进行处理。
+    在适用法律有要求时,我们会就跨境传输采取适当的保障措施,包括:
+    对自 EEA 或英国向外的传输,采用欧盟委员会的标准合同条款及英国的等效附录;
+    对涉及中国大陆个人信息的跨境传输,采用《个人信息出境标准合同》或经网信办批准的等效机制。
+  </p>
+
+  <h2 id="children">12. 儿童</h2>
+  <p>
+    本服务不面向 13 周岁以下儿童(或您所在地法律规定的等同最低年龄)。
+    我们不会在知情情况下收集儿童的个人数据。
+    若您认为有儿童向我们提供了个人数据,请联系
+    <a href="mailto:legal@will.sigworld.io">legal@will.sigworld.io</a>,我们将予以删除。
+  </p>
+
+  <h2 id="changes">13. 政策变更</h2>
+  <p>
+    我们可能不时更新本政策。更新后的政策将在此处发布,并相应更新生效日期。
+    若变更属重大变更,我们将通过邮件或应用内横幅事先合理通知您。
+  </p>
+
+  <h2 id="contact">14. 联系我们</h2>
+  <p>
+    隐私相关问题、请求和投诉:
+    <a href="mailto:legal@will.sigworld.io">legal@will.sigworld.io</a>。
+  </p>
+
+  <p class="legal-footnote">最近更新于 2026 年 6 月 12 日。</p>
+  </div>
+</div>
+
+<script>
+  const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-legal-toc]'));
+  const targets = links
+    .map((link) => {
+      const id = link.getAttribute('href')?.slice(1) ?? '';
+      const el = id ? document.getElementById(id) : null;
+      return el ? { link, el } : null;
+    })
+    .filter((x): x is { link: HTMLAnchorElement; el: HTMLElement } => x !== null);
+
+  if (targets.length) {
+    const setActive = (active: HTMLAnchorElement | null) => {
+      for (const { link } of targets) {
+        link.classList.toggle('is-active', link === active);
+      }
+    };
+    const update = () => {
+      const offset = 120;
+      let current: HTMLAnchorElement | null = null;
+      for (const { link, el } of targets) {
+        if (el.getBoundingClientRect().top - offset <= 0) current = link;
+        else break;
+      }
+      if (!current && window.scrollY < 200) current = targets[0].link;
+      setActive(current);
+    };
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        update();
+        ticking = false;
+      });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    update();
+  }
+</script>

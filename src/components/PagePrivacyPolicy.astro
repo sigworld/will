@@ -1,0 +1,365 @@
+---
+// Privacy Policy — formal binding version. The marketing /privacy page is the
+// plain-prose story; this is the document linked from the payment processor,
+// app stores, installer, and product settings.
+//
+const LEGAL_NAME = 'WiLL Labs';
+
+const toc = [
+  { id: 'summary', title: 'Summary' },
+  { id: 'data-controller', title: 'Who is the data controller' },
+  { id: 'data-we-process', title: 'The data we process' },
+  { id: 'purposes', title: 'How we use this data' },
+  { id: 'legal-bases', title: 'Legal bases (EEA / UK)' },
+  { id: 'retention', title: 'Retention' },
+  { id: 'sharing', title: 'Sharing' },
+  { id: 'sub-processors', title: 'Sub-processors' },
+  { id: 'your-rights', title: 'Your rights' },
+  { id: 'security', title: 'Security' },
+  { id: 'transfers', title: 'International transfers' },
+  { id: 'children', title: 'Children' },
+  { id: 'changes', title: 'Changes to this Policy' },
+  { id: 'contact', title: 'Contact' },
+];
+---
+
+<section class="page-hero">
+  <div class="container">
+    <h1>Privacy Policy</h1>
+    <p class="lede">Effective 12 June 2026. This is the binding version. The plain-prose version is on the <a href="/privacy">privacy page</a>.</p>
+  </div>
+</section>
+
+<div class="container legal-shell">
+  <aside class="legal-toc-side" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      {toc.map((s, i) => (
+        <li>
+          <a href={`#${s.id}`} data-legal-toc>
+            <span class="toc-num">{String(i + 1).padStart(2, '0')}</span>
+            <span>{s.title}</span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </aside>
+
+  <div class="legal-prose">
+  <p>
+    This Privacy Policy explains how {LEGAL_NAME} ("<strong>WiLL</strong>", "<strong>we</strong>",
+    "<strong>us</strong>", "<strong>our</strong>") collects, uses, shares, and protects information
+    about you when you use the WiLL macOS application, the WiLL server APIs,
+    <a href="https://will.sigworld.io">will.sigworld.io</a>, and related services (together, the "<strong>Service</strong>").
+    Defined terms not explained here have the meaning given in our
+    <a href="/terms">Terms of Service</a>.
+  </p>
+
+  <h2 id="summary">1. Summary</h2>
+  <p>
+    WiLL is built so that, by default, most of what you say and type stays on your Mac. Cloud features
+    — refined dictation, Translation mode, Caption Mode — only send data to our servers (or, with
+    BYOK, directly to a provider you have chosen) when you actively use them. We do not sell personal
+    data, do not show advertising, and do not train models on your content.
+  </p>
+
+  <h2 id="data-controller">2. Who is the data controller</h2>
+  <p>
+    For users in the EEA, the UK, and Switzerland, the data controller of personal data described in
+    this Policy is {LEGAL_NAME}. For users in mainland China, we act as the
+    personal-information handler ("个人信息处理者") under the Personal Information Protection Law
+    ("PIPL"). For users in California, we act as the "business" under the California Consumer Privacy
+    Act ("CCPA/CPRA").
+  </p>
+
+  <h2 id="data-we-process">3. The data we process</h2>
+
+  <h3>3.1 Data that stays on your Mac</h3>
+  <p>
+    The following data is stored locally on your device in a SQLite database under
+    <code>~/Library/Application Support/WiLL/</code> and is not transmitted to us:
+  </p>
+  <ul>
+    <li>your local voice transcript (Apple on-device SFSpeech preview);</li>
+    <li>your vocabulary, text expansions, and acronym dictionary;</li>
+    <li>your correction history and per-app style patterns;</li>
+    <li>your on-screen-text OCR results (used to compose refinement prompts and immediately discarded);</li>
+    <li>your pinyin / CJK input state.</li>
+  </ul>
+  <p>
+    You can browse, export, import, or delete this data at any time from <em>Preferences → Memory</em>.
+    Uninstalling the application without exporting will leave this database in place under your user
+    library; you may delete it manually.
+  </p>
+
+  <h3>3.2 Account data</h3>
+  <p>
+    If you sign in to use cloud features we collect: an account identifier from your chosen identity
+    provider (Apple, Google, etc.); the email address you choose to share with us (Sign in with Apple
+    permits a private relay address); your subscription plan and entitlement state; a pseudonymous
+    device identifier used to bind sessions; and the date your account was created and last active.
+  </p>
+
+  <h3>3.3 Billing data</h3>
+  <p>
+    Payment is handled by Apple, Google, or our designated Merchant of Record. We do <strong>not</strong>
+    receive or store your full card number, bank account number, or equivalent. We receive: the
+    subscription identifier, the transaction status, the billing-cycle dates, the amount and currency
+    paid, the country of the billing address, the last four digits of the card or wallet brand (where
+    provided by the processor), and any refund or chargeback events. We use this data to provision
+    your entitlement, prevent fraud, and meet our accounting and tax obligations.
+  </p>
+
+  <h3>3.4 Content sent to cloud features</h3>
+  <p>
+    When you actively use a cloud feature, the following content is transmitted from your Mac:
+  </p>
+  <ul>
+    <li><strong>Cloud-refined dictation.</strong> The audio of what you spoke (or, depending on
+      provider configuration, the SFSpeech transcript of what you spoke) is sent to our server, which
+      forwards it to our ASR model partner (currently Alibaba Cloud DashScope / Qwen). The refined
+      text is returned to your Mac. Surrounding-text context (a short window around your cursor),
+      OCR'd on-screen text where the corresponding permissions are granted, and your selected
+      language are sent alongside as prompt context.</li>
+    <li><strong>Translation mode.</strong> The source text to be translated is sent to a chat-completions
+      endpoint — ours by default, or your BYOK provider — and the translated text is returned.</li>
+    <li><strong>Caption Mode.</strong> System-audio frames captured by macOS ScreenCaptureKit are
+      streamed to our realtime relay for transcription and translation. Caption Mode is available
+      only on paid plans because we operate the whole pipeline.</li>
+    <li><strong>Smart Typing cloud actions (⌥`, ⌃⌥R).</strong> Short snippets of the surrounding text
+      you are composing are sent to the chat-completions endpoint to generate continuations or style
+      variants.</li>
+  </ul>
+  <p>
+    We do not store this content beyond the duration of the request that produced it. Our model
+    partner's contractual no-retention commitment is described in <a href="#sub-processors">section
+    8</a>. If you have configured BYOK, this content is sent directly from your Mac to your chosen
+    provider and we do not see it.
+  </p>
+
+  <h3>3.5 Usage and diagnostic data</h3>
+  <p>
+    For accounts using cloud features, we collect metered counters needed for billing — token counts,
+    audio seconds, request counts, error rates, request latency, and per-feature aggregates — keyed to
+    your account identifier. We collect crash reports and basic technical diagnostics (operating-system
+    version, application version, locale) when WiLL encounters an error, with sensitive content
+    redacted. We do not collect content that has not been sent to a cloud feature.
+  </p>
+
+  <h3>3.6 Website data</h3>
+  <p>
+    will.sigworld.io uses no third-party analytics, no advertising trackers, and no cross-site cookies. Our
+    server records standard HTTP request logs (IP address, user agent, requested URL, timestamp) for
+    up to 30 days for security and abuse prevention.
+  </p>
+
+  <h2 id="purposes">4. How we use this data</h2>
+  <p>We use the data described above to:</p>
+  <ul>
+    <li>provide the Service you have requested, including fulfilling individual cloud-feature
+      requests;</li>
+    <li>operate the account, subscription, and entitlement system;</li>
+    <li>collect payment and provide receipts (via our Merchant of Record, Apple, or Google);</li>
+    <li>meter usage against your quota;</li>
+    <li>prevent fraud, abuse, and security incidents;</li>
+    <li>diagnose and fix bugs and improve product quality;</li>
+    <li>communicate with you about service-related matters (security notices, billing notices,
+      material policy changes);</li>
+    <li>comply with legal obligations, including tax, accounting, and lawful requests from authorities.</li>
+  </ul>
+  <p>
+    We do <strong>not</strong> use Your Content to train, fine-tune, or evaluate machine-learning
+    models. We do <strong>not</strong> sell personal data. We do <strong>not</strong> use your data
+    for advertising.
+  </p>
+
+  <h2 id="legal-bases">5. Legal bases (EEA / UK)</h2>
+  <p>
+    Where the GDPR or UK GDPR applies, our legal bases for processing are:
+  </p>
+  <ul>
+    <li><strong>Performance of a contract</strong> — providing the Service you have requested,
+      collecting payment, applying entitlements.</li>
+    <li><strong>Legitimate interests</strong> — securing the Service, preventing fraud, debugging,
+      and improving product quality. Where we rely on legitimate interests, you have the right to
+      object as described in <a href="#your-rights">section 9</a>.</li>
+    <li><strong>Legal obligation</strong> — tax, accounting, and responding to lawful requests.</li>
+    <li><strong>Consent</strong> — for any optional processing where consent is required, including
+      where applicable for sensitive-content categories that might surface incidentally in voice
+      input.</li>
+  </ul>
+
+  <h2 id="retention">6. Retention</h2>
+  <ul>
+    <li><strong>Content sent to cloud features:</strong> not retained beyond the request lifecycle.</li>
+    <li><strong>Metered usage counters:</strong> kept for the current and previous billing periods,
+      then aggregated and the per-request rows deleted, in any event within 18 months.</li>
+    <li><strong>Account data:</strong> kept for the life of the account, then deleted within 90 days
+      of account deletion, except where law requires longer.</li>
+    <li><strong>Billing and tax records:</strong> kept for the period required by applicable
+      accounting and tax law (typically 7–10 years).</li>
+    <li><strong>HTTP server logs:</strong> up to 30 days.</li>
+    <li><strong>On-device data (your Mac):</strong> retained for as long as you choose;
+      <em>Preferences → Memory</em> lets you prune by age or delete individual rows. Default pruning
+      removes entries older than 90 days.</li>
+  </ul>
+
+  <h2 id="sharing">7. Sharing</h2>
+  <p>
+    We share personal data only with the parties listed below, and only to the extent needed for the
+    purposes described:
+  </p>
+  <ul>
+    <li><strong>Our ASR model partner</strong> — receives audio or transcript for refinement and
+      Caption Mode, returns text. Bound contractually to a no-retention, no-training commitment.</li>
+    <li><strong>Our designated Merchant of Record</strong> — receives billing information needed
+      to collect payment and remit proceeds. The Merchant of Record is an independent controller of
+      your billing data; its own privacy policy applies to its processing.</li>
+    <li><strong>Apple and Google</strong> — when you subscribe via Apple In-App Purchase or Google
+      Play Billing, those platforms process your payment as independent controllers; their privacy
+      policies apply.</li>
+    <li><strong>Identity providers</strong> (Apple, Google, etc.) — receive authentication requests
+      when you sign in.</li>
+    <li><strong>Infrastructure providers</strong> — hosting, database, and email-delivery providers
+      acting as our processors under written agreements.</li>
+    <li><strong>Authorities</strong> — when required by valid legal process; we will challenge
+      requests we believe are improper and, where lawful, notify you.</li>
+    <li><strong>Acquirers</strong> — in connection with a merger, acquisition, or sale of assets, in
+      which case the acquirer will be bound by this Policy or a successor with equivalent protection.</li>
+  </ul>
+  <p>
+    If you have configured BYOK, your content is sent <em>directly</em> from your Mac to the provider
+    you chose. We have no contractual relationship with that provider on your behalf, and their terms
+    and privacy policy govern.
+  </p>
+
+  <h2 id="sub-processors">8. Sub-processors</h2>
+  <p>
+    The current list of sub-processors we use to operate the Service:
+  </p>
+  <ul>
+    <li><strong>Alibaba Cloud — DashScope / Qwen ASR.</strong> ASR + chat-completions; no-retention,
+      no-training contractual commitment. Processing region: configurable; default Singapore for
+      international users, Beijing for mainland-China users.</li>
+    <li><strong>Our designated Merchant of Record.</strong> Acts as seller of record for desktop direct-download subscriptions, collects payment, and remits proceeds to us.</li>
+    <li><strong>Apple Inc.</strong> Sign in with Apple, In-App Purchase, App Store distribution.</li>
+    <li><strong>Google LLC.</strong> Sign in with Google (where used), Play Billing (where used).</li>
+    <li><strong>Hosting provider.</strong> Operates the WiLL relay servers.</li>
+  </ul>
+  <p>
+    We update this list when sub-processors change. Material additions will be reflected here with
+    advance notice where required by applicable law.
+  </p>
+
+  <h2 id="your-rights">9. Your rights</h2>
+  <p>
+    Depending on where you live, you have some or all of the following rights with respect to your
+    personal data:
+  </p>
+  <ul>
+    <li>access to a copy of the personal data we hold about you;</li>
+    <li>correction of inaccurate data;</li>
+    <li>deletion of your personal data ("the right to be forgotten");</li>
+    <li>restriction or objection to certain processing;</li>
+    <li>portability of data you have provided to us, in a structured machine-readable format;</li>
+    <li>withdrawal of any consent you previously gave (without affecting prior lawful processing);</li>
+    <li>the right to lodge a complaint with your local data-protection authority (EEA: your national
+      DPA; UK: the ICO; mainland China: the Cyberspace Administration of China);</li>
+    <li>under PIPL: the right to ask us to explain how your personal information is handled, and to
+      designate a person to exercise these rights after your death;</li>
+    <li>under CCPA/CPRA: the right to know, delete, correct, and opt out of "sharing" or "sale" of
+      personal information (we do not sell or share for cross-context behavioural advertising), plus
+      the right to non-discrimination for exercising any of these rights.</li>
+  </ul>
+  <p>
+    To exercise any of these rights, contact <a href="mailto:legal@will.sigworld.io">legal@will.sigworld.io</a>.
+    Most data can be deleted directly in-app — your local Memory under <em>Preferences → Memory</em>,
+    and your account from the Account tab.
+  </p>
+
+  <h2 id="security">10. Security</h2>
+  <p>
+    We protect data in transit with TLS, store account and metering data on encrypted volumes, and
+    restrict administrative access to people who need it. We use prepared statements throughout the
+    server to prevent SQL injection, validate all webhook signatures against the issuing party's
+    public keys, and rotate provider credentials on a regular schedule. No system is perfectly secure;
+    we will notify you and the relevant authorities if a breach affects your personal data, as
+    required by applicable law.
+  </p>
+
+  <h2 id="transfers">11. International transfers</h2>
+  <p>
+    Because the Service is operated from the Hong Kong Special Administrative Region and our ASR
+    partner may process data in Singapore or mainland China, personal data may be transferred to and
+    processed in countries other than your own. Where required by applicable law, we use appropriate
+    safeguards for cross-border transfers, including, for transfers out of the EEA or UK, the European
+    Commission's Standard Contractual Clauses and equivalent UK addendums, and, for transfers of
+    mainland-China personal information, the Standard Contract for cross-border transfer of personal
+    information or equivalent CAC-approved mechanism.
+  </p>
+
+  <h2 id="children">12. Children</h2>
+  <p>
+    The Service is not directed to children under 13 (or the equivalent minimum age in your
+    jurisdiction). We do not knowingly collect personal data from children under that age. If you
+    believe a child has provided us personal data, contact
+    <a href="mailto:legal@will.sigworld.io">legal@will.sigworld.io</a> and we will delete it.
+  </p>
+
+  <h2 id="changes">13. Changes to this Policy</h2>
+  <p>
+    We may update this Policy from time to time. The updated Policy will be posted here with a new
+    Effective date. If the changes are material, we will give reasonable advance notice by email or
+    in-app banner before they take effect.
+  </p>
+
+  <h2 id="contact">14. Contact</h2>
+  <p>
+    Privacy questions, requests, and complaints:
+    <a href="mailto:legal@will.sigworld.io">legal@will.sigworld.io</a>.
+  </p>
+
+  <p class="legal-footnote">Last updated 12 June 2026.</p>
+  </div>
+</div>
+
+<script>
+  const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-legal-toc]'));
+  const targets = links
+    .map((link) => {
+      const id = link.getAttribute('href')?.slice(1) ?? '';
+      const el = id ? document.getElementById(id) : null;
+      return el ? { link, el } : null;
+    })
+    .filter((x): x is { link: HTMLAnchorElement; el: HTMLElement } => x !== null);
+
+  if (targets.length) {
+    const setActive = (active: HTMLAnchorElement | null) => {
+      for (const { link } of targets) {
+        link.classList.toggle('is-active', link === active);
+      }
+    };
+    const update = () => {
+      const offset = 120;
+      let current: HTMLAnchorElement | null = null;
+      for (const { link, el } of targets) {
+        if (el.getBoundingClientRect().top - offset <= 0) current = link;
+        else break;
+      }
+      if (!current && window.scrollY < 200) current = targets[0].link;
+      setActive(current);
+    };
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        update();
+        ticking = false;
+      });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    update();
+  }
+</script>

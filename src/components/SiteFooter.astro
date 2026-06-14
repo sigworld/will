@@ -10,6 +10,16 @@ interface Props {
 
 const { locale } = Astro.props;
 const t = getCopy(locale);
+
+const legalLinks = locale === 'zh'
+  ? [
+      { label: '服务条款', href: '/zh/terms' },
+      { label: '隐私政策', href: '/zh/privacy-policy' },
+    ]
+  : [
+      { label: 'Terms', href: '/terms' },
+      { label: 'Privacy Policy', href: '/privacy-policy' },
+    ];
 ---
 
 <footer class="site-footer">
@@ -30,6 +40,11 @@ const t = getCopy(locale);
     </div>
     <div class="footer-bottom">
       <span>{t.footer.copyright}</span>
+      <nav class="footer-legal" aria-label="Legal">
+        {legalLinks.map((it) => (
+          <a href={it.href}>{it.label}</a>
+        ))}
+      </nav>
     </div>
   </div>
 </footer>
@@ -83,5 +98,24 @@ const t = getCopy(locale);
     border-top: 1px solid var(--border-subtle);
     font-size: var(--text-caption);
     color: var(--text-tertiary);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-4);
+  }
+  .footer-legal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--s-4);
+  }
+  .footer-legal a {
+    color: var(--text-tertiary);
+    border-bottom: none;
+    transition: color var(--dur-fast) var(--ease-out-quad);
+  }
+  .footer-legal a:hover {
+    color: var(--text-primary);
+    border-bottom: none;
   }
 </style>

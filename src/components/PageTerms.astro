@@ -1,0 +1,349 @@
+---
+// Terms of Service — formal binding version intended to be linked from the
+// payment processor / app store / installer.
+//
+// Resolve these placeholders before publishing.
+const LEGAL_NAME = 'WiLL Labs';
+const JURISDICTION = 'the Hong Kong Special Administrative Region';
+const ARBITRATION_VENUE = 'the Hong Kong International Arbitration Centre (HKIAC)';
+
+const toc = [
+  { id: 'who-we-are', title: 'Who we are' },
+  { id: 'the-service', title: 'The Service' },
+  { id: 'eligibility', title: 'Eligibility and accounts' },
+  { id: 'plans', title: 'Plans, billing and refunds' },
+  { id: 'byok', title: 'Bring Your Own Key' },
+  { id: 'your-content', title: 'Your content' },
+  { id: 'acceptable-use', title: 'Acceptable use' },
+  { id: 'ip', title: 'Intellectual property' },
+  { id: 'third-parties', title: 'Third-party services' },
+  { id: 'warranty', title: 'Disclaimers' },
+  { id: 'liability', title: 'Limitation of liability' },
+  { id: 'indemnification', title: 'Indemnification' },
+  { id: 'termination', title: 'Suspension and termination' },
+  { id: 'changes', title: 'Changes to these Terms' },
+  { id: 'law', title: 'Governing law and disputes' },
+  { id: 'misc', title: 'Miscellaneous' },
+  { id: 'contact', title: 'Contact' },
+];
+---
+
+<section class="page-hero">
+  <div class="container">
+    <h1>Terms of Service</h1>
+    <p class="lede">Effective 12 June 2026.</p>
+  </div>
+</section>
+
+<div class="container legal-shell">
+  <aside class="legal-toc-side" aria-label="On this page">
+    <p class="toc-label">On this page</p>
+    <ol>
+      {toc.map((s, i) => (
+        <li>
+          <a href={`#${s.id}`} data-legal-toc>
+            <span class="toc-num">{String(i + 1).padStart(2, '0')}</span>
+            <span>{s.title}</span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </aside>
+
+  <div class="legal-prose">
+  <p>
+    These Terms of Service ("<strong>Terms</strong>") form a binding agreement between you and
+    <strong>{LEGAL_NAME}</strong> ("<strong>WiLL</strong>", "<strong>we</strong>", "<strong>us</strong>", or "<strong>our</strong>"),
+    governing your access to and use of the WiLL macOS application, the WiLL server APIs,
+    <a href="https://will.sigworld.io">will.sigworld.io</a>, and any related software or services we make available
+    (together, the "<strong>Service</strong>"). By downloading, installing, signing in to, or using
+    the Service you agree to these Terms. If you do not agree, do not use the Service.
+  </p>
+
+  <h2 id="who-we-are">1. Who we are</h2>
+  <p>
+    WiLL is operated by {LEGAL_NAME}. You can contact us at
+    <a href="mailto:legal@will.sigworld.io">legal@will.sigworld.io</a>.
+  </p>
+
+  <h2 id="the-service">2. The Service</h2>
+  <p>
+    WiLL is a voice-and-keyboard input method for macOS. It lets you dictate text into any application,
+    refines that dictation with on-device and (optionally) cloud language models, supports translation
+    and live captioning, and learns vocabulary and corrections over time. Some features run entirely
+    on your Mac; some make network calls to our servers or, if you have configured Bring Your Own Key
+    ("<strong>BYOK</strong>"), directly to a third-party provider you have chosen. The split between
+    on-device and cloud features is described on our <a href="/privacy">privacy page</a>.
+  </p>
+  <p>
+    We may add, modify, suspend, or remove features at any time. We will give reasonable notice of
+    material reductions to features you are actively paying for.
+  </p>
+
+  <h2 id="eligibility">3. Eligibility and accounts</h2>
+  <p>
+    You must be at least 13 years old (or the minimum age required by the laws of your jurisdiction)
+    to use the Service. If you are using the Service on behalf of an organization, you represent that
+    you have authority to bind that organization to these Terms.
+  </p>
+  <p>
+    You may use the on-device portion of WiLL without creating an account. Cloud features (refined
+    dictation, Translation mode, Caption Mode, Pro entitlements) require an account, which you create
+    by signing in with Apple, Google, or another identity provider we support. You are responsible for
+    keeping your sign-in credentials secure and for activity that occurs under your account.
+  </p>
+
+  <h2 id="plans">4. Plans, billing and refunds</h2>
+  <h3>4.1 Plans</h3>
+  <p>
+    WiLL is offered in the following plans:
+  </p>
+  <ul>
+    <li><strong>Free.</strong> On-device features only. No payment required, no auto-renewal.</li>
+    <li><strong>Pro.</strong> Adds cloud-refined dictation, Translation mode, and Caption Mode, subject to
+      a monthly metered quota. Billed on a recurring basis until cancelled.</li>
+    <li><strong>BYOK.</strong> You configure your own OpenAI-compatible provider for cloud features.
+      You are billed by that provider directly. WiLL receives no payment for BYOK use of cloud features.</li>
+  </ul>
+
+  <h3>4.2 Billing rails</h3>
+  <p>
+    Pro is billed through one of three rails, depending on how you obtained the Service:
+  </p>
+  <ul>
+    <li>via Apple — Apple's In-App Purchase, governed by your agreement with Apple;</li>
+    <li>via Google — Google Play Billing, governed by your agreement with Google;</li>
+    <li>via our Merchant of Record — our designated payment processor (currently DodoPayments and/or
+      Gumroad, subject to change), which acts as the merchant of record, collects payment, and remits
+      proceeds to us.</li>
+  </ul>
+  <p>
+    When you pay through Apple or Google, the platform's own terms govern price, currency conversion,
+    receipts, and dispute resolution for that payment. When you pay through our Merchant of Record,
+    the merchant's own customer terms apply in addition to these Terms; the merchant is the seller of
+    record on your invoice.
+  </p>
+
+  <h3>4.3 Auto-renewal and cancellation</h3>
+  <p>
+    Pro subscriptions renew automatically at the end of each billing period at the then-current price
+    until cancelled. You can cancel at any time:
+  </p>
+  <ul>
+    <li>through your Apple ID or Google account if you subscribed through Apple or Google;</li>
+    <li>through the link in your purchase-confirmation email, or by emailing
+      <a href="mailto:legal@will.sigworld.io">legal@will.sigworld.io</a>, if you subscribed through our Merchant of Record.</li>
+  </ul>
+  <p>
+    Cancellation takes effect at the end of the current paid period; your Pro features remain active
+    until then.
+  </p>
+
+  <h3>4.4 Free trial / starter quota</h3>
+  <p>
+    New accounts may receive a one-time starter quota (currently approximately two hours of voice,
+    or 550,000 metering units). The starter quota is non-transferable, has no cash value, and expires
+    if unused. Receiving a starter quota does not enroll you in a paid plan.
+  </p>
+
+  <h3>4.5 Refunds</h3>
+  <p>
+    For purchases made through our Merchant of Record, we offer a no-questions-asked refund within
+    14 days of the initial purchase or most recent renewal, on request to
+    <a href="mailto:legal@will.sigworld.io">legal@will.sigworld.io</a>. After 14 days, refunds are at our discretion
+    except where applicable law (including consumer-protection laws) requires otherwise. For purchases
+    made through Apple or Google, refunds are handled by those platforms under their own policies.
+  </p>
+
+  <h3>4.6 Taxes</h3>
+  <p>
+    Prices are exclusive of taxes unless stated otherwise. Where our Merchant of Record or the
+    relevant platform is required to collect VAT, GST, sales tax, or similar, that amount will be added
+    at checkout.
+  </p>
+
+  <h2 id="byok">5. Bring Your Own Key (BYOK)</h2>
+  <p>
+    If you configure BYOK, you authorize the Service to send requests to the third-party provider
+    you have specified, using the API key and endpoint you have entered. You are solely responsible
+    for: (a) selecting your provider; (b) complying with that provider's terms; (c) any fees they
+    charge; and (d) the security of your API key. We make no representation about the availability,
+    accuracy, latency, or privacy practices of third-party providers.
+  </p>
+
+  <h2 id="your-content">6. Your content</h2>
+  <p>
+    "<strong>Your Content</strong>" means any text, audio, or other material you provide to the
+    Service — including what you dictate, what you type, what is on screen near your cursor when WiLL
+    is invoked, and the prompts you send through BYOK. As between you and us, you own Your Content.
+  </p>
+  <p>
+    You grant us a worldwide, non-exclusive, royalty-free licence to host, transmit, and process Your
+    Content solely to operate the Service for you — for example, to forward audio to our ASR partner
+    for refinement and return the result. We do not use Your Content to train models. We do not
+    retain audio or transcript content beyond the duration of the request that produced it, except
+    where a feature you have enabled (e.g. local Memory) explicitly stores it on your Mac. See the
+    <a href="/privacy-policy">Privacy Policy</a> for full detail.
+  </p>
+  <p>
+    You represent that you have the right to provide Your Content and that doing so does not violate
+    any law or the rights of any third party. You are responsible for what you dictate, type, or
+    instruct WiLL to translate, including for ensuring that any people whose voices you record have
+    consented to that recording where required by law.
+  </p>
+
+  <h2 id="acceptable-use">7. Acceptable use</h2>
+  <p>You agree not to:</p>
+  <ul>
+    <li>use the Service to violate any law or the rights of any person;</li>
+    <li>use the Service to generate, transmit, or distribute illegal content, including content that
+      sexually exploits minors, content that incites violence or unlawful discrimination, or content
+      designed to defraud;</li>
+    <li>attempt to reverse-engineer, decompile, or extract the source code of the Service, except to
+      the extent that applicable law expressly permits this and any reverse-engineering required for
+      interoperability;</li>
+    <li>resell, sublicense, or otherwise commercially exploit the Service except as expressly
+      permitted in these Terms;</li>
+    <li>circumvent quotas, billing, entitlement checks, or rate limits, or otherwise attempt to gain
+      unauthorized access to any portion of the Service;</li>
+    <li>use automated means to extract data from the Service or to overload our infrastructure;</li>
+    <li>use the Service to develop a competing product where doing so relies on extracting our
+      proprietary prompts, fine-tunes, or model routing logic.</li>
+  </ul>
+
+  <h2 id="ip">8. Intellectual property</h2>
+  <p>
+    The Service, including the WiLL macOS application, server code, website, brand, prompts, model
+    routing, and documentation, is owned by us or our licensors and is protected by intellectual
+    property laws. We grant you a personal, non-exclusive, non-transferable, revocable licence to
+    install and use the Service in object-code form on devices you own or control, solely for your
+    own use, subject to these Terms.
+  </p>
+  <p>
+    The WiLL macOS application incorporates open-source components under their respective licences;
+    a list is shipped with the application.
+  </p>
+
+  <h2 id="third-parties">9. Third-party services</h2>
+  <p>
+    The Service relies on, integrates with, or links to third-party services — including Apple's
+    speech and operating-system APIs, our ASR model partner (currently Alibaba Cloud DashScope), our
+    Merchant of Record, Apple, Google, identity providers, and any third-party provider you choose
+    through BYOK. We are not responsible for those services; your use of them is governed by their
+    own terms.
+  </p>
+
+  <h2 id="warranty">10. Disclaimers</h2>
+  <p>
+    The Service is provided <strong>"as is" and "as available"</strong>. To the maximum extent
+    permitted by law, we disclaim all warranties, express or implied, including merchantability,
+    fitness for a particular purpose, non-infringement, accuracy, reliability, and uninterrupted
+    availability. WiLL uses statistical language models; the text it produces may be inaccurate,
+    incomplete, or unsuitable for your purpose, and you remain responsible for reviewing it before
+    relying on it.
+  </p>
+
+  <h2 id="liability">11. Limitation of liability</h2>
+  <p>
+    To the maximum extent permitted by law, in no event will we be liable for any indirect,
+    incidental, special, consequential, exemplary, or punitive damages, including loss of profits,
+    revenue, data, business opportunity, or goodwill, arising out of or in connection with the
+    Service or these Terms, even if we have been advised of the possibility of such damages. Our
+    aggregate liability for any direct damages will not exceed the greater of (a) the amount you paid
+    us for the Service in the twelve months preceding the event giving rise to the claim, or
+    (b) US$50. Some jurisdictions do not allow these limitations; in those jurisdictions, our
+    liability is limited to the minimum amount permitted by law.
+  </p>
+
+  <h2 id="indemnification">12. Indemnification</h2>
+  <p>
+    You will indemnify and hold us harmless from any third-party claim arising from your breach of
+    these Terms, your misuse of the Service, your violation of law, or Your Content (including any
+    claim that Your Content infringes a third party's rights). We will give you prompt notice of any
+    such claim and reasonable cooperation in defending it.
+  </p>
+
+  <h2 id="termination">13. Suspension and termination</h2>
+  <p>
+    You may stop using the Service at any time. We may suspend or terminate your access to the
+    Service, with or without notice, if you breach these Terms, if we are required to do so by law,
+    or if we discontinue the Service. On termination, your right to use the Service ends; sections
+    that by their nature should survive (intellectual property, disclaimers, liability,
+    indemnification, dispute resolution) will survive.
+  </p>
+
+  <h2 id="changes">14. Changes to these Terms</h2>
+  <p>
+    We may update these Terms from time to time. We will post the updated Terms here and update the
+    "Effective" date above. If the changes are material, we will give reasonable advance notice by
+    email or in-app banner. Your continued use of the Service after the new Terms take effect
+    constitutes acceptance.
+  </p>
+
+  <h2 id="law">15. Governing law and disputes</h2>
+  <p>
+    These Terms are governed by the laws of {JURISDICTION}, without regard to conflict-of-laws
+    rules. Any dispute arising out of or in connection with these Terms will be resolved by binding
+    arbitration at {ARBITRATION_VENUE}, in accordance with that body's rules in effect at the time.
+    Nothing in this section limits any right you have under mandatory consumer-protection law in your
+    place of residence to bring a claim in your local courts.
+  </p>
+
+  <h2 id="misc">16. Miscellaneous</h2>
+  <p>
+    These Terms, together with the <a href="/privacy-policy">Privacy Policy</a> and any in-product
+    notices, are the entire agreement between you and us regarding the Service. If any provision is
+    held unenforceable, the remaining provisions remain in effect. Our failure to enforce a provision
+    is not a waiver of that provision. You may not assign these Terms without our consent; we may
+    assign them in connection with a sale of substantially all of our assets.
+  </p>
+
+  <h2 id="contact">17. Contact</h2>
+  <p>
+    Questions about these Terms: <a href="mailto:legal@will.sigworld.io">legal@will.sigworld.io</a>.
+  </p>
+
+  <p class="legal-footnote">Last updated 12 June 2026.</p>
+  </div>
+</div>
+
+<script>
+  const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-legal-toc]'));
+  const targets = links
+    .map((link) => {
+      const id = link.getAttribute('href')?.slice(1) ?? '';
+      const el = id ? document.getElementById(id) : null;
+      return el ? { link, el } : null;
+    })
+    .filter((x): x is { link: HTMLAnchorElement; el: HTMLElement } => x !== null);
+
+  if (targets.length) {
+    const setActive = (active: HTMLAnchorElement | null) => {
+      for (const { link } of targets) {
+        link.classList.toggle('is-active', link === active);
+      }
+    };
+    const update = () => {
+      const offset = 120;
+      let current: HTMLAnchorElement | null = null;
+      for (const { link, el } of targets) {
+        if (el.getBoundingClientRect().top - offset <= 0) current = link;
+        else break;
+      }
+      if (!current && window.scrollY < 200) current = targets[0].link;
+      setActive(current);
+    };
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        update();
+        ticking = false;
+      });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    update();
+  }
+</script>
