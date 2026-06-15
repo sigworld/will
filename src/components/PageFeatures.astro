@@ -21,6 +21,37 @@ const downloadHref = `${base}/download`;
 const brandify = (s: string) =>
   locale === 'zh' ? s.replace(/如义/g, '<span class="brand-zh">如义</span>') : s;
 
+// Shortcut chips. Copy strings wrap any key combo in a plain <kbd>…</kbd>
+// (e.g. "<kbd>⌃⌥⇧T</kbd>" or "<kbd>Option+Shift</kbd>"). Here we expand
+// each <kbd> into the same .kbd-group markup the home-page demos use,
+// matching Keycaps.astro: single-glyph modifiers (⌃ ⌥ ⇧ ⌘) and literal
+// keys become their own chip; named keys (Tab, Esc, Option, Shift, …)
+// stay grouped as a single chip. Space and "+" act as separators inside
+// the kbd source, so "Option+Shift" tokenizes cleanly.
+const multiCharKeys = ['Tab', 'Enter', 'Return', 'Escape', 'Esc', 'Space', 'Cmd', 'Shift', 'Option'];
+function tokenizeShortcut(input: string): string[] {
+  const tokens: string[] = [];
+  let i = 0;
+  while (i < input.length) {
+    const ch = input[i];
+    if (ch === ' ' || ch === '+') { i++; continue; }
+    const m = multiCharKeys.find((k) => input.startsWith(k, i));
+    if (m) { tokens.push(m); i += m.length; }
+    else { tokens.push(ch); i++; }
+  }
+  return tokens;
+}
+const renderShortcuts = (html: string): string =>
+  html.replace(/<kbd>([^<]+)<\/kbd>/g, (_, raw: string) => {
+    const tokens = tokenizeShortcut(raw);
+    const chips = tokens.map((t, i) =>
+      (i > 0 ? '<span class="kbd-plus" aria-hidden="true">+</span>' : '') +
+      `<kbd class="kbd" data-kbd-token="${t}">${t}</kbd>`
+    ).join('');
+    return `<span class="kbd-group">${chips}</span>`;
+  });
+const decorate = (s: string) => renderShortcuts(brandify(s));
+
 const schematics: Record<string, string> = {
   speak: `<svg viewBox="0 0 100 80" fill="none" aria-hidden="true">
     <rect x="44" y="14" width="12" height="28" rx="6" stroke="currentColor" stroke-width="1.5"/>
@@ -105,13 +136,13 @@ const schematics: Record<string, string> = {
         set:html={schematics[s.id] ?? ''}
       />
       <section class={`feature-section ${i === 0 ? 'is-first' : ''}`} id={s.id}>
-        <h2 set:html={brandify(s.title)} />
+        <h2 set:html={brandify(s.heading ?? s.title)} />
         <p class="feature-lede" set:html={brandify(s.lede)} />
         <div class="prose feature-prose">
-          {s.body.map((p) => <p set:html={brandify(p)} />)}
+          {s.body.map((p) => <p set:html={decorate(p)} />)}
         </div>
         <div class="feature-specs">
-          {s.specs.map((spec) => <span class="chip spec-chip" set:html={brandify(spec)} />)}
+          {s.specs.map((spec) => <span class="chip spec-chip" set:html={decorate(spec)} />)}
         </div>
       </section>
     </>
@@ -407,6 +438,20 @@ const schematics: Record<string, string> = {
     text-decoration-thickness: 2px;
     text-underline-offset: 3px;
     text-decoration-skip-ink: none;
+  }
+  /* Keycap chips inside body / specs / highlighted spans. Center the
+     chip on the text's x-height (so it sits visually centered against the
+     surrounding line of prose rather than dangling below the baseline)
+     and drop the mark.hl underline that would otherwise cut through. */
+  .feature-prose :global(.kbd-group),
+  .feature-prose :global(.kbd),
+  .spec-chip :global(.kbd-group),
+  .spec-chip :global(.kbd) {
+    vertical-align: middle;
+  }
+  .feature-prose :global(mark.hl) :global(.kbd-group),
+  .feature-prose :global(mark.hl) :global(.kbd) {
+    text-decoration: none;
   }
   .feature-specs {
     margin-top: var(--s-4);

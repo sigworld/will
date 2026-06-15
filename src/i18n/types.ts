@@ -8,6 +8,8 @@ export interface NavItem {
 export interface FeatureSection {
   id: string;
   title: string;
+  /** Optional in-page H2. Falls back to `title` (used by the TOC) when absent. */
+  heading?: string;
   lede: string;
   body: string[];
   specs: string[];
