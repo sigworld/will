@@ -14,9 +14,12 @@ export const en: Copy = {
   hero: {
     headline: 'Your input, refined.',
     sub: 'Speak, type, translate — at your WiLL.',
-    cta: 'Download for macOS',
-    ctaSub: 'Free. No account needed.',
-    seeHow: 'see how it feels',
+    purpose: [
+      'WiLL is a voice-first LLM-based input method.',
+      'Speak in any app. Get clean, polished text.',
+      'Smart typing, captions, translation — built in.',
+    ],
+    seeHow: 'FEEL WiLL',
   },
   speak: {
     title: 'What you said. The way you’d write it.',

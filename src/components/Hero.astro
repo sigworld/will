@@ -9,7 +9,6 @@ interface Props {
 
 const { locale } = Astro.props;
 const t = getCopy(locale);
-const downloadHref = locale === 'zh' ? '/zh/download' : '/download';
 const isZh = locale === 'zh';
 
 // Split the headline at its natural pause so the first phrase fog-clears,
@@ -144,39 +143,56 @@ const subWaveBars = 7;
       </div>
     </div>
 
-    <div class="hero-cta">
-      <a class="btn btn-primary" href={downloadHref}>{t.hero.cta}</a>
-      <p class="hero-cta-sub">{t.hero.ctaSub}</p>
-    </div>
-    <a class="hero-arrow" href="#speak" aria-label={t.hero.seeHow}>
-      <span class="hero-arrow-chevron" aria-hidden="true">
-        <svg viewBox="0 0 16 10" fill="none" preserveAspectRatio="xMidYMid meet">
-          <path
-            d="M2 2 L8 8 L14 2"
-            stroke="currentColor"
-            stroke-width="1.5"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          />
-        </svg>
+    <p class="hero-purpose">
+      {t.hero.purpose.map((line) => (
+        <span class="hero-purpose-line">{line}</span>
+      ))}
+    </p>
+    <a class="hero-arrow" href="#speak">
+      <span class="hero-arrow-inner">
+        <span class="hero-arrow-label">{t.hero.seeHow}</span>
+        <span class="hero-arrow-chevron" aria-hidden="true">
+          <svg viewBox="0 0 16 10" fill="none" preserveAspectRatio="xMidYMid meet">
+            <path
+              d="M2 2 L8 8 L14 2"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </span>
       </span>
     </a>
   </div>
 </section>
 
 <style>
+  /* Hero fills the small-viewport height so we can distribute the children
+     across the page rather than stacking them all at the top. `100svh`
+     (small viewport) is used in preference to `100vh` so the arrow doesn't
+     end up underneath mobile browser chrome that hides on scroll. The hero
+     itself becomes a flex column; `.hero-inner` stretches to fill it via
+     `flex: 1`, which gives `margin-top: auto` something to distribute on
+     `.hero-purpose` and `.hero-arrow` below — those two each grab an even
+     share of the remaining space above them, landing the purpose near the
+     vertical center of gravity and the arrow near the bottom edge. */
   .hero {
-    padding: var(--s-9) 0 var(--s-8);
+    padding: var(--s-9) 0 var(--s-7);
     text-align: center;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
   }
   @media (min-width: 768px) {
-    .hero { padding: var(--s-10) 0 var(--s-9); }
+    .hero { padding: var(--s-10) 0 var(--s-8); }
   }
   .hero-inner {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: var(--s-5);
+    flex: 1;
   }
 
   /* ─── Title stage: each phrase owns its own waveform sized to its own
@@ -607,9 +623,9 @@ const subWaveBars = 7;
     color: var(--clean-white);
   }
 
-  /* CTA and arrow stay hidden until the sub finishes typing — keeps the
-     vertical reveal order title → sub → CTA → arrow. */
-  .hero-cta,
+  /* Purpose paragraph and arrow stay hidden until the sub finishes typing —
+     keeps the vertical reveal order title → sub → purpose → arrow. */
+  .hero-purpose,
   .hero-arrow {
     opacity: 0;
     transform: translateY(8px);
@@ -617,38 +633,73 @@ const subWaveBars = 7;
       opacity 500ms var(--ease-out-quad),
       transform 500ms var(--ease-out-quad);
   }
-  .hero-sub-stage.is-done ~ .hero-cta {
+  .hero-sub-stage.is-done ~ .hero-purpose {
     opacity: 1;
     transform: translateY(0);
     transition-delay: 60ms;
   }
-  /* Arrow is the LAST hero beat — it begins just as the CTA finishes its
-     own reveal (CTA: +60ms start + 500ms transition = +560ms done) so the
-     order still reads title → sub → CTA → arrow but without the long
-     breath that previously stalled the cascade. */
+  /* Arrow is the LAST hero beat — it begins just as the purpose paragraph
+     finishes its own reveal (purpose: +60ms start + 500ms transition =
+     +560ms done) so the order still reads title → sub → purpose → arrow
+     without a long breath stalling the cascade. */
   .hero-sub-stage.is-done ~ .hero-arrow {
     opacity: 1;
     transform: translateY(0);
     transition-delay: 560ms;
   }
 
-  .hero-cta {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: var(--s-2);
-    margin-top: var(--s-3);
+  /* Explicit purpose statement — three rhythmically balanced lines stating
+     what WiLL is and does in plain prose, so the page is self-explanatory
+     for first-time visitors and OAuth-consent reviewers without depending
+     on the headline/subline animations being read poetically. Each sentence
+     is its own block so the centered hero alignment stays clean even at
+     viewport widths where a single paragraph would wrap raggedly; the lines
+     also get `text-wrap: balance` so any individual line that does need to
+     wrap on narrow screens distributes its words evenly. */
+  .hero-purpose {
+    max-width: 60ch;
+    /* `margin-top: auto` (with `.hero-arrow` also using auto) splits the
+       hero's leftover vertical space evenly above each — pushes the
+       paragraph down to the lower-middle, near the visual center of
+       gravity, while leaving room for the arrow at the bottom. */
+    margin: auto auto 0;
+    color: var(--text-secondary);
   }
-  .hero-cta .btn { padding: 14px 28px; }
-  .hero-cta-sub {
-    font-size: var(--text-body-s);
-    color: var(--text-tertiary);
+  .hero-purpose-line {
+    display: block;
+    font-size: var(--text-body-l);
+    line-height: var(--leading-body);
+    text-wrap: balance;
   }
-  /* Scroll hint — a single refined stroked chevron. The chevron breathes
-     gently downward as a subtle directional cue. */
+  /* CJK breathing room: PingFang / Source Han glyphs fill ~95% of the em-box
+     vs Inter's ~70%, so the same 1.5 leading + zero tracking that reads
+     comfortably in Latin reads as dense and cramped in zh. Open up vertical
+     leading and add a touch of horizontal tracking (matches the value already
+     used by `.sub-fog-brand-zh` further down) so the zh purpose paragraph
+     has the same visual airiness as its EN counterpart. */
+  :global(html[lang^="zh"]) .hero-purpose-line {
+    line-height: 1.85;
+    letter-spacing: 0.04em;
+  }
+  /* Scroll hint — chevron then label ("↓ Feel WiLL" / "↓ 体验如义"). The
+     chevron + label glide together as a single unit: the drift animation
+     lives on `.hero-arrow-inner` (the flex row), so both children
+     translate vertically in sync — reads as a gentle "this whole thing is
+     beckoning you down" rather than a lonely bouncing glyph. The outer
+     `.hero-arrow` keeps the reveal transform (translateY(8px) → 0 on
+     reveal) and the color/hover transition; the inner wrapper owns the
+     ongoing drift loop. The label now carries the implicit-CTA role
+     previously held by the (removed) download button. */
   .hero-arrow {
     display: inline-flex;
-    margin-top: var(--s-7);
+    /* Pair the arrow's `margin-bottom: auto` with `.hero-purpose`'s
+       `margin-top: auto` — the two autos compete and split the hero's
+       leftover vertical space equally, half above the paragraph and half
+       below the arrow. The paragraph + arrow pair stays glued together
+       (separated only by this fixed --s-6 top margin) and floats as a
+       unit to the visual center of the viewport. */
+    margin-top: var(--s-6);
+    margin-bottom: auto;
     color: var(--text-tertiary);
     text-decoration: none;
     border-bottom: none;
@@ -658,10 +709,23 @@ const subWaveBars = 7;
     color: var(--text-primary);
     border-bottom: none;
   }
+  .hero-arrow-inner {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--s-3);
+  }
+  .hero-arrow-label {
+    font-size: var(--text-body-s);
+    letter-spacing: 0.08em;
+  }
+  :global(html[lang^="zh"]) .hero-arrow-label {
+    letter-spacing: 0.06em;
+  }
   .hero-arrow-chevron {
     display: inline-flex;
-    width: 18px;
-    height: 11px;
+    width: 12px;
+    height: 8px;
     color: currentColor;
   }
   .hero-arrow-chevron svg {
@@ -670,11 +734,14 @@ const subWaveBars = 7;
     display: block;
     overflow: visible;
   }
-  /* Chevron drift starts only after the link has finished its own reveal
-     (sub.is-done + 560ms delay + 500ms transition = 1060ms). Driving the
-     chevron — not the whole link — keeps the label visually anchored and
-     reads more refined than a unified bob. */
-  .hero-sub-stage.is-done ~ .hero-arrow .hero-arrow-chevron {
+  /* Drift starts only after the link has finished its own reveal
+     (sub.is-done + 560ms delay + 500ms transition = 1060ms). The animation
+     rides `.hero-arrow-inner` rather than the outer `.hero-arrow` so it
+     doesn't fight the reveal's `translateY(8px) → 0` transform; both
+     children of `.hero-arrow-inner` (chevron + label) drift together as
+     one unit, reading as a "scroll-down beckon" rather than a lonely
+     bouncing glyph. */
+  .hero-sub-stage.is-done ~ .hero-arrow .hero-arrow-inner {
     animation: hero-chevron-drift 2.2s ease-in-out 1060ms infinite;
   }
   @keyframes hero-chevron-drift {
@@ -683,7 +750,7 @@ const subWaveBars = 7;
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .hero-arrow-chevron { animation: none; transform: none; }
+    .hero-arrow-inner { animation: none; transform: none; }
     .phrase-waveform, .sub-waveform { display: none; }
     .phrase-text {
       opacity: 1; filter: none; transform: none; transition: none;
@@ -702,7 +769,7 @@ const subWaveBars = 7;
       transform: translateY(-1.35em) scale(0.78);
       transition: none;
     }
-    .hero-cta,
+    .hero-purpose,
     .hero-arrow {
       opacity: 1; transform: none; transition: none;
     }

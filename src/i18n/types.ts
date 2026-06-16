@@ -42,8 +42,7 @@ export interface Copy {
   hero: {
     headline: string;
     sub: string;
-    cta: string;
-    ctaSub: string;
+    purpose: readonly string[];
     seeHow: string;
   };
   speak: {

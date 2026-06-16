@@ -8,6 +8,14 @@ html, body {
   background: var(--bg-primary);
 }
 
+/* Smooth in-page anchor navigation (hero "Feel WiLL" ↓ chevron, plus any
+   future #section links). Browsers automatically downgrade this to instant
+   scroll when `prefers-reduced-motion: reduce` is set, so no extra guard
+   needed. */
+html {
+  scroll-behavior: smooth;
+}
+
 html[lang^="zh"] body {
   font-family: var(--font-cjk), var(--font-sans);
 }
