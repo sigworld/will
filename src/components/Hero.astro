@@ -623,9 +623,16 @@ const subWaveBars = 7;
     color: var(--clean-white);
   }
 
-  /* Purpose paragraph and arrow stay hidden until the sub finishes typing —
-     keeps the vertical reveal order title → sub → purpose → arrow. */
-  .hero-purpose,
+  /* `.hero-purpose` is intentionally NOT hidden behind the animation
+     cascade. It carries the page's explicit "what is WiLL" statement and
+     must be visible on first paint so search crawlers and OAuth consent
+     reviewers (who don't wait through ~5s of JS animation) can see the
+     page actually explains the app. The headline animation still plays
+     above it; the purpose just sits there as steady background text. */
+
+  /* Arrow stays hidden until the sub finishes typing — keeps the vertical
+     reveal order title → sub → arrow for the live experience. (Purpose
+     is exempt; see above.) */
   .hero-arrow {
     opacity: 0;
     transform: translateY(8px);
@@ -633,19 +640,10 @@ const subWaveBars = 7;
       opacity 500ms var(--ease-out-quad),
       transform 500ms var(--ease-out-quad);
   }
-  .hero-sub-stage.is-done ~ .hero-purpose {
-    opacity: 1;
-    transform: translateY(0);
-    transition-delay: 60ms;
-  }
-  /* Arrow is the LAST hero beat — it begins just as the purpose paragraph
-     finishes its own reveal (purpose: +60ms start + 500ms transition =
-     +560ms done) so the order still reads title → sub → purpose → arrow
-     without a long breath stalling the cascade. */
   .hero-sub-stage.is-done ~ .hero-arrow {
     opacity: 1;
     transform: translateY(0);
-    transition-delay: 560ms;
+    transition-delay: 60ms;
   }
 
   /* Explicit purpose statement — three rhythmically balanced lines stating
@@ -769,7 +767,6 @@ const subWaveBars = 7;
       transform: translateY(-1.35em) scale(0.78);
       transition: none;
     }
-    .hero-purpose,
     .hero-arrow {
       opacity: 1; transform: none; transition: none;
     }
