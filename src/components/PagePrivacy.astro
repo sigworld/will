@@ -9,6 +9,14 @@ interface Props {
 const { locale } = Astro.props;
 const t = getCopy(locale);
 const p = t.pages.privacy;
+
+/** Split "lead (note)" → { lead, note }. Lets the table render parenthetical
+ *  qualifiers (e.g. "✓ (fallback)") as a star marker with a hover tooltip,
+ *  keeping the cell visually compact. */
+function splitNote(text: string): { lead: string; note: string | null } {
+  const m = text.match(/^(.*?)\s?\(([^)]+)\)\s*$/);
+  return m ? { lead: m[1].trim(), note: m[2].trim() } : { lead: text, note: null };
+}
 ---
 
 <section class="page-hero">
@@ -67,6 +75,70 @@ const p = t.pages.privacy;
     <ul class="priv-list never-list">
       {p.never.items.map((it) => <li>{it}</li>)}
     </ul>
+  </section>
+
+  <section class="priv-block priv-table-block" id="reference">
+    <h2>{p.table.title}</h2>
+    <p class="priv-table-lede">{p.table.lede}</p>
+    <div class="priv-table-scroll" role="region" aria-label={p.table.title} tabindex="0">
+      <table class="priv-table priv-table--main">
+        <colgroup>
+          <col class="col-feature" />
+          <col class="col-mark" />
+          <col class="col-mark" />
+          <col class="col-data" />
+          <col class="col-switch" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th scope="col">{p.table.headers.feature}</th>
+            <th scope="col">{p.table.headers.local}</th>
+            <th scope="col">{p.table.headers.cloud}</th>
+            <th scope="col">{p.table.headers.transmitted}</th>
+            <th scope="col">{p.table.headers.killSwitch}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {p.table.rows.map((r) => {
+            const lc = splitNote(r.local);
+            const cc = splitNote(r.cloud);
+            const tc = splitNote(r.transmitted);
+            const kc = splitNote(r.killSwitch);
+            return (
+              <tr>
+                <th scope="row">{r.feature}</th>
+                <td>{lc.lead}{lc.note && <span class="cell-note" title={lc.note} tabindex="0" aria-label={lc.note}>*</span>}</td>
+                <td>{cc.lead}{cc.note && <span class="cell-note" title={cc.note} tabindex="0" aria-label={cc.note}>*</span>}</td>
+                <td>{tc.lead}{tc.note && <span class="cell-note" title={tc.note} tabindex="0" aria-label={tc.note}>*</span>}</td>
+                <td>{kc.lead}{kc.note && <span class="cell-note" title={kc.note} tabindex="0" aria-label={kc.note}>*</span>}</td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="priv-subheading">{p.table.permissionsTitle}</h3>
+    <div class="priv-table-scroll" role="region" aria-label={p.table.permissionsTitle} tabindex="0">
+      <table class="priv-table priv-table--narrow">
+        <thead>
+          <tr>
+            <th scope="col">{p.table.permissionsHeaders.permission}</th>
+            <th scope="col">{p.table.permissionsHeaders.purpose}</th>
+            <th scope="col">{p.table.permissionsHeaders.requiredFor}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {p.table.permissions.map((row) => (
+            <tr>
+              <th scope="row">{row.permission}</th>
+              <td>{row.purpose}</td>
+              <td>{row.requiredFor}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   </section>
 
   <p class="priv-footnote">{p.footerNote}</p>
@@ -209,5 +281,113 @@ const p = t.pages.privacy;
     font-size: var(--text-body-s);
     color: var(--text-tertiary);
     font-style: italic;
+  }
+  .priv-table-block > h2,
+  .priv-table-lede,
+  .priv-subheading {
+    max-width: var(--prose-max);
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .priv-table-lede {
+    color: var(--text-secondary);
+    line-height: var(--leading-body);
+    margin-bottom: var(--s-4);
+  }
+  .priv-subheading {
+    margin-top: var(--s-6);
+    margin-bottom: var(--s-3);
+    font-size: var(--text-body-l);
+    font-weight: var(--weight-heading);
+  }
+  .priv-table-scroll {
+    overflow-x: auto;
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    background: var(--bg-primary);
+  }
+  .priv-table-scroll:focus-visible {
+    outline: 2px solid var(--signal-blue);
+    outline-offset: 2px;
+  }
+  .priv-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-body-s);
+    line-height: var(--leading-body);
+  }
+  .priv-table--main {
+    min-width: 880px;
+    table-layout: fixed;
+  }
+  .priv-table--main .col-feature { width: 22%; }
+  .priv-table--main .col-mark    { width: 17%; }
+  .priv-table--main .col-data    { width: 22%; }
+  .priv-table--main .col-switch  { width: 22%; }
+  .priv-table--narrow {
+    min-width: 560px;
+  }
+  .priv-table th,
+  .priv-table td {
+    padding: var(--s-3) var(--s-4);
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid var(--border-subtle);
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+  }
+  .priv-table--main thead th:nth-child(2),
+  .priv-table--main thead th:nth-child(3),
+  .priv-table--main tbody td:nth-child(2),
+  .priv-table--main tbody td:nth-child(3) {
+    text-align: center;
+  }
+  .priv-table--main tbody td:nth-child(2),
+  .priv-table--main tbody td:nth-child(3) {
+    white-space: nowrap;
+  }
+  .priv-table thead th {
+    background: var(--surface-soft);
+    font-weight: var(--weight-heading);
+    color: var(--text-primary);
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    white-space: normal;
+    line-height: 1.3;
+  }
+  .priv-table tbody th {
+    font-weight: var(--weight-ui);
+    color: var(--text-primary);
+  }
+  .priv-table--main tbody th {
+    white-space: pre-line;
+  }
+  .cell-note {
+    display: inline-block;
+    margin-left: 3px;
+    color: var(--signal-blue);
+    font-weight: var(--weight-heading);
+    cursor: help;
+    line-height: 1;
+    vertical-align: super;
+    font-size: 0.85em;
+    text-decoration: none;
+  }
+  .cell-note:focus-visible {
+    outline: 2px solid var(--signal-blue);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+  .priv-table tbody td {
+    color: var(--text-secondary);
+  }
+  .priv-table tbody tr:last-child th,
+  .priv-table tbody tr:last-child td {
+    border-bottom: none;
+  }
+  .priv-table tbody tr:hover th,
+  .priv-table tbody tr:hover td {
+    background: var(--surface-soft);
   }
 </style>

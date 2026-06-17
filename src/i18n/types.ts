@@ -207,6 +207,27 @@ export interface Copy {
       };
       paths: { title: string; items: PrivacyNamedItem[] };
       never: { title: string; items: string[] };
+      table: {
+        title: string;
+        lede: string;
+        headers: {
+          feature: string;
+          local: string;
+          cloud: string;
+          transmitted: string;
+          killSwitch: string;
+        };
+        rows: {
+          feature: string;
+          local: string;
+          cloud: string;
+          transmitted: string;
+          killSwitch: string;
+        }[];
+        permissionsTitle: string;
+        permissionsHeaders: { permission: string; purpose: string; requiredFor: string };
+        permissions: { permission: string; purpose: string; requiredFor: string }[];
+      };
       footerNote: string;
     };
     download: {
