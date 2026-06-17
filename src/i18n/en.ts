@@ -19,6 +19,11 @@ export const en: Copy = {
       'Speak in any app. Get clean, polished text.',
       'Smart typing, captions, translation — built in.',
     ],
+    purposeMobile: [
+      'WiLL is a voice-first input method.',
+      'Speak in any app. Get polished text.',
+      'Smart typing, captions — built in.',
+    ],
     seeHow: 'FEEL WiLL',
   },
   speak: {

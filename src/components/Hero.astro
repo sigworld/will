@@ -147,7 +147,10 @@ const subWaveBars = 7;
 
     <p class="hero-purpose">
       {t.hero.purpose.map((line) => (
-        <span class="hero-purpose-line">{line}</span>
+        <span class="hero-purpose-line hero-purpose-line--wide">{line}</span>
+      ))}
+      {t.hero.purposeMobile.map((line) => (
+        <span class="hero-purpose-line hero-purpose-line--narrow">{line}</span>
       ))}
     </p>
     <a class="hero-arrow" href="#speak">
@@ -636,7 +639,6 @@ const subWaveBars = 7;
 
   /* Purpose paragraph and arrow stay hidden until the sub finishes typing —
      keeps the vertical reveal order title → sub → purpose → arrow. */
-  .hero-purpose,
   .hero-arrow {
     opacity: 0;
     transform: translateY(8px);
@@ -644,10 +646,52 @@ const subWaveBars = 7;
       opacity 500ms var(--ease-out-quad),
       transform 500ms var(--ease-out-quad);
   }
+  /* The purpose paragraph is the hero's closing statement, so it doesn't just
+     fade up — it lands in TWO beats:
+       1. A bright, luminous BLOCK snaps in — the text heavily blurred and
+          wrapped in a white-cyan bloom, so it reads as a glowing bar that
+          grabs the eye (you can't read it yet — that's the point).
+       2. The Gaussian blur then clears and the bloom settles into the resting
+          legibility shadow, resolving the block into legible prose.
+     Driven by a keyframe (not a transition) because the bloom rises then falls
+     — a non-monotonic curve a transition can't express. */
+  .hero-purpose {
+    opacity: 0;
+    filter: blur(16px);
+    transform: translateY(8px);
+  }
   .hero-sub-stage.is-done ~ .hero-purpose {
-    opacity: 1;
-    transform: translateY(0);
-    transition-delay: 60ms;
+    animation: purpose-fog-reveal 1850ms var(--ease-out-expo) 60ms forwards;
+  }
+  @keyframes purpose-fog-reveal {
+    /* Bright blurred block snaps in — attention beat. */
+    0% {
+      opacity: 0;
+      filter: blur(16px) brightness(1.3);
+      transform: translateY(8px);
+      text-shadow: 0 0 32px rgba(190, 222, 255, 0.95), 0 0 14px rgba(255, 255, 255, 0.9);
+    }
+    11% {
+      opacity: 1;
+      filter: blur(15px) brightness(1.35);
+      transform: translateY(4px);
+      text-shadow: 0 0 38px rgba(190, 222, 255, 1), 0 0 16px rgba(255, 255, 255, 0.95);
+    }
+    /* A brief beat at full bloom so the block registers as a highlight, then
+       straight into the de-blur — kept short so the bright phase doesn't linger. */
+    20% {
+      opacity: 1;
+      filter: blur(13px) brightness(1.3);
+      transform: translateY(3px);
+      text-shadow: 0 0 30px rgba(190, 222, 255, 0.85), 0 0 12px rgba(255, 255, 255, 0.75);
+    }
+    /* Then de-blurs into legible prose, bloom settling to the resting shadow. */
+    100% {
+      opacity: 1;
+      filter: blur(0) brightness(1);
+      transform: translateY(0);
+      text-shadow: 0 1px 3px rgba(4, 28, 78, 0.75), 0 2px 18px rgba(4, 28, 78, 0.55);
+    }
   }
   /* Arrow is the LAST hero beat — it begins just as the purpose paragraph
      finishes its own reveal (purpose: +60ms start + 500ms transition =
@@ -679,7 +723,8 @@ const subWaveBars = 7;
        Works in both themes (the sea is blue in light and dark). */
     color: var(--clean-white);
     /* Layered shadow — a tight dark edge + soft halo — so the white text stays
-       legible even where a foam crest passes behind the top line. */
+       legible even where a foam crest passes behind the top line. (The bright
+       reveal bloom lives in the `purpose-fog-reveal` keyframe, not here.) */
     text-shadow: 0 1px 3px rgba(4, 28, 78, 0.75), 0 2px 18px rgba(4, 28, 78, 0.55);
   }
   .hero-purpose-line {
@@ -687,6 +732,14 @@ const subWaveBars = 7;
     font-size: var(--text-body-l);
     line-height: var(--leading-body);
     text-wrap: balance;
+  }
+  /* Two purpose copies are rendered into the same paragraph; show only the one
+     for this width. The narrow set (i18n `purposeMobile`) is shorter so the
+     paragraph stays compact on phones. */
+  .hero-purpose-line--narrow { display: none; }
+  @media (max-width: 600px) {
+    .hero-purpose-line--wide { display: none; }
+    .hero-purpose-line--narrow { display: block; }
   }
   /* CJK breathing room: PingFang / Source Han glyphs fill ~95% of the em-box
      vs Inter's ~70%, so the same 1.5 leading + zero tracking that reads
@@ -800,7 +853,13 @@ const subWaveBars = 7;
     }
     .hero-purpose,
     .hero-arrow {
-      opacity: 1; transform: none; transition: none;
+      opacity: 1; filter: none; transform: none; transition: none;
+    }
+    /* Match the `.is-done ~` specificity so the fog-reveal keyframe is killed
+       (a lower-specificity `animation: none` on `.hero-purpose` wouldn't win). */
+    .hero-sub-stage.is-done ~ .hero-purpose {
+      animation: none;
+      opacity: 1; filter: none; transform: none;
     }
   }
 </style>

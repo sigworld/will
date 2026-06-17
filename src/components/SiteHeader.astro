@@ -126,14 +126,19 @@ const navClass = (slug: string) => (isActive(slug) ? 'is-active' : undefined);
     gap: var(--s-4);
     flex: 0 0 auto;
   }
+  /* The download CTA shows at every width — on mobile the nav links are
+     hidden (they only appear ≥768px), so this button is the sole top-of-page
+     download affordance there and must always be present. Slightly tighter
+     padding below 640px so it sits comfortably next to the lang toggle on
+     narrow screens. */
   .header-cta {
-    display: none;
+    display: inline-flex;
+    padding: 6px 12px;
+    font-size: var(--text-body-s);
   }
   @media (min-width: 640px) {
     .header-cta {
-      display: inline-flex;
       padding: 8px 16px;
-      font-size: var(--text-body-s);
     }
   }
 

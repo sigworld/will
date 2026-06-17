@@ -43,6 +43,8 @@ export interface Copy {
     headline: string;
     sub: string;
     purpose: readonly string[];
+    /** Shorter purpose copy shown on narrow (mobile) viewports. */
+    purposeMobile: readonly string[];
     seeHow: string;
   };
   speak: {
