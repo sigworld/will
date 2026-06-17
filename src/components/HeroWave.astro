@@ -1,0 +1,262 @@
+---
+// Voice ribbon filling the bottom of the hero — a web port of the WiLL client's
+// Siri-style ribbon (client/IMEBundle/Sources/SiriRibbonView.swift). A solid
+// Signal-Blue (#0A7BFF) block holds the hero's white purpose text + arrow; over
+// it, several light ribbons flow and morph continuously so the WHOLE block reads
+// as living audio rather than a static slab. Drawn per-frame on a <canvas> via
+// requestAnimationFrame (the browser analogue of the client's CVDisplayLink) —
+// the only way to get a genuinely morphing waveform, not a looped slide.
+// Purely decorative → aria-hidden; honors reduced-motion (one still frame) and
+// pauses when scrolled offscreen.
+---
+
+<div class="hero-tide" aria-hidden="true">
+  <canvas class="hero-ribbon"></canvas>
+</div>
+
+<style>
+  /* A band made entirely of the ribbons — no solid fill. The canvas draws large,
+     thick, brand-blue ribbons; a vertical mask dissolves the whole field into
+     the page background at the top and bottom edges and lets it saturate through
+     the middle (where the white purpose text + arrow float). `z-index: 0` — hero
+     content + `.below-hero` sit at z-index:1 above it. */
+  /* Occupies ~the bottom half of the first screen; runs a touch below the fold
+     so the thickest ribbon's gradient-out fades into the next section rather
+     than ending at a hard edge. No CSS mask — the fade in/out is the thickest
+     ribbon's own vertical gradient (the thin ribbons stay within its blue core,
+     so they never need masking). */
+  .hero-tide {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -22vh;
+    height: 104vh;
+    z-index: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+
+  .hero-ribbon {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  @media (max-width: 600px) {
+    .hero-tide { bottom: -22vh; height: 98vh; }
+  }
+</style>
+
+<script>
+  type Ribbon = {
+    frequency: number; phaseOffset: number;
+    amplitudeScale: number; thickness: number; opacity: number;
+  };
+
+  // Front → back. The LAST entry is the backing: a thick, deep, near-opaque,
+  // barely-moving Signal-Blue band that guarantees a saturated blue core under
+  // the white text. The earlier (front) entries are the lively ribbons — thinner
+  // and translucent — that flow OVER the backing as shifting tonal bands and
+  // wavy edges. So the block is all ribbon (no static fill) yet the text always
+  // has its blue backing. Last index is drawn first (back); index 0 drawn last.
+  const RIBBONS: Ribbon[] = [
+    { frequency: 2.6, phaseOffset: 1.3, amplitudeScale: 0.55, thickness: 0.16, opacity: 0.50 },
+    { frequency: 2.0, phaseOffset: 0.0, amplitudeScale: 0.95, thickness: 0.30, opacity: 0.60 },
+    { frequency: 1.6, phaseOffset: 2.8, amplitudeScale: 1.05, thickness: 0.34, opacity: 0.58 },
+    { frequency: 2.3, phaseOffset: 0.6, amplitudeScale: 0.78, thickness: 0.26, opacity: 0.56 },
+    { frequency: 3.0, phaseOffset: 2.0, amplitudeScale: 0.46, thickness: 0.20, opacity: 0.50 },
+    { frequency: 0.7, phaseOffset: 3.5, amplitudeScale: 0.40, thickness: 0.72, opacity: 0.95 },
+  ];
+  const BACKING = RIBBONS.length - 1;
+
+  // Wavelength anchor (px). The wave is driven off absolute x / WAVE_REF rather
+  // than the normalized 0→1 sweep, so each cycle is a FIXED pixel width on every
+  // window — a narrow viewport simply shows fewer cycles instead of squeezing the
+  // same count into less space (which read as crowded). 2592 = the visible span
+  // at the 1440 design width (1440 × (1 + 2·EXT), EXT = 0.4), so the look at that
+  // width is unchanged.
+  const WAVE_REF = 2592;
+
+  // Brand-theme blues anchored on Signal Blue #0A7BFF — deep→light, every shade
+  // unmistakably brand blue (lights capped so translucent top ribbons tint the
+  // core without ever washing it pale). Index aligns with RIBBONS; the backing
+  // (last) is the deepest.
+  const PALETTE: [number, number, number][] = [
+    [86, 172, 255],   // sky accent (thin top ribbon)
+    [30, 138, 255],
+    [10, 123, 255],   // Signal Blue
+    [44, 152, 255],
+    [8, 110, 240],
+    [0, 84, 210],     // deep backing
+  ];
+
+  function initRibbon(canvas: HTMLCanvasElement) {
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    let w = 0, h = 0, dpr = 1;
+    function resize() {
+      const rect = canvas.getBoundingClientRect();
+      if (!rect.width || !rect.height) return;
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      w = rect.width; h = rect.height;
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
+      ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function waveY(x: number, r: Ribbon, maxAmp: number, env: number, phase: number) {
+      const u = x / WAVE_REF;                                    // fixed px wavelength
+      const wBase = Math.cos(Math.PI * 4.0 * u);                 // standing wave
+      const theta = r.frequency * Math.PI * 2.0 * u
+        + phase * (1.0 + r.phaseOffset * 0.3) + r.phaseOffset;   // traveling wave
+      const blend = wBase * 0.6 + Math.sin(theta) * 0.4;
+      return blend * maxAmp * env;
+    }
+
+    function draw(phase: number) {
+      ctx!.clearRect(0, 0, w, h);
+      // Idle "breathing" — kept HIGH and shallow so the band stays a thick blue
+      // mass (the text always has its blue backing); the life comes from the
+      // flowing ribbon shapes and overlapping shades, not from big size swings.
+      let amp = 0.82 + 0.09 * Math.sin(phase * 0.5) + 0.05 * Math.sin(phase * 0.27 + 1.1);
+      amp = Math.max(0.60, Math.min(0.98, amp));
+
+      // Ribbons centered in the band and sized to the full block height so the
+      // thick bodies overlap into a saturated blue core, fading to bg (the mask)
+      // at top + bottom. The white purpose text floats over this dense middle.
+      const centerY = h * 0.5;
+      // Draw across a range that runs OFF both sides of the window, so each
+      // ribbon's tapered pinch-points sit off-screen and only its full-width
+      // mid-section is visible — no awkward narrowing at the window edges.
+      const EXT = 0.4;
+      const x0 = -EXT * w;
+      const span = w * (1 + 2 * EXT);
+      const steps = Math.max(96, Math.floor(span / 3));
+
+      // Back-to-front so brighter front ribbons overlay the dimmer back ones.
+      for (let i = RIBBONS.length - 1; i >= 0; i--) {
+        const r = RIBBONS[i];
+        const maxAmp = amp * r.amplitudeScale * h * 0.18;
+        const halfThick = r.thickness * h * 0.42 * (0.7 + amp * 0.3);
+
+        const c1 = PALETTE[i % PALETTE.length];
+
+        // The thick backing carries the field's fade IN ITS OWN FILL — no
+        // separate layer. It's drawn as thin vertical strips, and each strip is
+        // filled with a gradient anchored to THAT strip's own upper and lower
+        // edges (transparent at the edge, deep blue through the middle). Because
+        // every gradient is tied to the local edge position, the feather follows
+        // the ribbon's wavy contour instead of cutting a flat horizontal line.
+        if (i === BACKING) {
+          // One solid band with a wavy TOP and BOTTOM edge; a blur filter feathers
+          // both contours so the band fades softly into the page background at top
+          // AND bottom — no hard cut, no flat solid base. The bottom feather is
+          // meant to sit BELOW the fold (the band geometry places it there on both
+          // desktop and mobile), so the first screen shows a saturated blue core
+          // that dissolves gently past the fold into the next section.
+          ctx!.save();
+          ctx!.filter = `blur(${Math.round(h * 0.075)}px)`;
+          ctx!.beginPath();
+          for (let s = 0; s <= steps; s++) {
+            const t = s / steps;
+            const x = x0 + t * span;
+            const env = Math.min(1, Math.sin(Math.PI * t) * 2.4);
+            const y = centerY + waveY(x, r, maxAmp, env, phase) + halfThick * env;
+            s === 0 ? ctx!.moveTo(x, y) : ctx!.lineTo(x, y);
+          }
+          for (let s = steps; s >= 0; s--) {
+            const t = s / steps;
+            const x = x0 + t * span;
+            const env = Math.min(1, Math.sin(Math.PI * t) * 2.4);
+            const y = centerY + waveY(x, r, maxAmp, env, phase) - halfThick * env;
+            ctx!.lineTo(x, y);
+          }
+          ctx!.closePath();
+          ctx!.fillStyle = `rgba(${c1[0]},${c1[1]},${c1[2]},1)`;
+          ctx!.fill();
+          ctx!.restore();
+          continue;
+        }
+
+        // Lively ribbon: one band path with a left→right tonal gradient.
+        ctx!.beginPath();
+        for (let s = 0; s <= steps; s++) {
+          const t = s / steps;
+          const x = x0 + t * span;
+          const env = Math.min(1, Math.sin(Math.PI * t) * 2.4);     // taper at edges
+          const y = centerY + waveY(x, r, maxAmp, env, phase) + halfThick * env;
+          s === 0 ? ctx!.moveTo(x, y) : ctx!.lineTo(x, y);
+        }
+        for (let s = steps; s >= 0; s--) {
+          const t = s / steps;
+          const x = x0 + t * span;
+          const env = Math.min(1, Math.sin(Math.PI * t) * 2.4);
+          const y = centerY + waveY(x, r, maxAmp, env, phase) - halfThick * env;
+          ctx!.lineTo(x, y);
+        }
+        ctx!.closePath();
+
+        const c2 = PALETTE[(i + 2) % PALETTE.length];
+        const g = ctx!.createLinearGradient(0, 0, w, 0);
+        g.addColorStop(0.0, `rgba(${c1[0]},${c1[1]},${c1[2]},${r.opacity * 0.72})`);
+        g.addColorStop(0.5, `rgba(${c1[0]},${c1[1]},${c1[2]},${r.opacity})`);
+        g.addColorStop(1.0, `rgba(${c2[0]},${c2[1]},${c2[2]},${r.opacity * 0.72})`);
+        ctx!.fillStyle = g;
+        ctx!.fill();
+
+        // Glowing centerline as a flowing highlight on the lively mid ribbons
+        // only (not the backing, not the thin top accent). Tinted light-blue, not
+        // white, so it reads as a glint without washing the white type.
+        if (i >= 1 && i <= 3) {
+          ctx!.beginPath();
+          for (let s = 0; s <= steps; s++) {
+            const t = s / steps;
+            const x = x0 + t * span;
+            const env = Math.min(1, Math.sin(Math.PI * t) * 2.4);
+            const y = centerY + waveY(x, r, maxAmp, env, phase);
+            s === 0 ? ctx!.moveTo(x, y) : ctx!.lineTo(x, y);
+          }
+          ctx!.lineWidth = 1.2;
+          ctx!.lineCap = 'round';
+          ctx!.strokeStyle = `rgba(200,228,255,${r.opacity * 0.4})`;
+          ctx!.shadowColor = `rgba(200,228,255,${r.opacity * 0.4 * amp})`;
+          ctx!.shadowBlur = 6;
+          ctx!.stroke();
+          ctx!.shadowBlur = 0;
+        }
+      }
+    }
+
+    let phase = 0, last = 0, raf = 0, running = false;
+    function frame(now: number) {
+      if (!running) return;
+      if (!last) last = now;
+      const dt = Math.min((now - last) / 1000, 1 / 30);
+      last = now;
+      phase += dt * 0.8;            // slow, ambient flow (client uses ~3.6 while live)
+      draw(phase);
+      raf = requestAnimationFrame(frame);
+    }
+    function start() { if (running) return; running = true; last = 0; raf = requestAnimationFrame(frame); }
+    function stop() { running = false; if (raf) cancelAnimationFrame(raf); raf = 0; }
+
+    resize();
+    const ro = new ResizeObserver(() => { resize(); if (!running) draw(phase); });
+    ro.observe(canvas);
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      draw(1.2);                    // one calm still frame, no animation
+      return;
+    }
+    // Only animate while the hero is on screen.
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) e.isIntersecting ? start() : stop();
+    }, { threshold: 0 });
+    io.observe(canvas);
+  }
+
+  document.querySelectorAll<HTMLCanvasElement>('canvas.hero-ribbon').forEach(initRibbon);
+</script>

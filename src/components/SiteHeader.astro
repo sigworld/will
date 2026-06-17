@@ -51,10 +51,28 @@ const navClass = (slug: string) => (isActive(slug) ? 'is-active' : undefined);
     z-index: 50;
     background: var(--bg-primary);
     border-bottom: 1px solid transparent;
-    transition: border-color var(--dur-fast) var(--ease-out-quad);
+    transition:
+      background var(--dur-fast) var(--ease-out-quad),
+      border-color var(--dur-fast) var(--ease-out-quad),
+      box-shadow var(--dur-fast) var(--ease-out-quad);
+  }
+  /* Once content scrolls under it, the bar turns to frosted glass — a
+     translucent background plus a backdrop blur so the page (e.g. the blue
+     tide) blurs softly beneath it. At the very top it stays opaque so it reads
+     as solid over the hero. */
+  @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .site-header.is-stuck {
+      /* Translucent glass with a light blur — sharp enough that the page
+         reads through it, not a heavy frost. */
+      background: rgba(255, 255, 255, 0.55);
+      -webkit-backdrop-filter: saturate(180%) blur(12px);
+      backdrop-filter: saturate(180%) blur(12px);
+    }
   }
   .site-header.is-stuck {
-    border-bottom-color: var(--border-subtle);
+    /* Border barely there — the blur + faint shadow do the separating. */
+    border-bottom-color: rgba(22, 24, 26, 0.035);
+    box-shadow: 0 6px 24px rgba(22, 24, 26, 0.04);
   }
   .header-inner {
     display: flex;
@@ -142,14 +160,27 @@ const navClass = (slug: string) => (isActive(slug) ? 'is-active' : undefined);
     .site-header.is-hero-deferred .header-nav,
     .site-header.is-hero-deferred .header-right { transition: none; }
   }
+
+  /* Dark mode: frost the onyx background instead of white. */
+  @media (prefers-color-scheme: dark) {
+    @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+      .site-header.is-stuck {
+        background: rgba(22, 24, 26, 0.55);
+      }
+    }
+    .site-header.is-stuck {
+      border-bottom-color: rgba(255, 255, 255, 0.05);
+      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.2);
+    }
+  }
 </style>
 
 <script>
-  // Sticky-header border appears after 200px scroll, per planning/02-design-system.md.
+  // Frosted-glass + border kick in as soon as content scrolls under the bar.
   const header = document.querySelector<HTMLElement>('[data-site-header]');
   if (header) {
     const onScroll = () => {
-      header.classList.toggle('is-stuck', window.scrollY > 200);
+      header.classList.toggle('is-stuck', window.scrollY > 24);
     };
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });

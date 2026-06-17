@@ -2,6 +2,7 @@
 import type { Locale } from '../i18n';
 import { getCopy } from '../i18n';
 import Wordmark from './Wordmark.astro';
+import HeroWave from './HeroWave.astro';
 
 interface Props {
   locale: Locale;
@@ -55,6 +56,7 @@ const subWaveBars = 7;
 ---
 
 <section class="hero">
+  <HeroWave />
   <div class="container hero-inner">
     <div class="hero-title-stage" data-hero-title>
       <h1 class="hero-headline hero-headline-fog">
@@ -183,6 +185,12 @@ const subWaveBars = 7;
     min-height: 100svh;
     display: flex;
     flex-direction: column;
+    /* Positioning context for the decorative tide band (HeroWave). Kept at
+       z-index:auto on purpose so it does NOT establish a stacking context —
+       the band (z-index:0) then competes in the root context alongside the
+       `.below-hero` wrapper (z-index:1), letting the tide bleed across the
+       seam and show through the next section's transparent areas. */
+    position: relative;
   }
   @media (min-width: 768px) {
     .hero { padding: var(--s-10) 0 var(--s-8); }
@@ -193,6 +201,9 @@ const subWaveBars = 7;
     align-items: center;
     gap: var(--s-5);
     flex: 1;
+    /* Sit above the tide band (z-index:-1) so hero content is never veiled. */
+    position: relative;
+    z-index: 1;
   }
 
   /* ─── Title stage: each phrase owns its own waveform sized to its own
@@ -663,7 +674,13 @@ const subWaveBars = 7;
        paragraph down to the lower-middle, near the visual center of
        gravity, while leaving room for the arrow at the bottom. */
     margin: auto auto 0;
-    color: var(--text-secondary);
+    /* The purpose paragraph + arrow float on the brand-blue tide (HeroWave),
+       so they invert to white with a soft shadow for legibility on the blue.
+       Works in both themes (the sea is blue in light and dark). */
+    color: var(--clean-white);
+    /* Layered shadow — a tight dark edge + soft halo — so the white text stays
+       legible even where a foam crest passes behind the top line. */
+    text-shadow: 0 1px 3px rgba(4, 28, 78, 0.75), 0 2px 18px rgba(4, 28, 78, 0.55);
   }
   .hero-purpose-line {
     display: block;
@@ -699,15 +716,27 @@ const subWaveBars = 7;
        (separated only by this fixed --s-6 top margin) and floats as a
        unit to the visual center of the viewport. */
     margin-top: var(--s-6);
-    margin-bottom: auto;
-    color: var(--text-tertiary);
+    /* Pin the purpose+arrow pair lower in the viewport (fixed offset from the
+       hero bottom instead of `auto`, which would re-center them) so they sit
+       well down inside the blue sea rather than up at the waterline. The free
+       space all collects above via the purpose paragraph's `margin-top: auto`. */
+    margin-bottom: 16vh;
+    /* On the blue tide — bright white, like the purpose paragraph above it. */
+    color: rgba(255, 255, 255, 0.82);
+    text-shadow: 0 1px 14px rgba(8, 60, 130, 0.35);
     text-decoration: none;
     border-bottom: none;
     transition: color var(--dur-fast) var(--ease-out-quad);
   }
   .hero-arrow:hover {
-    color: var(--text-primary);
+    color: var(--clean-white);
     border-bottom: none;
+  }
+  /* On mobile the band sits lower (so it clears the subtitle and its base feathers
+     out well below the fold, consistent with desktop). Drop the purpose+arrow pair
+     down to match so the white text lands on the band's solid blue, not the feather. */
+  @media (max-width: 600px) {
+    .hero-arrow { margin-bottom: 9vh; }
   }
   .hero-arrow-inner {
     display: inline-flex;

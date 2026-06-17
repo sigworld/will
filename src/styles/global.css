@@ -356,6 +356,13 @@ a:hover {
    hero's animation completes, then reveals top-down with a stagger so the
    visitor's eye is led down the page section by section. */
 
+/* Sits above the hero's tide band (z-index:0) where the band bleeds across the
+   seam, so feature content paints over it (the tide still shows through the
+   section's transparent areas) rather than being veiled by it. */
+.below-hero {
+  position: relative;
+  z-index: 1;
+}
 .below-hero > * {
   opacity: 0;
   transform: translateY(24px);
