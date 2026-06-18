@@ -254,6 +254,20 @@ const t = getCopy(locale);
     margin-right: auto;
   }
 
+  @media (max-width: 520px) {
+    .composer {
+      min-height: 110px;
+      font-size: var(--text-body);
+      padding: var(--s-3);
+    }
+    .composer-text { inset: var(--s-3) var(--s-3); }
+    .composer-cursor { left: var(--s-3); top: var(--s-3); height: 18px; }
+    .mic-button { width: 48px; height: 48px; }
+    .dock { gap: var(--s-3); margin-top: var(--s-3); }
+    .dock-status { font-size: var(--text-body-s); }
+    .dock-key { font-size: var(--text-caption); }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .composer-cursor,
     .mic-waves span { animation: none; }

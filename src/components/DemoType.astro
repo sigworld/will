@@ -141,6 +141,15 @@ const t = getCopy(locale);
     transform-origin: top left;
     animation: popup-in var(--dur-fast) var(--ease-out-expo);
   }
+  @media (max-width: 520px) {
+    /* Don't force a wider popup than the editor itself on phones. */
+    .candidate-popup {
+      min-width: 0;
+      left: 0 !important;
+      right: 0;
+      max-width: 100%;
+    }
+  }
   @keyframes popup-in {
     from { opacity: 0; transform: translateY(-4px) scale(0.98); }
     to   { opacity: 1; transform: translateY(0)    scale(1.00); }

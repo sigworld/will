@@ -167,7 +167,32 @@ const t = getCopy(locale);
     gap: 8px;
   }
   @media (max-width: 640px) {
-    .stage-meeting { grid-template-columns: 1fr; }
+    /* Mobile Meet UX: speaker tile fills the stage, "You" floats as a
+       picture-in-picture in the top-right corner. */
+    .stage-meeting {
+      display: block;
+      position: relative;
+    }
+    .stage-meeting .tile-speaker {
+      position: absolute;
+      inset: 0;
+    }
+    .stage-meeting .tile-you {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 88px;
+      height: 110px;
+      z-index: 1;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .stage-meeting .tile-you .tile-avatar {
+      width: 36px;
+      height: 36px;
+      font-size: 14px;
+    }
+    .stage-meeting .tile-you .tile-name { font-size: 11px; }
   }
   .tile {
     border-radius: 10px;
@@ -641,6 +666,33 @@ const t = getCopy(locale);
     max-width: 64ch;
     margin-left: auto;
     margin-right: auto;
+  }
+
+  @media (max-width: 520px) {
+    /* Capsule wraps to more lines at narrow widths — reserve a bit more
+       room and shrink type so the wrapped capsule doesn't crash into the
+       stage content above it. */
+    .caption-body { min-height: 280px; }
+    .stage {
+      padding: var(--s-2) var(--s-2) calc(var(--s-2) + 180px);
+      min-height: 280px;
+    }
+    .caption-capsule {
+      width: calc(100% - var(--s-3));
+      bottom: var(--s-2);
+    }
+    .capsule-body { padding: var(--s-2) var(--s-3); min-height: 0; }
+    .capsule-source { font-size: var(--text-caption); }
+    .capsule-target { font-size: var(--text-body); }
+    .capsule-key { padding: 6px var(--s-2); gap: var(--s-2); flex-wrap: wrap; }
+    .capsule-key-label { font-size: 10px; }
+    .tile-avatar { width: 52px; height: 52px; font-size: 20px; }
+    .music-card { gap: var(--s-3); padding: var(--s-2) var(--s-3); }
+    .album-art { width: 64px; height: 64px; }
+    .album-art-glyph { font-size: 24px; }
+    .video-frame { min-height: 160px; }
+    .video-play { width: 48px; height: 48px; }
+    .voice-waveform { min-width: 0; }
   }
 </style>
 

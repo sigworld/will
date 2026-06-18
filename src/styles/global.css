@@ -146,10 +146,14 @@ a:hover {
 /* ─── Sections ─── */
 
 .section {
-  padding: var(--s-9) 0 var(--s-8);
+  padding: var(--s-7) 0 var(--s-6);
 }
 .section-tight {
-  padding: var(--s-7) 0;
+  padding: var(--s-6) 0;
+}
+@media (min-width: 768px) {
+  .section { padding: var(--s-9) 0 var(--s-8); }
+  .section-tight { padding: var(--s-7) 0; }
 }
 
 .section-header {
@@ -214,7 +218,10 @@ a:hover {
   margin: 0 auto;
   background: var(--surface-soft);
   border-radius: var(--radius-lg);
-  padding: var(--s-5);
+  padding: var(--s-3);
+}
+@media (min-width: 600px) {
+  .demo-container { padding: var(--s-5); }
 }
 @media (min-width: 768px) {
   .demo-container { padding: var(--s-6); }
@@ -236,12 +243,14 @@ a:hover {
   padding: 10px var(--s-4);
   background: var(--surface-soft);
   border-bottom: 1px solid var(--border-subtle);
+  min-width: 0;
 }
 .app-dot {
   width: 11px;
   height: 11px;
   border-radius: 50%;
   display: inline-block;
+  flex-shrink: 0;
 }
 .app-dot-r { background: #FF5F57; }
 .app-dot-y { background: #FEBC2E; }
@@ -254,14 +263,36 @@ a:hover {
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  min-width: 0;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .app-title-channel {
   color: var(--text-tertiary);
   font-weight: var(--weight-body);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+@media (max-width: 520px) {
+  .app-titlebar { padding: 8px var(--s-3); gap: 6px; }
+  .app-title {
+    margin-left: var(--s-2);
+    font-size: var(--text-caption);
+    gap: 6px;
+  }
+  /* Channel suffix ("— general") is decorative; drop it when it's the
+     first thing that would force the title to truncate mid-name. */
+  .app-title-channel { display: none; }
 }
 .app-body {
-  padding: var(--s-5);
+  padding: var(--s-3);
   position: relative;
+}
+@media (min-width: 600px) {
+  .app-body { padding: var(--s-5); }
 }
 @media (min-width: 768px) {
   .app-body { padding: var(--s-6); }
@@ -521,6 +552,21 @@ a:hover {
     font-size: var(--text-caption);
     bottom: var(--s-2);
     left: var(--s-2);
+  }
+}
+@media (max-width: 520px) {
+  /* Detach the corner hint chips from the demo card on phones — they steal
+     space from the gesture-row and overlap the app frame at narrow widths. */
+  .demo-shortcut,
+  .demo-hint-left {
+    position: static;
+    display: flex;
+    width: fit-content;
+    margin: var(--s-3) auto 0;
+    max-width: 100%;
+    flex-wrap: wrap;
+    justify-content: center;
+    opacity: 1;
   }
 }
 .demo-shortcut-label {

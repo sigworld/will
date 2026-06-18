@@ -483,6 +483,25 @@ const targetLangLabel = locale === 'zh' ? 'EN' : '中';
     margin-right: auto;
   }
 
+  @media (max-width: 520px) {
+    /* Mode-bar floats above the composer and steals reading width; pin its
+       text size down and let it wrap onto two short lines if needed. */
+    .mode-bar {
+      right: 8px;
+      padding: 3px 8px;
+      font-size: 10px;
+    }
+    /* Waveform: drop the uppercase label and tighten the bar grid so it
+       doesn't overflow the composer at ~320px viewports. */
+    .composer-waveform { gap: var(--s-2); }
+    .waveform-label { display: none; }
+    .waveform-bars { gap: 2px; flex-wrap: nowrap; }
+    .waveform-bars span { width: 2px; }
+    /* Avatars/messages compete with text — give text more room. */
+    .msg { gap: 8px; }
+    .msg-avatar { width: 30px; height: 30px; font-size: 13px; }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .composer.is-listening .mode-bar-dot,
     .composer.is-listening .waveform-label-dot,
