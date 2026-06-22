@@ -680,10 +680,10 @@ export const zh: Copy = {
     download: {
       title: '下载如义',
       lede: 'macOS 14 或更高。Apple Silicon 和 Intel 都支持。免费下载。',
-      button: '下载如义 1.0.4(macOS)',
+      button: '下载如义 1.0.3(macOS)',
       buttonAvailability: '现已发布',
-      fileMeta: 'macOS 14+ · Universal(Apple Silicon 与 Intel) · 59.9 MB · 免费',
-      checksumLabel: 'SHA-256:9df8d9a94289f4f1a5a81776d27c85dd1decb5e2fb91708dc9977b3d1a87ede0',
+      fileMeta: 'macOS 14+ · Universal(Apple Silicon 与 Intel) · 60.9 MB · 免费',
+      checksumLabel: 'SHA-256:ae68fcaad1f1100a9d363a5324f6815f377c480d72f5feb9ec1330a21a7ca175',
       requirementsTitle: '系统要求',
       requirements: [
         'macOS 14(Sonoma)或更高',
