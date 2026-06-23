@@ -524,6 +524,29 @@ a:hover {
   font-size: var(--text-caption);
   user-select: none;
 }
+/* UI navigation tag: a whisper-thin signal-blue outline frame around
+   paths like "Preferences → Refinement". Reads as a discrete UI
+   artifact, not prose, not a hyperlink. Authors wrap each `→` in a
+   `<span class="nav-arrow">` so the separator dims via text-tertiary
+   while each segment stays text-primary. Global so it works wherever
+   set:html renders the strings (PageFeatures, DemoTranslate, Privacy,
+   PageDownload, etc.). */
+mark.nav {
+  display: inline;
+  padding: 1px 8px;
+  border: 1px solid rgba(10, 123, 255, 0.45);
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-primary);
+  text-decoration: none;
+  font-weight: var(--weight-ui);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+mark.nav .nav-arrow {
+  color: var(--text-tertiary);
+  margin: 0 4px;
+}
 .demo-shortcut-segment {
   display: inline-flex;
   align-items: center;

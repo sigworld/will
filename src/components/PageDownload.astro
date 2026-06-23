@@ -53,7 +53,7 @@ const dmgHref = `https://github.com/sigworld/will/releases/download/v${dmgVersio
           <span class="step-num">{i + 1}</span>
           <div class="step-body">
             <h3>{step.title}</h3>
-            <p>{step.body}</p>
+            <p set:html={step.body} />
           </div>
         </li>
       ))}

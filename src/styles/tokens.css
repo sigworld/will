@@ -95,6 +95,18 @@
   --radius-lg: 16px;
 }
 
+/* ─── ZH locale typography adjustment ───
+   CJK glyphs are denser than Latin at the same em size — they read as
+   slightly heavier and need a bit more vertical breathing room. We
+   nudge body sizes down ~1px and loosen leading on the ZH locale only.
+   Headings are left alone (their tight leading is already calibrated). */
+html[lang^="zh"] {
+  --text-body-l: 17px;
+  --text-body: 15px;
+  --text-body-s: 13px;
+  --leading-body: 1.75;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --bg-primary: var(--onyx);

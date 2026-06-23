@@ -46,7 +46,7 @@ const privacyHref = locale === 'zh' ? '/zh/privacy' : '/privacy';
       </div>
       <div class="killswitch-copy">
         <h3>{p.killSwitch.headline}</h3>
-        <p>{p.killSwitch.body}</p>
+        <p set:html={p.killSwitch.body} />
       </div>
     </div>
 

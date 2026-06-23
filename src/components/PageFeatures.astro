@@ -28,7 +28,7 @@ const brandify = (s: string) =>
 // keys become their own chip; named keys (Tab, Esc, Option, Shift, …)
 // stay grouped as a single chip. Space and "+" act as separators inside
 // the kbd source, so "Option+Shift" tokenizes cleanly.
-const multiCharKeys = ['Tab', 'Enter', 'Return', 'Escape', 'Esc', 'Space', 'Cmd', 'Shift', 'Option'];
+const multiCharKeys = ['Tab', 'Enter', 'Return', 'Escape', 'Esc', 'Space', 'Cmd', 'Shift', 'Option', 'Control'];
 function tokenizeShortcut(input: string): string[] {
   const tokens: string[] = [];
   let i = 0;
@@ -50,7 +50,14 @@ const renderShortcuts = (html: string): string =>
     ).join('');
     return `<span class="kbd-group">${chips}</span>`;
   });
-const decorate = (s: string) => renderShortcuts(brandify(s));
+// UI navigation paths like "Preferences → Refinement" are wrapped in
+// <mark class="nav">…</mark> in the copy. We post-process by dropping a
+// span around the → so it dims via CSS (text-tertiary) inside the
+// signal-blue outline frame; segments stay text-primary.
+const wrapNavArrows = (s: string): string =>
+  s.replace(/<mark class="nav">([\s\S]+?)<\/mark>/g, (_, content: string) =>
+    `<mark class="nav">${content.replace(/→/g, '<span class="nav-arrow" aria-hidden="true">→</span>')}</mark>`);
+const decorate = (s: string) => renderShortcuts(wrapNavArrows(brandify(s)));
 
 const schematics: Record<string, string> = {
   speak: `<svg viewBox="0 0 100 80" fill="none" aria-hidden="true">
@@ -140,9 +147,6 @@ const schematics: Record<string, string> = {
         <p class="feature-lede" set:html={brandify(s.lede)} />
         <div class="prose feature-prose">
           {s.body.map((p) => <p set:html={decorate(p)} />)}
-        </div>
-        <div class="feature-specs">
-          {s.specs.map((spec) => <span class="chip spec-chip" set:html={decorate(spec)} />)}
         </div>
       </section>
     </>
@@ -426,8 +430,14 @@ const schematics: Record<string, string> = {
   }
   /* On a Signal Blue background (.btn-primary), the brand color collides
      with the button fill and "如义" disappears. Fall back to the button's
-     own text color; weight + CJK font still carry the brand cue. */
-  :global(.btn-primary .brand-zh) {
+     own text color; weight + CJK font still carry the brand cue. Same
+     issue inside hl-start / hl-end brush strokes (white text on signal
+     blue) and hl-mode (signal-blue text on white) — let "如义" inherit
+     the surrounding color so it stays legible. */
+  :global(.btn-primary .brand-zh),
+  :global(mark.hl-start .brand-zh),
+  :global(mark.hl-end .brand-zh),
+  :global(mark.hl-mode .brand-zh) {
     color: inherit;
   }
   .feature-prose :global(mark.hl) {
@@ -439,29 +449,77 @@ const schematics: Record<string, string> = {
     text-underline-offset: 3px;
     text-decoration-skip-ink: none;
   }
-  /* Keycap chips inside body / specs / highlighted spans. Center the
-     chip on the text's x-height (so it sits visually centered against the
+  /* Speak section uses three custom highlight treatments instead of the
+     default underline: `.hl-mode` names a mode (Ease / Live) in brand
+     color; `.hl-start` / `.hl-end` bookend the feature with a static
+     signal-blue brush-stroke. Start is heavy on the left and trails to
+     nothing; end mirrors that — nothing on the left, building to heavy
+     on the right — so the eye reads "begin → … → end". No animation. */
+  .feature-prose :global(mark.hl-mode) {
+    background: transparent;
+    color: var(--signal-blue);
+    font-weight: var(--weight-heading);
+    text-decoration: none;
+  }
+  .feature-prose :global(mark.hl-start),
+  .feature-prose :global(mark.hl-end) {
+    display: inline;
+    padding: 6px 8px;
+    border-radius: 6px;
+    color: #fff;
+    text-decoration: none;
+    background-color: transparent;
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
+  /* Brand blue fills the whole sentence; only the trailing edge fades
+     into the page bg so the brush feels "lifted" rather than stamped.
+     Text stays uniformly white over the saturated band. */
+  .feature-prose :global(mark.hl-start) {
+    background-image: linear-gradient(90deg,
+      var(--signal-blue) 0%,
+      var(--signal-blue) 92%,
+      rgba(10, 123, 255, 0) 100%);
+  }
+  /* hl-end: mirror — only the leading edge fades in. */
+  .feature-prose :global(mark.hl-end) {
+    background-image: linear-gradient(90deg,
+      rgba(10, 123, 255, 0) 0%,
+      var(--signal-blue) 8%,
+      var(--signal-blue) 100%);
+  }
+  /* Keycap chips inside both marks: transparent fill (so the chip
+     doesn't punch through the blue band) + white glyph + white outline.
+     The "+" separator between chips defaults to tertiary text color
+     globally, so override it back to white here too. */
+  .feature-prose :global(mark.hl-start) :global(.kbd),
+  .feature-prose :global(mark.hl-end) :global(.kbd) {
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.55);
+    color: #fff;
+    box-shadow: none;
+  }
+  .feature-prose :global(mark.hl-start) :global(.kbd-plus),
+  .feature-prose :global(mark.hl-end) :global(.kbd-plus) {
+    color: rgba(255, 255, 255, 0.78);
+  }
+  /* mark.nav / .nav-arrow styling lives in global.css so it works
+     across components (DemoTranslate, Privacy, PageDownload) — not
+     just inside .feature-prose. The wrapNavArrows post-process below
+     still injects the .nav-arrow spans for strings rendered via the
+     PageFeatures decorate() pipeline; other components write the
+     spans inline in their i18n strings. */
+  /* Keycap chips inside body / highlighted spans. Center the chip on
+     the text's x-height (so it sits visually centered against the
      surrounding line of prose rather than dangling below the baseline)
      and drop the mark.hl underline that would otherwise cut through. */
   .feature-prose :global(.kbd-group),
-  .feature-prose :global(.kbd),
-  .spec-chip :global(.kbd-group),
-  .spec-chip :global(.kbd) {
+  .feature-prose :global(.kbd) {
     vertical-align: middle;
   }
   .feature-prose :global(mark.hl) :global(.kbd-group),
   .feature-prose :global(mark.hl) :global(.kbd) {
     text-decoration: none;
-  }
-  .feature-specs {
-    margin-top: var(--s-4);
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--s-2);
-  }
-  .spec-chip {
-    background: var(--surface-soft);
-    color: var(--text-secondary);
   }
   .features-cta {
     padding: var(--s-8) 0 var(--s-7);

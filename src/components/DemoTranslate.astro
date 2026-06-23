@@ -108,7 +108,7 @@ const targetLangLabel = locale === 'zh' ? 'EN' : '中';
       </div>
 
       <div class="demo-hint demo-hint-left" aria-hidden="true">
-        <span class="demo-shortcut-label">{t.translate.shortcutHint.turnOn}</span>
+        <span class="demo-shortcut-label" set:html={t.translate.shortcutHint.turnOn} />
       </div>
       <div class="demo-shortcut" aria-hidden="true" data-shortcut-hint>
         <Keycaps shortcut={t.translate.shortcutHint.selectKey} />
