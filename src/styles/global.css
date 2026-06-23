@@ -5,8 +5,13 @@ html, body {
   font-size: var(--text-body);
   font-weight: var(--weight-body);
   color: var(--text-primary);
-  background: var(--bg-primary);
 }
+
+/* The body carries the page background; the html element gets Signal Blue
+   so the rubber-band overscroll area at the top and bottom edges (iOS/Mac
+   trackpad pull) reveals brand blue instead of white. */
+body { background: var(--bg-primary); }
+html { background: var(--signal-blue); }
 
 /* Smooth in-page anchor navigation (hero "Feel WiLL" ↓ chevron, plus any
    future #section links). Browsers automatically downgrade this to instant

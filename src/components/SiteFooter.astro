@@ -51,9 +51,78 @@ const legalLinks = locale === 'zh'
 
 <style>
   .site-footer {
-    background: var(--surface-soft);
+    /* Top fade: page background bleeds in for the first ~160px so the
+       footer's surface tint arrives gradually rather than as a hard band,
+       then holds solid surface-soft through the rest. The bottom bloom
+       (::after) layers over the held color. */
+    background: linear-gradient(
+      to bottom,
+      transparent 0,
+      color-mix(in srgb, var(--surface-soft) 55%, transparent) 80px,
+      var(--surface-soft) 160px,
+      var(--surface-soft) 100%
+    );
     padding: var(--s-8) 0 var(--s-6);
     margin-top: var(--s-9);
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+  }
+  /* Brand bloom at the page floor — mirrors the outer feathered range of
+     the hero ribbon band so the page is bookended by the same fog gesture.
+     Two layered signal-blue radials, anchored at the bottom edge and
+     drifting in counter-phase. Their overlap produces a wavy bright edge:
+     where they reinforce → crest, where they separate → trough. Blur is
+     kept light (24px) so the motion reads through the haze. */
+  .site-footer::before,
+  .site-footer::after {
+    content: '';
+    position: absolute;
+    left: -20%;
+    right: -20%;
+    bottom: -130px;
+    height: 360px;
+    pointer-events: none;
+    z-index: 0;
+    transform-origin: 50% 100%;
+    filter: blur(16px);
+    will-change: transform;
+  }
+  .site-footer::before {
+    background: radial-gradient(
+      ellipse 50% 90% at 35% 100%,
+      rgba(10, 123, 255, 0.85) 0%,
+      rgba(10, 123, 255, 0.45) 28%,
+      rgba(10, 123, 255, 0.18) 55%,
+      transparent 85%
+    );
+    animation: footer-bloom-wave-a 7s ease-in-out infinite;
+  }
+  .site-footer::after {
+    background: radial-gradient(
+      ellipse 48% 88% at 65% 100%,
+      rgba(10, 123, 255, 0.78) 0%,
+      rgba(10, 123, 255, 0.40) 28%,
+      rgba(10, 123, 255, 0.14) 55%,
+      transparent 85%
+    );
+    animation: footer-bloom-wave-b 9s ease-in-out infinite;
+  }
+  @keyframes footer-bloom-wave-a {
+    0%, 100% { transform: translateX(-160px) translateY(14px)  scaleY(0.88) scaleX(1.10) rotate(-3deg); }
+    50%      { transform: translateX(160px)  translateY(-10px) scaleY(1.10) scaleX(0.90) rotate(3deg); }
+  }
+  @keyframes footer-bloom-wave-b {
+    0%, 100% { transform: translateX(170px)  translateY(-8px) scaleY(1.08) scaleX(0.92) rotate(3.5deg); }
+    50%      { transform: translateX(-150px) translateY(16px) scaleY(0.88) scaleX(1.08) rotate(-3.5deg); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .site-footer::before,
+    .site-footer::after { animation: none; }
+  }
+  .site-footer > .container {
+    position: relative;
+    z-index: 1;
   }
   /* Single horizontal row at desktop: brand on the left, the 4 product
      links inline in the middle, language toggle on the right. Collapses

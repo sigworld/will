@@ -50,18 +50,6 @@ const privacyHref = locale === 'zh' ? '/zh/privacy' : '/privacy';
       </div>
     </div>
 
-    <div class="paths">
-      <h3 class="paths-label">{p.paths.label}</h3>
-      <div class="paths-grid">
-        {p.paths.items.map((it) => (
-          <div class="path-card">
-            <h4>{it.name}</h4>
-            <p>{it.body}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-
     <p class="full-story">
       <a href={privacyHref}>{p.fullStory}</a>
     </p>
@@ -235,48 +223,6 @@ const privacyHref = locale === 'zh' ? '/zh/privacy' : '/privacy';
     color: var(--text-secondary);
     line-height: var(--leading-body);
     max-width: 60ch;
-  }
-
-  /* ─── Three paths grid ──────────────────────────────────────────
-     Mirrors the structure on /privacy so the two surfaces feel like
-     one story. Compressed copy here; the long version lives there. */
-  .paths {
-    max-width: var(--demo-max);
-    margin: var(--s-6) auto 0;
-  }
-  .paths-label {
-    font-size: var(--text-body-s);
-    font-weight: var(--weight-ui);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: var(--text-tertiary);
-    margin-bottom: var(--s-3);
-    text-align: center;
-  }
-  .paths-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--s-3);
-  }
-  @media (min-width: 768px) {
-    .paths-grid { grid-template-columns: repeat(3, 1fr); }
-  }
-  .path-card {
-    padding: var(--s-4);
-    border: 1px solid var(--border-subtle);
-    border-radius: var(--radius-md);
-    background: var(--bg-primary);
-  }
-  .path-card h4 {
-    font-size: var(--text-body-l);
-    font-weight: var(--weight-heading);
-    margin-bottom: var(--s-2);
-  }
-  .path-card p {
-    color: var(--text-secondary);
-    font-size: var(--text-body-s);
-    line-height: var(--leading-body);
-    max-width: none;
   }
 
   .full-story {

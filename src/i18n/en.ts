@@ -199,14 +199,6 @@ export const en: Copy = {
       headline: 'Or turn the cloud off entirely.',
       body: 'One checkbox in <mark class="nav">Preferences <span class="nav-arrow" aria-hidden="true">→</span> Privacy</mark>. WiLL stops calling any cloud endpoint. Voice, completions, OCR, memory all keep working — on-device.',
     },
-    paths: {
-      label: 'Three ways to keep things private',
-      items: [
-        { name: 'Free', body: 'Nothing leaves. On-device dictation, Smart Typing, OCR, memory.' },
-        { name: 'BYOK', body: 'Cloud calls go from your Mac to your provider. We see nothing.' },
-        { name: 'Pro', body: 'Through our relay. We meter usage, not your content.' },
-      ],
-    },
     fullStory: 'Read the full privacy story →',
   },
   pricing: {
@@ -443,9 +435,9 @@ export const en: Copy = {
     },
     privacy: {
       title: 'Privacy',
-      lede: 'What stays on your Mac, and what doesn’t.',
+      lede: 'What stays on your device, and what doesn’t.',
       stays: {
-        title: 'What stays on your Mac',
+        title: 'Local',
         items: [
           'Voice transcript — the live preview you see while you speak',
           'Smart Typing predictions, completions, and grammar checks (local LLM)',
@@ -457,7 +449,7 @@ export const en: Copy = {
         ],
       },
       leaves: {
-        title: 'What leaves your Mac (and why)',
+        title: 'Cloud',
         items: [
           {
             name: 'Cloud-refined dictation',
@@ -469,22 +461,22 @@ export const en: Copy = {
           },
           {
             name: 'Caption Mode',
-            body: 'System audio (what’s playing on your Mac) is streamed to WiLL Cloud for transcription and translation. Same no-retention policy. Caption Mode is Pro-only because we run the whole pipeline.',
+            body: 'System audio (what’s playing on your device) is streamed to WiLL Cloud for transcription and translation. Same no-retention policy. Caption Mode is Pro-only because we run the whole pipeline.',
           },
         ],
-        diagramSteps: ['Your Mac', 'WiLL Cloud', 'Your Mac'],
+        diagramSteps: ['Your device', 'WiLL Cloud'],
         diagramCaption: 'Audio in, text out. Nothing kept along the way.',
       },
       paths: {
-        title: 'Your three privacy paths',
+        title: 'Privacy Paths',
         items: [
-          { name: 'Free', body: 'Nothing leaves. You use only the on-device pieces — dictation transcript, Smart Typing, OCR, memory, pinyin.' },
-          { name: 'BYOK', body: 'Cloud calls go directly from your Mac to your chosen provider. We don’t see them. (Caption Mode not supported on BYOK.)' },
-          { name: 'Pro', body: 'Cloud calls go through WiLL Cloud. We see metered usage for billing. We don’t store your audio or text content.' },
+          { name: 'Local', body: 'Free plan, no key configured. Nothing leaves your device — you use only the on-device pieces: dictation transcript, Smart Typing, OCR, memory, pinyin.' },
+          { name: 'Your Trusted LLMs', body: 'Free plan with your own provider key (BYOK). Cloud calls go directly from your device to the provider you chose. We don’t see them. (Caption Mode not supported on BYOK.)' },
+          { name: 'WiLL Cloud', body: 'Pro plan. Cloud calls go through WiLL Cloud — voice refinement, translation, Caption Mode, Smart Typing alternatives. We see metered usage for billing. We don’t store your audio or text content.' },
         ],
       },
       never: {
-        title: 'What we never do',
+        title: 'No Evil',
         items: [
           'We don’t sell data. There’s no data to sell — we don’t keep your content.',
           'We don’t train models on your text. The providers behind WiLL Cloud are contracted not to either.',
@@ -498,7 +490,7 @@ export const en: Copy = {
         headers: {
           feature: 'Feature',
           local: 'Runs locally',
-          cloud: 'Sent to cloud',
+          cloud: 'Sent to LLM',
           transmitted: 'What’s transmitted',
           killSwitch: 'With “Forbid remote LLM” on',
         },
@@ -649,13 +641,6 @@ export const en: Copy = {
             cloud: '✓',
             transmitted: 'Usage counts only — no content',
             killSwitch: 'Nothing to count',
-          },
-          {
-            feature: 'BYOK',
-            local: '✓ (key only)',
-            cloud: '✓ (your provider)',
-            transmitted: 'Same as the feature above sending it',
-            killSwitch: 'Off',
           },
         ],
         permissionsTitle: 'Permissions WiLL requests',

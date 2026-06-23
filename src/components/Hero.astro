@@ -884,6 +884,39 @@ const subWaveBars = 7;
     const locale = subStage.dataset.locale === 'zh' ? 'zh' : 'en';
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+    // Play the intro once per browser session, and re-play it after a
+    // 2-day cooldown so returning visitors still get the moment. Anything
+    // shorter than that lands flat (the animation is the first thing they
+    // saw the last time they were here); anything longer feels like the
+    // joy was a one-time gift. Fails open on storage errors (private mode,
+    // disabled cookies) — the worst case is the animation plays.
+    const STORAGE_KEY_SESSION = 'will_hero_intro_played';
+    const STORAGE_KEY_LAST = 'will_hero_intro_last_ts';
+    const REPLAY_WINDOW_MS = 2 * 24 * 60 * 60 * 1000;
+    const shouldSkipIntro = (): boolean => {
+      try {
+        if (window.sessionStorage.getItem(STORAGE_KEY_SESSION) === '1') return true;
+        const last = window.localStorage.getItem(STORAGE_KEY_LAST);
+        if (last) {
+          const ts = parseInt(last, 10);
+          if (!Number.isNaN(ts) && Date.now() - ts < REPLAY_WINDOW_MS) return true;
+        }
+      } catch {
+        // storage unavailable — treat as first visit
+      }
+      return false;
+    };
+    const markIntroPlayed = () => {
+      try {
+        window.sessionStorage.setItem(STORAGE_KEY_SESSION, '1');
+        window.localStorage.setItem(STORAGE_KEY_LAST, String(Date.now()));
+      } catch {
+        // ignore
+      }
+    };
+    const skipIntro = shouldSkipIntro();
+    markIntroPlayed();
+
     // Source-text peek on hover/tap: the dimmed ghost FROM lifts forward
     // briefly when the user touches or hovers it (or "translate" / "翻译"
     // beneath it), then eases back to its 3D-distant ghost state. Listener
@@ -905,7 +938,7 @@ const subWaveBars = 7;
       morphCycle.addEventListener('click', triggerPeek);
     }
 
-    if (reduced) {
+    if (reduced || skipIntro) {
       phraseCells.forEach((cell) => cell.classList.add('is-text-revealed'));
       cycleEls.forEach((el) => {
         const kind = el.dataset.cycleKind ?? '';
@@ -916,6 +949,13 @@ const subWaveBars = 7;
         if (kind === 'type') {
           const typedEl = el.querySelector<HTMLElement>('[data-sub-typed]');
           if (typedEl) typedEl.textContent = text;
+        }
+        if (kind === 'fog') {
+          // Fog reveal targets the inner `.sub-fog` span (not the cycle
+          // wrapper), so revealing the wrapper alone leaves "at your WiLL."
+          // / "随心如义" invisible at opacity:0/blur(14px).
+          const fogEl = el.querySelector<HTMLElement>('[data-sub-fog]');
+          if (fogEl) fogEl.classList.add('is-revealed');
         }
         el.classList.add('is-active', 'is-showing-from', 'is-revealed');
       });

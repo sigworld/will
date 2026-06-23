@@ -200,14 +200,6 @@ export const zh: Copy = {
       headline: '或者，把云端整个关掉。',
       body: '在 <mark class="nav">偏好设置 <span class="nav-arrow" aria-hidden="true">→</span> 隐私</mark> 里勾一下。如义不再调用任何云端服务。语音、补全、OCR、拼音、记忆继续工作 — 全部在本地。',
     },
-    paths: {
-      label: '三条隐私路径',
-      items: [
-        { name: '免费版', body: '什么都不离开 Mac。本地听写、智能输入、OCR、记忆、拼音。' },
-        { name: 'BYOK', body: '云端调用直接从你 Mac 发到你选的服务商，我们看不到。' },
-        { name: 'Pro 版', body: '经过我们的转发。我们看到用量以计费，不看你的内容。' },
-      ],
-    },
     fullStory: '阅读完整隐私说明 →',
   },
   pricing: {

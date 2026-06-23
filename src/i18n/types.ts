@@ -158,10 +158,6 @@ export interface Copy {
     stays: { label: string; items: string[] };
     leaves: { label: string; items: string[]; note: string };
     killSwitch: { toggleLabel: string; headline: string; body: string };
-    paths: {
-      label: string;
-      items: { name: string; body: string }[];
-    };
     fullStory: string;
   };
   pricing: {
