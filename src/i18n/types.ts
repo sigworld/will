@@ -198,7 +198,7 @@ export interface Copy {
     privacy: {
       title: string;
       lede: string;
-      stays: { title: string; items: string[]; note: string };
+      stays: { title: string; items: string[] };
       leaves: {
         title: string;
         items: PrivacyNamedItem[];
@@ -209,7 +209,6 @@ export interface Copy {
       never: { title: string; items: string[] };
       table: {
         title: string;
-        lede: string;
         headers: {
           feature: string;
           local: string;

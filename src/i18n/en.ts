@@ -264,7 +264,7 @@ export const en: Copy = {
             'Live keeps a channel open and <mark class="hl">reveals words as they come in, prefix-stable, no flicker</mark>.',
             '<kbd>Option+Shift</kbd>-tap toggles between them; <kbd>Shift</kbd>-tap alone cycles between English and Chinese dictation.',
             'Everything that doesn’t need the cloud stays on your Mac. <mark class="hl">The live preview never leaves.</mark>',
-            'Only the audio (or its transcript, depending on provider) goes out for refinement — to our ASR partner on Pro, or to your own provider on BYOK.',
+            'Only the audio (or its transcript, depending on provider) goes out for refinement — to WiLL Cloud on Pro, or to your own provider on BYOK.',
           ],
           specs: ['Dictation in EN · 中', 'Double-tap <kbd>⌥</kbd> to switch on', 'Local preview, cloud-refined final'],
         },
@@ -295,7 +295,7 @@ export const en: Copy = {
             'Slack, Mail, browsers, PDFs — anywhere you can select text.',
             'Translation runs through the same provider as your dictation — our relay on Pro, your own key on BYOK. <mark class="hl">Only text travels, never audio.</mark>',
           ],
-          specs: ['Targets: EN · 中 · 日', '<kbd>⌃⌥⇧T</kbd> translates any selection', 'WiLL relay or your BYOK key'],
+          specs: ['Targets: EN · 中 · 日', '<kbd>⌃⌥⇧T</kbd> translates any selection', 'WiLL Cloud or your BYOK key'],
         },
         {
           id: 'caption-mode',
@@ -308,7 +308,7 @@ export const en: Copy = {
             'Pick the source language (what’s being spoken) and the target language (what you want to read). Three of each at launch: <mark class="hl">English, Chinese, Japanese</mark>.',
             'The capsule shows partial lines as they’re heard, then locks each line in once the speaker pauses.',
             'Caption Mode is Pro-only. The whole pipeline — system-audio capture, transcription, translation — runs end-to-end through our realtime relay, which is why BYOK doesn’t cover it.',
-            '<mark class="hl">Same partner and same no-retention policy</mark> as Pro dictation.',
+            '<mark class="hl">Same WiLL Cloud pipeline, same no-retention policy</mark> as Pro dictation.',
           ],
           specs: ['Source: EN · 中 · 日', 'Target: EN · 中 · 日', 'Hotkey: <kbd>⌃⌥⇧C</kbd>', 'Pro only'],
         },
@@ -434,7 +434,7 @@ export const en: Copy = {
         },
         {
           q: 'Why isn’t Caption Mode in BYOK?',
-          a: 'Caption Mode uses a realtime ASR pipeline that runs end-to-end through our servers. We charge for it because we run it. Dictation refinement is just chat completions — you can route those yourself.',
+          a: 'Caption Mode uses a realtime pipeline that runs end-to-end through WiLL Cloud. We charge for it because we run it. Dictation refinement is just chat completions — you can route those yourself.',
         },
         {
           q: 'Do you offer a free trial of Pro?',
@@ -454,26 +454,25 @@ export const en: Copy = {
     },
     privacy: {
       title: 'Privacy',
-      lede: 'A plain-prose accounting of what stays on your Mac and what doesn’t. The legal version is at the bottom.',
+      lede: 'What stays on your Mac, and what doesn’t.',
       stays: {
         title: 'What stays on your Mac',
         items: [
-          'Voice transcript — Apple’s on-device SFSpeech, the live preview you see while you speak',
+          'Voice transcript — the live preview you see while you speak',
           'Smart Typing predictions, completions, and grammar checks (local LLM)',
-          'Your vocabulary — learned from what you type and from what’s on your screen',
+          'Your vocabulary — learned from what you type',
           'Your corrections — when you edit, WiLL learns',
           'Your style — per-app patterns we use to make refinements feel like you',
-          'On-screen text context (Vision OCR runs on your Mac, results never leave)',
+          'On-screen text context',
           'Pinyin engine and all CJK input',
         ],
-        note: 'All of it sits in a SQLite database under ~/Library/Application Support/WiLL/. Export it, browse it, delete it. It’s yours.',
       },
       leaves: {
         title: 'What leaves your Mac (and why)',
         items: [
           {
             name: 'Cloud-refined dictation',
-            body: 'On Pro, the audio (or the SFSpeech transcript, depending on provider) goes to our ASR relay, which forwards to a model partner — currently DashScope / Qwen. The refined text comes back. We don’t retain audio. The partner’s retention policy is in the legal privacy policy.',
+            body: 'On Pro, the audio goes to WiLL Cloud. The refined text comes back. We don’t retain audio. Details about the underlying ASR provider are in the legal privacy policy.',
           },
           {
             name: 'Translation mode',
@@ -481,10 +480,10 @@ export const en: Copy = {
           },
           {
             name: 'Caption Mode',
-            body: 'System audio (what’s playing on your Mac) is streamed to our relay for transcription and translation. Same partner, same no-retention policy. Caption Mode is Pro-only because we run the whole pipeline.',
+            body: 'System audio (what’s playing on your Mac) is streamed to WiLL Cloud for transcription and translation. Same no-retention policy. Caption Mode is Pro-only because we run the whole pipeline.',
           },
         ],
-        diagramSteps: ['Your Mac', 'WiLL relay', 'Model partner', 'Your Mac'],
+        diagramSteps: ['Your Mac', 'WiLL Cloud', 'Your Mac'],
         diagramCaption: 'Audio in, text out. Nothing kept along the way.',
       },
       paths: {
@@ -492,22 +491,21 @@ export const en: Copy = {
         items: [
           { name: 'Free', body: 'Nothing leaves. You use only the on-device pieces — dictation transcript, Smart Typing, OCR, memory, pinyin.' },
           { name: 'BYOK', body: 'Cloud calls go directly from your Mac to your chosen provider. We don’t see them. (Caption Mode not supported on BYOK.)' },
-          { name: 'Pro', body: 'Cloud calls go through our relay to our model partner. We see metered usage for billing. We don’t store your audio or text content.' },
+          { name: 'Pro', body: 'Cloud calls go through WiLL Cloud. We see metered usage for billing. We don’t store your audio or text content.' },
         ],
       },
       never: {
         title: 'What we never do',
         items: [
           'We don’t sell data. There’s no data to sell — we don’t keep your content.',
-          'We don’t train models on your text. Our model partners are contracted not to.',
+          'We don’t train models on your text. The providers behind WiLL Cloud are contracted not to either.',
           'We don’t show ads. There are no ads anywhere in WiLL or on this site.',
-          'We don’t share your data with third parties beyond the model partners required to fulfill your requests.',
+          'We don’t share your data with third parties beyond what’s needed to fulfill your requests.',
           'We don’t track you across the web. The site has no third-party analytics.',
         ],
       },
       table: {
         title: 'Complete reference: feature-by-feature data flow',
-        lede: 'Every WiLL feature, what runs where, exactly what leaves your Mac, and what happens when you flip the kill switch in Preferences → Privacy → “Forbid remote LLM”.',
         headers: {
           feature: 'Feature',
           local: 'Runs locally',

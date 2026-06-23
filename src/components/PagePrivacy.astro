@@ -10,6 +10,13 @@ const { locale } = Astro.props;
 const t = getCopy(locale);
 const p = t.pages.privacy;
 
+const toc = [
+  { id: 'stays', title: p.stays.title },
+  { id: 'leaves', title: p.leaves.title },
+  { id: 'paths', title: p.paths.title },
+  { id: 'never', title: p.never.title },
+];
+
 /** Split "lead (note)" → { lead, note }. Lets the table render parenthetical
  *  qualifiers (e.g. "✓ (fallback)") as a star marker with a hover tooltip,
  *  keeping the cell visually compact. */
@@ -26,25 +33,30 @@ function splitNote(text: string): { lead: string; note: string | null } {
   </div>
 </section>
 
-<div class="container privacy-body">
-  <section class="priv-block" id="stays">
+<div class="container privacy-shell">
+  <aside class="privacy-toc-side" aria-label={t.pages.features.tocLabel}>
+    <p class="toc-label">{t.pages.features.tocLabel}</p>
+    <ol class="toc-list">
+      {toc.map((s, i) => (
+        <li>
+          <a href={`#${s.id}`} data-priv-toc>
+            <span class="toc-num">{String(i + 1).padStart(2, '0')}</span>
+            <span class="toc-title">{s.title}</span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  </aside>
+
+  <section class="priv-block is-first" id="stays">
     <h2>{p.stays.title}</h2>
     <ul class="priv-list">
       {p.stays.items.map((it) => <li>{it}</li>)}
     </ul>
-    <p class="priv-aside">{p.stays.note}</p>
   </section>
 
   <section class="priv-block" id="leaves">
     <h2>{p.leaves.title}</h2>
-    <div class="prose">
-      {p.leaves.items.map((it) => (
-        <div class="named-item">
-          <h3>{it.name}</h3>
-          <p>{it.body}</p>
-        </div>
-      ))}
-    </div>
     <figure class="diagram" aria-label={p.leaves.diagramCaption}>
       <div class="diagram-row">
         {p.leaves.diagramSteps.map((step, i) => (
@@ -56,6 +68,14 @@ function splitNote(text: string): { lead: string; note: string | null } {
       </div>
       <figcaption>{p.leaves.diagramCaption}</figcaption>
     </figure>
+    <div class="prose">
+      {p.leaves.items.map((it) => (
+        <div class="named-item">
+          <h3>{it.name}</h3>
+          <p>{it.body}</p>
+        </div>
+      ))}
+    </div>
   </section>
 
   <section class="priv-block" id="paths">
@@ -76,10 +96,11 @@ function splitNote(text: string): { lead: string; note: string | null } {
       {p.never.items.map((it) => <li>{it}</li>)}
     </ul>
   </section>
+</div>
 
-  <section class="priv-block priv-table-block" id="reference">
+<div class="container priv-reference-wrap">
+  <section class="priv-table-block" id="reference">
     <h2>{p.table.title}</h2>
-    <p class="priv-table-lede">{p.table.lede}</p>
     <div class="priv-table-scroll" role="region" aria-label={p.table.title} tabindex="0">
       <table class="priv-table priv-table--main">
         <colgroup>
@@ -145,34 +166,124 @@ function splitNote(text: string): { lead: string; note: string | null } {
 </div>
 
 <style>
-  .privacy-body {
+  /* Mirrors .features-shell: 1120px container, sticky TOC sidebar on the
+     right, content column at --prose-max on the left. The reference block
+     opts into a wider span so the data-flow table can breathe. */
+  .privacy-shell {
+    display: grid;
+    grid-template-columns:
+      minmax(var(--s-3), 1fr)
+      minmax(0, var(--prose-max))
+      minmax(var(--s-3), 1fr);
+    column-gap: var(--s-5);
+    grid-auto-flow: dense;
+    align-items: start;
     padding-top: var(--s-6);
-    padding-bottom: var(--s-8);
+    padding-bottom: var(--s-4);
   }
+  /* Reference tables sit outside the TOC-indexed shell and use the
+     full container width. */
+  .priv-reference-wrap {
+    padding-top: var(--s-4);
+    padding-bottom: var(--s-6);
+  }
+  .priv-reference-wrap .priv-table-block {
+    padding-top: var(--s-6);
+    border-top: 1px solid var(--border-subtle);
+    scroll-margin-top: 96px;
+  }
+  .priv-reference-wrap .priv-table-block h2 {
+    margin-bottom: var(--s-4);
+  }
+  .privacy-toc-side {
+    grid-column: 3;
+    grid-row: 1 / span 999;
+    justify-self: start;
+    width: 100%;
+    max-width: 220px;
+    position: sticky;
+    top: 96px;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+  }
+  .privacy-toc-side .toc-label {
+    font-size: var(--text-caption);
+    font-weight: var(--weight-ui);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-tertiary);
+    margin: 0 0 var(--s-3);
+  }
+  .privacy-toc-side .toc-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-left: 1px solid var(--border-subtle);
+  }
+  .privacy-toc-side .toc-list li { margin: 0; }
+  .privacy-toc-side .toc-list a {
+    display: flex;
+    align-items: baseline;
+    gap: var(--s-2);
+    padding: 8px 0 8px var(--s-3);
+    margin-left: -1px;
+    border-left: 2px solid transparent;
+    color: var(--text-tertiary);
+    font-size: var(--text-body-s);
+    font-weight: var(--weight-ui);
+    line-height: 1.35;
+    text-decoration: none;
+    border-bottom: none;
+    transition: color var(--dur-fast) var(--ease-out-quad),
+                border-color var(--dur-fast) var(--ease-out-quad);
+  }
+  .privacy-toc-side .toc-list a:hover {
+    color: var(--text-primary);
+    border-bottom: none;
+  }
+  .privacy-toc-side .toc-list a.is-active {
+    color: var(--signal-blue);
+    border-left-color: var(--signal-blue);
+  }
+  .privacy-toc-side .toc-num {
+    font-variant-numeric: tabular-nums;
+    font-size: var(--text-caption);
+    color: var(--text-tertiary);
+    opacity: 0.7;
+  }
+  .privacy-toc-side .toc-list a.is-active .toc-num {
+    color: var(--signal-blue);
+    opacity: 1;
+  }
+  /* All blocks span the diagram-gutter + content column: features puts
+     animated diagrams in the left gutter — privacy has none, so the
+     content itself uses that real estate. */
   .priv-block {
+    grid-column: 1 / span 2;
+    min-width: 0;
     padding: var(--s-6) 0;
     border-top: 1px solid var(--border-subtle);
+    scroll-margin-top: 96px;
   }
-  .priv-block > h2,
-  .priv-block > .prose,
-  .priv-list,
-  .priv-aside,
-  .priv-footnote {
-    max-width: var(--prose-max);
-    margin-left: auto;
-    margin-right: auto;
-  }
-  .priv-block:first-child {
+  .priv-block.is-first {
     border-top: none;
     padding-top: var(--s-2);
   }
   .priv-block h2 {
     margin-bottom: var(--s-4);
   }
+  /* Two-column bullet layout — at wider widths short bullets sit
+     side-by-side instead of leaving the right half empty next to
+     the TOC sidebar. */
   .priv-list {
-    display: flex;
-    flex-direction: column;
-    gap: var(--s-2);
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s-2) var(--s-6);
+  }
+  @media (min-width: 768px) {
+    .priv-list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
   .priv-list li {
     font-size: var(--text-body);
@@ -192,30 +303,42 @@ function splitNote(text: string): { lead: string; note: string | null } {
     background: var(--signal-blue);
     opacity: 0.6;
   }
-  .priv-aside {
-    margin-top: var(--s-4);
-    padding: var(--s-3) var(--s-4);
-    background: var(--surface-soft);
-    border-radius: var(--radius-md);
-    color: var(--text-secondary);
-    font-size: var(--text-body-s);
-    line-height: var(--leading-body);
+  /* The "leaves" section: diagram banner spans the full width above,
+     then three named-items sit side-by-side as cards (matching the
+     paths section below so the page reads as one design language). */
+  #leaves .prose {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--s-3);
+    max-width: none;
+  }
+  @media (min-width: 768px) {
+    #leaves .prose {
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--s-4);
+    }
   }
   .named-item {
-    margin-bottom: var(--s-4);
+    padding: var(--s-4);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
   }
   .named-item h3 {
     font-size: var(--text-body-l);
     font-weight: var(--weight-heading);
-    margin-bottom: var(--s-1);
+    margin-bottom: var(--s-2);
   }
   .named-item p {
     color: var(--text-secondary);
+    font-size: var(--text-body-s);
     line-height: var(--leading-body);
   }
+  /* Diagram sits above the cards as a one-line flow banner. Stretches
+     edge-to-edge so the long content area carries a clear visual
+     instead of trailing empty space below the cards. */
   .diagram {
-    margin: var(--s-5) 0 0;
-    padding: var(--s-4);
+    margin: 0 0 var(--s-5);
+    padding: var(--s-4) var(--s-5);
     background: var(--surface-soft);
     border-radius: var(--radius-md);
     text-align: center;
@@ -224,12 +347,14 @@ function splitNote(text: string): { lead: string; note: string | null } {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    justify-content: center;
-    gap: var(--s-2);
-    margin-bottom: var(--s-3);
+    justify-content: space-between;
+    gap: var(--s-3);
+    margin-bottom: var(--s-2);
   }
   .diagram-box {
-    padding: 8px 14px;
+    flex: 1 1 0;
+    min-width: 110px;
+    padding: 10px 14px;
     background: var(--bg-primary);
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-sm);
@@ -238,8 +363,10 @@ function splitNote(text: string): { lead: string; note: string | null } {
     color: var(--text-primary);
   }
   .diagram-arrow {
-    color: var(--text-tertiary);
-    font-size: 18px;
+    flex: 0 0 auto;
+    color: var(--signal-blue);
+    font-size: 20px;
+    opacity: 0.7;
   }
   .diagram figcaption {
     font-size: var(--text-caption);
@@ -281,18 +408,6 @@ function splitNote(text: string): { lead: string; note: string | null } {
     font-size: var(--text-body-s);
     color: var(--text-tertiary);
     font-style: italic;
-  }
-  .priv-table-block > h2,
-  .priv-table-lede,
-  .priv-subheading {
-    max-width: var(--prose-max);
-    margin-left: auto;
-    margin-right: auto;
-  }
-  .priv-table-lede {
-    color: var(--text-secondary);
-    line-height: var(--leading-body);
-    margin-bottom: var(--s-4);
   }
   .priv-subheading {
     margin-top: var(--s-6);
@@ -390,4 +505,74 @@ function splitNote(text: string): { lead: string; note: string | null } {
   .priv-table tbody tr:hover td {
     background: var(--surface-soft);
   }
+
+  @media (max-width: 900px) {
+    .privacy-shell {
+      grid-template-columns: minmax(0, var(--prose-max));
+      justify-content: center;
+      row-gap: var(--s-4);
+    }
+    .privacy-toc-side,
+    .priv-block {
+      grid-column: 1;
+      grid-row: auto;
+    }
+    .privacy-toc-side {
+      position: static;
+      max-width: none;
+      max-height: none;
+      overflow: visible;
+      padding: var(--s-4);
+      background: var(--surface-soft);
+      border-radius: var(--radius-md);
+    }
+    .privacy-toc-side .toc-list { border-left: none; }
+    .privacy-toc-side .toc-list a {
+      padding: 6px 0;
+      margin-left: 0;
+      border-left: none;
+    }
+    .privacy-toc-side .toc-list a.is-active { border-left: none; }
+  }
 </style>
+
+<script>
+  const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('[data-priv-toc]'));
+  const targets = links
+    .map((link) => {
+      const id = link.getAttribute('href')?.slice(1) ?? '';
+      const el = id ? document.getElementById(id) : null;
+      return el ? { link, el } : null;
+    })
+    .filter((x): x is { link: HTMLAnchorElement; el: HTMLElement } => x !== null);
+
+  if (targets.length) {
+    const setActive = (active: HTMLAnchorElement | null) => {
+      for (const { link } of targets) {
+        link.classList.toggle('is-active', link === active);
+      }
+    };
+    const update = () => {
+      const offset = 120;
+      let current: HTMLAnchorElement | null = null;
+      for (const { link, el } of targets) {
+        if (el.getBoundingClientRect().top - offset <= 0) current = link;
+        else break;
+      }
+      if (!current && window.scrollY < 200) current = targets[0].link;
+      setActive(current);
+    };
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        update();
+        ticking = false;
+      });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    update();
+  }
+</script>
