@@ -30,6 +30,10 @@
 
   /* ─── Surfaces ─── */
   --bg-primary: var(--clean-white);
+  /* The rubber-band/overscroll area painted behind <html>. Brand-tinted
+     rather than full Signal Blue so the pull-down reads as a hue cue, not
+     a flash. Light = pale porcelain wash; dark = deep brand navy. */
+  --bg-overscroll: color-mix(in srgb, var(--signal-blue) 75%, var(--clean-white) 25%);
 
   /* ─── State (functional only) ─── */
   --success: #15A36E;
@@ -110,6 +114,7 @@ html[lang^="zh"] {
 @media (prefers-color-scheme: dark) {
   :root {
     --bg-primary: var(--onyx);
+    --bg-overscroll: color-mix(in srgb, var(--signal-blue) 32%, var(--onyx) 68%);
     --text-primary: var(--clean-white);
     --text-secondary: rgba(255, 255, 255, 0.65);
     --text-tertiary: rgba(255, 255, 255, 0.45);
