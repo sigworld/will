@@ -150,13 +150,15 @@ const t = getCopy(locale);
 <style>
   .demo-caption { position: relative; }
 
-  .caption-body { padding: 0; background: #0F1216; position: relative; min-height: 320px; }
+  .caption-body { padding: 0; background: #0F1216; position: relative; height: 380px; }
 
-  /* Shared stage wrapper — fills the body and leaves room for the capsule. */
+  /* Shared stage wrapper — fills the body and leaves room for the capsule.
+     Fixed height (not min-height) so every variant renders at exactly the
+     same box height; video-frame and meeting tiles fill via height: 100%. */
   .stage {
     position: relative;
     padding: var(--s-3) var(--s-3) calc(var(--s-3) + 160px);
-    min-height: 320px;
+    height: 380px;
   }
   .stage[hidden] { display: none; }
 
@@ -263,7 +265,6 @@ const t = getCopy(locale);
   .video-frame {
     position: relative;
     height: 100%;
-    min-height: 200px;
     border-radius: 10px;
     background:
       radial-gradient(120% 80% at 30% 25%, rgba(74, 111, 165, 0.42), transparent 60%),
@@ -672,10 +673,10 @@ const t = getCopy(locale);
     /* Capsule wraps to more lines at narrow widths — reserve a bit more
        room and shrink type so the wrapped capsule doesn't crash into the
        stage content above it. */
-    .caption-body { min-height: 280px; }
+    .caption-body { height: 320px; }
     .stage {
       padding: var(--s-2) var(--s-2) calc(var(--s-2) + 180px);
-      min-height: 280px;
+      height: 320px;
     }
     .caption-capsule {
       width: calc(100% - var(--s-3));
@@ -690,7 +691,6 @@ const t = getCopy(locale);
     .music-card { gap: var(--s-3); padding: var(--s-2) var(--s-3); }
     .album-art { width: 64px; height: 64px; }
     .album-art-glyph { font-size: 24px; }
-    .video-frame { min-height: 160px; }
     .video-play { width: 48px; height: 48px; }
     .voice-waveform { min-width: 0; }
   }
