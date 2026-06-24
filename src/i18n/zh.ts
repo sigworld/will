@@ -650,9 +650,9 @@ export const zh: Copy = {
       steps: [
         { title: '打开 DMG', body: '把如义拖到 Applications。' },
         { title: '启动如义', body: '按系统提示授予麦克风、语音识别、屏幕录制权限。屏幕录制驱动 OCR，你也可以选择不授予。' },
-        { title: '把如义加为输入法', body: '<mark class="nav">系统设置 <span class="nav-arrow" aria-hidden="true">→</span> 键盘 <span class="nav-arrow" aria-hidden="true">→</span> 输入法 <span class="nav-arrow" aria-hidden="true">→</span> + <span class="nav-arrow" aria-hidden="true">→</span> 中文（或英文） <span class="nav-arrow" aria-hidden="true">→</span> 如义</mark>。切换方式跟切其他输入法一样（⌃Space）。' },
+        { title: '把如义加为输入法', body: '<mark class="nav">系统设置 <span class="nav-arrow" aria-hidden="true">→</span> 键盘 <span class="nav-arrow" aria-hidden="true">→</span> 输入法 <span class="nav-arrow" aria-hidden="true">→</span> + <span class="nav-arrow" aria-hidden="true">→</span> 中文（或英文） <span class="nav-arrow" aria-hidden="true">→</span> 如义</mark>。切换到如义就能开始。' },
       ],
-      footerNote: '就这些。按住 ⌥ 说话，或直接开始打字。',
+      footerNote: '就这些。双击 ⌥ 说话，或直接开始打字。',
     },
     about: {
       title: '关于如义',

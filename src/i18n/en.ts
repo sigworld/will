@@ -688,9 +688,9 @@ export const en: Copy = {
       steps: [
         { title: 'Open the DMG', body: 'Drag WiLL into Applications.' },
         { title: 'Launch WiLL', body: 'Grant Microphone, Speech Recognition, and Screen Recording permissions when prompted. The Screen Recording permission powers OCR; you can skip it if you’d rather.' },
-        { title: 'Add WiLL as an input method', body: '<mark class="nav">System Settings <span class="nav-arrow" aria-hidden="true">→</span> Keyboard <span class="nav-arrow" aria-hidden="true">→</span> Input Sources <span class="nav-arrow" aria-hidden="true">→</span> + <span class="nav-arrow" aria-hidden="true">→</span> English (or Chinese) <span class="nav-arrow" aria-hidden="true">→</span> WiLL</mark>. Switch to WiLL the same way you switch any input method (⌃Space).' },
+        { title: 'Add WiLL as an input method', body: '<mark class="nav">System Settings <span class="nav-arrow" aria-hidden="true">→</span> Keyboard <span class="nav-arrow" aria-hidden="true">→</span> Input Sources <span class="nav-arrow" aria-hidden="true">→</span> + <span class="nav-arrow" aria-hidden="true">→</span> English (or Chinese) <span class="nav-arrow" aria-hidden="true">→</span> WiLL</mark>. Switch to WiLL and start.' },
       ],
-      footerNote: 'That’s it. Hold ⌥ to speak, or just start typing.',
+      footerNote: 'That’s it. Double-tap ⌥ to speak, or just start typing.',
     },
     about: {
       title: 'About WiLL',
