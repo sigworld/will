@@ -41,7 +41,7 @@ const t = getCopy(locale);
 
           <!-- Candidate popup — anchored to caret like a real IME candidate window. -->
           <div class="candidate-popup" data-popup hidden>
-            <div class="popup-header">⌥`</div>
+            <div class="popup-header">⌃⌘`</div>
             <button class="alt-row" data-alt="0" type="button">
               <span class="alt-num">1</span><span class="alt-text"></span>
             </button>
@@ -53,7 +53,7 @@ const t = getCopy(locale);
             </button>
           </div>
 
-          <!-- Transient shortcut tip — pops near the caret when Tab / ⌥` fire. -->
+          <!-- Transient shortcut tip — pops near the caret when Tab / ⌃⌘` fire. -->
           <div class="editor-tip" data-tip hidden aria-hidden="true">
             <span class="editor-tip-inner">
               <span class="editor-tip-key" data-tip-key></span>
@@ -206,7 +206,7 @@ const t = getCopy(locale);
     margin-right: auto;
   }
 
-  /* Transient shortcut tip — pops above caret when Tab / ⌥` fire. */
+  /* Transient shortcut tip — pops above caret when Tab / ⌃⌘` fire. */
   .editor-tip {
     position: absolute;
     z-index: 6;
@@ -421,8 +421,8 @@ const t = getCopy(locale);
         setGhost('');
       });
 
-      // ⌥` tip pops near caret, dwells, then alternatives appear.
-      after(typeEnd + 3700, () => showTip('⌥`', altHintLabel));
+      // ⌃⌘` tip pops near caret, dwells, then alternatives appear.
+      after(typeEnd + 3700, () => showTip('⌃⌘`', altHintLabel));
       after(typeEnd + 4900, () => {
         showPopup(sample.alts);
         flashChips(altChips);

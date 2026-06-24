@@ -157,7 +157,7 @@ export interface Copy {
     title: string;
     lede: string;
     stays: { label: string; items: string[] };
-    leaves: { label: string; items: string[]; note: string };
+    leaves: { label: string; items: string[] };
     killSwitch: { toggleLabel: string; headline: string; body: string };
     fullStory: string;
   };

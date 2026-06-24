@@ -97,7 +97,7 @@ export const en: Copy = {
     shortcutHint: {
       accept: 'Tab',
       acceptLabel: 'to accept',
-      alts: '⌥`',
+      alts: '⌃⌘`',
       altsLabel: 'for alternatives',
     },
   },
@@ -192,7 +192,6 @@ export const en: Copy = {
         'Translation mode',
         'Caption mode',
       ],
-      note: 'Audio in, text out. Nothing kept along the way.',
     },
     killSwitch: {
       toggleLabel: 'Forbid remote LLM',
@@ -269,7 +268,7 @@ export const en: Copy = {
             '<mark class="hl-start">Press <kbd>Control+Cmd+`</kbd> for three short continuations.</mark> The top one appears inline as italic ghost; <kbd>Tab</kbd> accepts it, <kbd>1</kbd> / <kbd>2</kbd> / <kbd>3</kbd> picks a different one.',
             'Press <kbd>Control+Option+R</kbd> to rewrite the sentence you just finished into three style variants: <mark class="hl-mode">formal</mark>, <mark class="hl-mode">concise</mark>, <mark class="hl-mode">casual</mark>. <mark class="hl-end">Press <kbd>Esc</kbd> to dismiss.</mark>',
           ],
-          specs: ['Local model: Qwen3.5-2B, Qwen3.5-4B, or Apple FM', '<kbd>⌥`</kbd> for ghosts & rewrites', 'On-device by default'],
+          specs: ['Local model: Qwen3.5-2B, Qwen3.5-4B, or Apple FM', '<kbd>⌃⌘`</kbd> for ghosts & rewrites', 'On-device by default'],
         },
         {
           id: 'translation',
@@ -278,7 +277,7 @@ export const en: Copy = {
           lede: 'Speak in your language, land in theirs. Or read theirs in yours.',
           body: [
             'Turn Translation mode on in <mark class="nav">Preferences → Refinement</mark> and pick a target language. Anything you dictate arrives translated.',
-            'The original transcript stays in a composition view so you can verify what you actually said — the mode bar tags the target flag so you always know what’s being sent.',
+            'The original transcript stays in a composition view so you can verify what you actually said — the status bar tags the target flag so you always know what’s being sent.',
             '<mark class="hl-start">For the other direction, select any text and press <kbd>Control+Option+Shift+T</kbd>.</mark> A small popup appears next to the selection with the translation in your language.',
             'Slack, Mail, browsers, PDFs — anywhere you can select text. <mark class="hl-end">Press <kbd>Esc</kbd> to dismiss.</mark>',
           ],

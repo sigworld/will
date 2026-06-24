@@ -304,7 +304,7 @@ a:hover {
   .app-body { padding: var(--s-6); }
 }
 
-/* ─── Animated key glyph (Option, Tab, ⌥`, etc.) ─── */
+/* ─── Animated key glyph (Option, Tab, ⌃⌘`, etc.) ─── */
 
 .key-glyph {
   display: inline-flex;
