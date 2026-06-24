@@ -22,23 +22,25 @@ const downloadHref = `${base}/download`;
 
 <section class="pricing-grid-section">
   <div class="container">
-    <div class="tiles">
+    <div class="tiles" data-tile-count={p.tiles.length}>
       {p.tiles.map((tile) => (
         <article class={`tile tile-${tile.id}`} id={tile.id}>
           <header class="tile-header">
-            <h2>{tile.name}</h2>
-            <p class="price">{tile.price}</p>
+            <div class="tile-header-row">
+              <h2>{tile.name}</h2>
+              <span class="price">{tile.price}</span>
+            </div>
             <p class="tile-lede">{tile.lede}</p>
           </header>
           <div class="tile-body">
-            <h3 class="tile-section-label">{p.includedHeader}</h3>
             <ul class="tile-list">
               {tile.included.map((it) => <li>{it}</li>)}
             </ul>
-            <h3 class="tile-section-label note-label">{p.notIncludedHeader}</h3>
-            <p class="tile-note">{tile.notIncluded}</p>
           </div>
-          <a class={`btn ${tile.id === 'pro' ? 'btn-primary' : 'btn-secondary'} tile-cta`} href={tile.href === '/download' || tile.href === '/zh/download' ? downloadHref : tile.href}>{tile.cta}</a>
+          <div class="tile-cta-wrap">
+            {tile.ctaNote && <span class="cta-note">{tile.ctaNote}</span>}
+            <a class={`btn ${tile.id === 'pro' ? 'btn-primary' : 'btn-secondary'} tile-cta`} href={tile.href === '/download' || tile.href === '/zh/download' ? downloadHref : tile.href}>{tile.cta}</a>
+          </div>
         </article>
       ))}
     </div>
@@ -79,6 +81,16 @@ const downloadHref = `${base}/download`;
     .tiles {
       grid-template-columns: repeat(3, 1fr);
     }
+    .tiles[data-tile-count="2"] {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      max-width: 720px;
+      margin: 0 auto;
+    }
+    .tiles[data-tile-count="1"] {
+      grid-template-columns: minmax(0, 1fr);
+      max-width: 480px;
+      margin: 0 auto;
+    }
   }
   .tile {
     display: flex;
@@ -96,15 +108,27 @@ const downloadHref = `${base}/download`;
   .tile-pro {
     border-color: var(--signal-blue);
   }
+  .tile-header-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--s-3);
+    margin-bottom: var(--s-3);
+  }
   .tile-header h2 {
     font-size: var(--text-h3);
-    margin-bottom: var(--s-1);
+    margin: 0;
   }
   .price {
-    font-size: var(--text-body-s);
-    color: var(--text-secondary);
-    font-weight: var(--weight-ui);
-    margin-bottom: var(--s-3);
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--signal-blue);
+    background: color-mix(in srgb, var(--signal-blue) 12%, transparent);
+    padding: 5px 12px;
+    border-radius: 999px;
+    text-align: right;
+    white-space: nowrap;
+    letter-spacing: -0.01em;
   }
   .tile-lede {
     font-size: var(--text-body);
@@ -112,17 +136,6 @@ const downloadHref = `${base}/download`;
   }
   .tile-body {
     flex: 1;
-  }
-  .tile-section-label {
-    font-size: var(--text-caption);
-    font-weight: var(--weight-ui);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--text-tertiary);
-    margin-bottom: var(--s-2);
-  }
-  .note-label {
-    margin-top: var(--s-4);
   }
   .tile-list {
     display: flex;
@@ -147,13 +160,33 @@ const downloadHref = `${base}/download`;
     background: var(--signal-blue);
     opacity: 0.6;
   }
-  .tile-note {
-    font-size: var(--text-body-s);
-    color: var(--text-secondary);
-    line-height: var(--leading-body);
+  .tile-cta-wrap {
+    position: relative;
+    display: flex;
+    flex-direction: column;
   }
   .tile-cta {
     align-self: stretch;
+  }
+  .cta-note {
+    position: absolute;
+    top: -14px;
+    right: -14px;
+    background: var(--bg-primary);
+    color: var(--signal-blue);
+    font-size: 11.5px;
+    font-weight: 600;
+    line-height: 1;
+    padding: 7px 13px;
+    border-radius: 999px;
+    white-space: nowrap;
+    z-index: 1;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    border: 1.5px solid color-mix(in srgb, var(--signal-blue) 40%, transparent);
+    box-shadow: 0 4px 10px rgba(10, 123, 255, 0.18);
+    transform: rotate(8deg);
+    transform-origin: center;
   }
   .faq-section {
     padding: var(--s-8) 0;
@@ -164,11 +197,19 @@ const downloadHref = `${base}/download`;
     text-align: center;
   }
   .faq-list {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: 1fr;
     gap: var(--s-2);
     max-width: var(--prose-max);
     margin: 0 auto;
+    align-items: start;
+  }
+  @media (min-width: 900px) {
+    .faq-list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: var(--s-4);
+      max-width: 1040px;
+    }
   }
   .faq-item {
     border: 1px solid var(--border-subtle);
@@ -209,10 +250,11 @@ const downloadHref = `${base}/download`;
     font-size: var(--text-body-s);
   }
   .pricing-cta {
-    padding: var(--s-8) 0;
+    padding: var(--s-8) 0 var(--s-4);
     text-align: center;
   }
   .pricing-cta h2 {
-    margin-bottom: var(--s-4);
+    font-size: var(--text-h3);
+    margin-bottom: var(--s-3);
   }
 </style>

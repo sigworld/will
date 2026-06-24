@@ -21,8 +21,9 @@ export interface PricingTile {
   price: string;
   lede: string;
   included: string[];
-  notIncluded: string;
   cta: string;
+  /** Optional small caption rendered beneath the CTA button. */
+  ctaNote?: string;
   href: string;
 }
 
@@ -185,7 +186,6 @@ export interface Copy {
       lede: string;
       tiles: PricingTile[];
       includedHeader: string;
-      notIncludedHeader: string;
       faqTitle: string;
       faq: PricingFAQ[];
       ctaTitle: string;

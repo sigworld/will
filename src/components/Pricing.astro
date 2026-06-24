@@ -17,12 +17,12 @@ const pricingHref = locale === 'zh' ? '/zh/pricing' : '/pricing';
       <h2>{t.pricing.title}</h2>
     </div>
 
-    <div class="tiles">
+    <div class="tiles" data-tile-count={t.pricing.tiles.length}>
       {t.pricing.tiles.map((tile, i) => (
         <div class={`tile ${i === 1 ? 'tile-featured' : ''}`}>
           <div class="tile-head">
             <h3>{tile.name}</h3>
-            <p class="price">{tile.price}</p>
+            <span class="price">{tile.price}</span>
           </div>
           <p class="tile-lede">{tile.lede}</p>
           <a class={`btn ${i === 1 ? 'btn-primary' : 'btn-secondary'} tile-cta`} href={tile.href}>
@@ -48,6 +48,10 @@ const pricingHref = locale === 'zh' ? '/zh/pricing' : '/pricing';
   }
   @media (min-width: 768px) {
     .tiles { grid-template-columns: repeat(3, 1fr); }
+    .tiles[data-tile-count="2"] {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      max-width: calc(var(--demo-max) * 0.7);
+    }
   }
 
   .tile {
@@ -65,14 +69,26 @@ const pricingHref = locale === 'zh' ? '/zh/pricing' : '/pricing';
     border-top: 2px solid var(--signal-blue);
   }
 
+  .tile-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--s-3);
+  }
   .tile-head h3 {
     font-weight: var(--weight-heading);
-    margin-bottom: 4px;
+    margin: 0;
   }
   .tile-head .price {
-    font-size: var(--text-body-s);
-    color: var(--text-secondary);
-    max-width: none;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--signal-blue);
+    background: color-mix(in srgb, var(--signal-blue) 12%, transparent);
+    padding: 5px 12px;
+    border-radius: 999px;
+    text-align: right;
+    white-space: nowrap;
+    letter-spacing: -0.01em;
   }
   .tile-lede {
     color: var(--text-secondary);
