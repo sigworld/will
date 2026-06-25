@@ -407,12 +407,12 @@ export const zh: Copy = {
       stays: {
         title: '留在你 Mac 上的',
         items: [
-          '语音转写 — 你边说边看的那段实时预览',
-          '智能输入的预测、补全、语法检查（本地 LLM）',
-          '你的词汇 — 从你打字中学到的',
+          '语音识别 — 你边说边看的实时预览',
+          '智能输入的预测、补全、语法检查（本机 LLM）',
+          '你的词汇 — 从你的打字习惯中学到的',
           '你的修改 — 你改一次，如义学一次',
-          '你的风格 — 按 App 记录的模式，用来让精修更像你',
-          '屏幕文字上下文',
+          '你的风格 — 分应用记录的写作风格，让润色更贴近你',
+          '屏幕上下文',
           '拼音引擎和所有中文输入',
         ],
       },
@@ -420,16 +420,16 @@ export const zh: Copy = {
         title: '离开你 Mac 的（以及为什么）',
         items: [
           {
-            name: '云端精修听写',
-            body: 'Pro 模式下，音频发到如义云端。精修文本返回。我们不留存音频。底层 ASR 服务商的具体信息写在法律版隐私政策里。',
+            name: '云端语音识别润色',
+            body: 'Pro 模式下，音频上传到如义云端，润色后的文本返回；我们不留存音频。',
           },
           {
             name: '实时翻译',
-            body: '源文本去到一个 chat-completions endpoint — Pro 默认走我们的，BYOK 走你的。翻译文本返回。没有音频。',
+            body: '免费版中源文本在本地处理；Pro 默认经过如义云端，BYOK 模式下则直连你设置的服务商；返回译文，全程不传音频。',
           },
           {
             name: 'AI 字幕',
-            body: '系统音频（你 Mac 在播的内容）流式上传到如义云端做转写与翻译。同样不留存。AI 字幕仅限 Pro，因为这整条管道由我们运行。',
+            body: '系统当前播放的音频内容，会被流式上传到如义云端做转写与翻译，同样不留存。AI 字幕同样全流程运行在如义云端。',
           },
         ],
         diagramSteps: ['你的 Mac', '如义云端', '你的 Mac'],
@@ -438,29 +438,29 @@ export const zh: Copy = {
       paths: {
         title: '你的三条隐私路径',
         items: [
-          { name: '免费版', body: '什么都不离开。只用端侧能力 — 听写转写、智能输入、OCR、记忆、拼音。' },
-          { name: 'BYOK', body: '云端调用直接从你 Mac 发到你选的服务商，我们看不到。（AI 字幕不支持。）' },
-          { name: 'Pro 版', body: '云端调用经过如义云端。我们看到用量以计费，不存储你的音频或文本内容。' },
+          { name: '免费版', body: '语音预览、智能输入、OCR、记忆、拼音全部本地完成。' },
+          { name: 'BYOK', body: '云端调用从本机直连你设置的服务商，不会经过如义。AI 字幕暂不支持 BYOK。' },
+          { name: 'Pro 版', body: '云端调用经过如义云端；我们只记录用量用于计费，不存储你的音频或文本内容。' },
         ],
       },
       never: {
         title: '我们不做的事',
         items: [
           '不卖数据 — 没有数据可卖，因为我们不保留你的内容。',
-          '不用你的文本训练模型，如义云端背后的服务商也合同约定不做。',
+          '不用你的文本训练模型。',
           '不投广告。如义里和这个站点上都没有广告。',
           '除了完成你请求所必须的，不把你的数据分享给第三方。',
-          '不在全网追踪你。本站没有第三方分析。',
+          '不跨站追踪你。本站没有第三方分析工具。',
         ],
       },
       table: {
-        title: '完整参考：逐功能数据流向',
+        title: '各功能数据流向参考',
         headers: {
           feature: '功能',
           local: '本地运行',
           cloud: '上传云端',
           transmitted: '具体传输了什么',
-          killSwitch: '「禁用远程 LLM」开启时',
+          killSwitch: '"禁用远程 LLM" 开启时',
         },
         rows: [
           {
@@ -485,7 +485,7 @@ export const zh: Copy = {
             killSwitch: '关闭',
           },
           {
-            feature: '精修',
+            feature: '润色',
             local: '—',
             cloud: '✓',
             transmitted: '你的转写文本',
@@ -520,7 +520,7 @@ export const zh: Copy = {
             killSwitch: '正常工作',
           },
           {
-            feature: '智能输入 — 端侧 AI',
+            feature: '智能输入 — 本机 AI',
             local: '✓',
             cloud: '—',
             transmitted: '—',
@@ -552,7 +552,7 @@ export const zh: Copy = {
             local: '✓',
             cloud: '✓（可选）',
             transmitted: '仅在云端使用时上传拼音前缀',
-            killSwitch: '本地拼音正常工作',
+            killSwitch: '拼音引擎本地正常工作',
           },
           {
             feature: '长期记忆',
@@ -590,7 +590,7 @@ export const zh: Copy = {
             killSwitch: '无内容可上传',
           },
           {
-            feature: '模式条、语言切换、偏好设置',
+            feature: '状态栏、语言切换、偏好设置',
             local: '✓',
             cloud: '—',
             transmitted: '—',
@@ -623,12 +623,12 @@ export const zh: Copy = {
         permissions: [
           { permission: '输入监控 / 输入法', purpose: '作为系统输入法运行', requiredFor: '全部' },
           { permission: '麦克风', purpose: '采集语音', requiredFor: '全部语音功能' },
-          { permission: '语音识别', purpose: '端侧实时预览', requiredFor: '下划线实时预览' },
+          { permission: '语音识别', purpose: '本机实时预览', requiredFor: '下划线实时预览' },
           { permission: '辅助功能', purpose: '读取周围文本与选区', requiredFor: '上下文感知、划词翻译' },
           { permission: '屏幕录制', purpose: '窗口上下文；AI 字幕所需音频', requiredFor: '屏幕上下文、AI 字幕' },
         ],
       },
-      footerNote: '完整法律隐私政策是有法律效力的版本；本页是它的故事版本。',
+      footerNote: '完整法律隐私政策是有法律效力的版本；本页是它的通俗版。',
     },
     download: {
       title: '下载如义',
