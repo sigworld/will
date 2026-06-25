@@ -403,7 +403,7 @@ export const zh: Copy = {
     },
     privacy: {
       title: '隐私',
-      lede: '什么留在你的 Mac，什么不留。',
+      lede: '哪些会留在本机，哪些发到云端',
       stays: {
         title: '留在你 Mac 上的',
         items: [
