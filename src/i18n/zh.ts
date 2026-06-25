@@ -405,7 +405,7 @@ export const zh: Copy = {
       title: '隐私',
       lede: '哪些会留在本机，哪些发到云端',
       stays: {
-        title: '留在你 Mac 上的',
+        title: '留在本机的',
         items: [
           '语音识别 — 你边说边看的实时预览',
           '智能输入的预测、补全、语法检查（本机 LLM）',
@@ -417,7 +417,7 @@ export const zh: Copy = {
         ],
       },
       leaves: {
-        title: '离开你 Mac 的（以及为什么）',
+        title: '发到云端的',
         items: [
           {
             name: '云端语音识别润色',
@@ -436,7 +436,7 @@ export const zh: Copy = {
         diagramCaption: '音频进，文本出。中间不留任何东西。',
       },
       paths: {
-        title: '你的三条隐私路径',
+        title: '三种使用方式',
         items: [
           { name: '免费版', body: '语音预览、智能输入、OCR、记忆、拼音全部本地完成。' },
           { name: 'BYOK', body: '云端调用从本机直连你设置的服务商，不会经过如义。AI 字幕暂不支持 BYOK。' },
@@ -444,7 +444,7 @@ export const zh: Copy = {
         ],
       },
       never: {
-        title: '我们不做的事',
+        title: '如义的承诺',
         items: [
           '不卖数据 — 没有数据可卖，因为我们不保留你的内容。',
           '不用你的文本训练模型。',
