@@ -471,7 +471,7 @@ export const en: Copy = {
         items: [
           {
             name: 'Cloud-refined dictation',
-            body: 'On Pro, the audio goes to WiLL Cloud. The refined text comes back. We don’t retain audio. Details about the underlying ASR provider are in the legal privacy policy.',
+            body: 'On Pro, the audio goes to WiLL Cloud. The refined text comes back. We don’t retain audio.',
           },
           {
             name: 'Translation mode',
@@ -479,7 +479,7 @@ export const en: Copy = {
           },
           {
             name: 'Caption Mode',
-            body: 'System audio (what’s playing on your device) is streamed to WiLL Cloud for transcription and translation. Same no-retention policy. Caption Mode is Pro-only because we run the whole pipeline.',
+            body: 'System audio (what’s playing on your device) is streamed to WiLL Cloud for transcription and translation. Same no-retention policy.',
           },
         ],
         diagramSteps: ['Your device', 'WiLL Cloud'],
@@ -543,7 +543,7 @@ export const en: Copy = {
           },
           {
             feature: 'Translation mode',
-            local: '✓ (short text)',
+            local: '—',
             cloud: '✓',
             transmitted: 'Your transcript',
             killSwitch: 'Off',

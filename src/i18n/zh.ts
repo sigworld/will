@@ -431,7 +431,7 @@ export const zh: Copy = {
           },
           {
             name: '实时翻译',
-            body: '免费版中源文本在本地处理；Pro 默认经过如义云端，BYOK 模式下则直连你设置的服务商。',
+            body: '源文本发到聊天补全接口——Pro 默认经过如义云端，BYOK 模式下则直连你设置的服务商。返回翻译后的文本，不上传音频。',
           },
           {
             name: 'AI 字幕',
@@ -499,7 +499,7 @@ export const zh: Copy = {
           },
           {
             feature: '实时翻译',
-            local: '✓（短片段）',
+            local: '—',
             cloud: '✓',
             transmitted: '你的转写文本',
             killSwitch: '关闭',
