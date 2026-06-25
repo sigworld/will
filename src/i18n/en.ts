@@ -365,9 +365,9 @@ export const en: Copy = {
           lede: '$96/yr billed annually. First year only: $89.99.',
           included: [
             'Everything in Free',
-            '~16 h/mo cloud-refined dictation',
-            'Translation mode',
-            'Caption Mode',
+            'Cloud-refined dictation (~12× free tier duration, ~75% fewer errors, ~90% accuracy lift)',
+            'Translation (~16 h/mo; ~95% accuracy)',
+            'Caption Mode (~8 h/mo)',
             'Or $12/mo month-to-month',
           ],
           cta: 'Try Pro for $1.99',
@@ -411,7 +411,7 @@ export const en: Copy = {
         },
         {
           q: 'What’s the difference between Pro and Unlimited?',
-          a: 'Pro includes ~16 hours of voice per month (3M units, or ~8h in live mode). Unlimited removes the cap. If you’re dictating a lot every day, Unlimited makes sense; otherwise Pro is plenty. Both share the same cloud features.',
+          a: 'Pro includes ~16 hours of voice per month (3M units, or ~8h in live mode) — cloud-refined dictation is ~75% more accurate than the on-device fallback. Unlimited removes the cap. If you’re dictating a lot every day, Unlimited makes sense; otherwise Pro is plenty. Both share the same cloud features.',
         },
         {
           q: 'What happens if I hit my Pro cap?',

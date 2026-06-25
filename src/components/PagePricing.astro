@@ -11,6 +11,9 @@ const t = getCopy(locale);
 const p = t.pages.pricing;
 const base = locale === 'zh' ? '/zh' : '';
 const downloadHref = `${base}/download`;
+
+const brandify = (s: string) =>
+  locale === 'zh' ? s.replace(/如义/g, '<span class="brand-zh">如义</span>') : s;
 ---
 
 <section class="page-hero">
@@ -53,8 +56,8 @@ const downloadHref = `${base}/download`;
     <div class="faq-list">
       {p.faq.map((item, i) => (
         <details class="faq-item" open={i === 0}>
-          <summary>{item.q}</summary>
-          <p>{item.a}</p>
+          <summary set:html={brandify(item.q)} />
+          <p set:html={brandify(item.a)} />
         </details>
       ))}
     </div>
@@ -63,8 +66,8 @@ const downloadHref = `${base}/download`;
 
 <section class="pricing-cta">
   <div class="container">
-    <h2>{p.ctaTitle}</h2>
-    <a class="btn btn-primary" href={downloadHref}>{p.ctaButton}</a>
+    <h2 set:html={brandify(p.ctaTitle)} />
+    <a class="btn btn-primary" href={downloadHref} set:html={brandify(p.ctaButton)} />
   </div>
 </section>
 
@@ -250,11 +253,19 @@ const downloadHref = `${base}/download`;
     font-size: var(--text-body-s);
   }
   .pricing-cta {
-    padding: var(--s-8) 0 var(--s-4);
+    padding: var(--s-8) 0 var(--s-7);
+    border-top: 1px solid var(--border-subtle);
     text-align: center;
   }
   .pricing-cta h2 {
-    font-size: var(--text-h3);
-    margin-bottom: var(--s-3);
+    font-size: clamp(28px, 3.5vw, 40px);
+    line-height: var(--leading-h2);
+    letter-spacing: -0.01em;
+    margin: 0 auto var(--s-5);
+    max-width: var(--prose-max);
+  }
+  .pricing-cta .btn {
+    font-size: var(--text-body-l);
+    padding: 14px 32px;
   }
 </style>
