@@ -11,33 +11,20 @@ const t = getCopy(locale);
 const a = t.pages.about;
 ---
 
-<section class="page-hero">
-  <div class="container">
-    <h1>{a.title}</h1>
-  </div>
-</section>
+<div class="about-page">
+  <section class="page-hero">
+    <div class="container">
+      <h1>{a.title}</h1>
+    </div>
+  </section>
 
-<div class="container about-body">
-  <div class="prose about-prose">
-    {a.paragraphs.map((p, i) => (
-      <p class={i === a.paragraphs.length - 1 ? 'about-coda' : ''}>{p}</p>
-    ))}
-  </div>
-
-  <div class="about-meta">
-    <p class="built-by">{a.builtBy}</p>
-    <p class="contact">
-      <a href={`mailto:${a.contactEmail}`}>{a.contactEmail}</a>
+  <div class="container about-body">
+    <div class="about-prose">
+      {a.paragraphs.map((p) => <p>{p}</p>)}
+    </div>
+    <p class="about-contact">
+      {a.contactPrefix}<a href={`mailto:${a.contactEmail}`}>{a.contactEmail}</a>
     </p>
-  </div>
-
-  <div class="about-links">
-    <h2>{a.linksLabel}</h2>
-    <ul>
-      {a.links.map((l) => (
-        <li><a href={l.href}>{l.label} →</a></li>
-      ))}
-    </ul>
   </div>
 </div>
 
@@ -46,56 +33,24 @@ const a = t.pages.about;
     max-width: var(--prose-max);
     padding-top: var(--s-5);
     padding-bottom: var(--s-9);
+    text-align: center;
   }
   .about-prose p {
     font-size: var(--text-body-l);
     line-height: var(--leading-body);
     color: var(--text-primary);
+    max-width: none;
+    text-align: left;
   }
-  .about-coda {
-    margin-top: var(--s-5);
-    padding-top: var(--s-4);
-    border-top: 1px solid var(--border-subtle);
-    color: var(--text-secondary);
-    font-style: italic;
-    font-size: var(--text-body);
+  .about-prose p + p {
+    margin-top: var(--s-4);
   }
-  .about-meta {
+  .about-contact {
     margin-top: var(--s-7);
     padding-top: var(--s-5);
     border-top: 1px solid var(--border-subtle);
-  }
-  .built-by {
     font-size: var(--text-body);
     color: var(--text-secondary);
-    margin-bottom: var(--s-1);
-  }
-  .contact {
-    font-size: var(--text-body);
-  }
-  .about-links {
-    margin-top: var(--s-7);
-  }
-  .about-links h2 {
-    font-size: var(--text-caption);
-    font-weight: var(--weight-ui);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: var(--text-tertiary);
-    margin-bottom: var(--s-3);
-  }
-  .about-links ul {
-    display: flex;
-    flex-direction: column;
-    gap: var(--s-2);
-  }
-  .about-links a {
-    color: var(--text-primary);
-    font-weight: var(--weight-ui);
-    border-bottom: none;
-  }
-  .about-links a:hover {
-    color: var(--signal-blue);
-    border-bottom: none;
+    max-width: none;
   }
 </style>

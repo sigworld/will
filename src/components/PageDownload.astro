@@ -22,7 +22,7 @@ const dmgHref = `https://github.com/sigworld/will/releases/download/v${dmgVersio
   </div>
 </section>
 
-<section class="dl-block">
+<section class="dl-cta-section">
   <div class="container">
     <div class="dl-card">
       <a class="btn btn-primary dl-btn" href={dmgHref} download>
@@ -35,17 +35,15 @@ const dmgHref = `https://github.com/sigworld/will/releases/download/v${dmgVersio
   </div>
 </section>
 
-<section class="dl-section">
-  <div class="container">
+<div class="container dl-shell">
+  <section class="dl-block">
     <h2>{d.requirementsTitle}</h2>
     <ul class="dl-list">
       {d.requirements.map((r) => <li>{r}</li>)}
     </ul>
-  </div>
-</section>
+  </section>
 
-<section class="dl-section">
-  <div class="container">
+  <section class="dl-block">
     <h2>{d.installTitle}</h2>
     <ol class="dl-steps">
       {d.steps.map((step, i) => (
@@ -58,16 +56,21 @@ const dmgHref = `https://github.com/sigworld/will/releases/download/v${dmgVersio
         </li>
       ))}
     </ol>
+  </section>
+</div>
+
+<section class="dl-footer-section">
+  <div class="container">
     <p class="dl-footnote">{d.footerNote}</p>
   </div>
 </section>
 
 <style>
-  .dl-block {
+  .dl-cta-section {
     padding: var(--s-6) 0 var(--s-8);
   }
   .dl-card {
-    max-width: 540px;
+    max-width: 640px;
     margin: 0 auto;
     padding: var(--s-6);
     background: var(--surface-soft);
@@ -79,7 +82,7 @@ const dmgHref = `https://github.com/sigworld/will/releases/download/v${dmgVersio
     padding: 14px 28px;
   }
   .dl-availability {
-    margin-top: var(--s-3);
+    margin: var(--s-3) auto 0;
     font-size: var(--text-caption);
     font-weight: var(--weight-ui);
     text-transform: uppercase;
@@ -87,37 +90,35 @@ const dmgHref = `https://github.com/sigworld/will/releases/download/v${dmgVersio
     color: var(--signal-blue);
   }
   .dl-meta {
-    margin-top: var(--s-3);
+    margin: var(--s-3) auto 0;
     font-size: var(--text-body-s);
     color: var(--text-secondary);
   }
   .dl-checksum {
-    margin-top: var(--s-2);
+    margin: var(--s-2) auto 0;
     font-family: var(--font-mono);
     font-size: var(--text-caption);
     color: var(--text-tertiary);
     overflow-wrap: anywhere;
     word-break: break-all;
   }
-  .dl-section {
-    padding: var(--s-6) 0;
+
+  .dl-shell {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: var(--s-7);
+    padding: var(--s-7) 0 var(--s-8);
     border-top: 1px solid var(--border-subtle);
+    align-items: start;
   }
-  .dl-section h2,
-  .dl-list,
-  .dl-steps,
-  .dl-footnote {
-    max-width: var(--prose-max);
-    margin-left: auto;
-    margin-right: auto;
-  }
-  .dl-section h2 {
+  .dl-block h2 {
     margin-bottom: var(--s-4);
   }
   .dl-list {
     display: flex;
     flex-direction: column;
     gap: var(--s-2);
+    max-width: none;
   }
   .dl-list li {
     font-size: var(--text-body);
@@ -125,6 +126,7 @@ const dmgHref = `https://github.com/sigworld/will/releases/download/v${dmgVersio
     padding-left: var(--s-4);
     position: relative;
     line-height: var(--leading-body);
+    max-width: none;
   }
   .dl-list li::before {
     content: '';
@@ -142,10 +144,11 @@ const dmgHref = `https://github.com/sigworld/will/releases/download/v${dmgVersio
     display: flex;
     flex-direction: column;
     gap: var(--s-4);
+    max-width: none;
   }
   .dl-steps li {
     display: flex;
-    gap: var(--s-4);
+    gap: var(--s-3);
     align-items: flex-start;
   }
   .step-num {
@@ -161,6 +164,10 @@ const dmgHref = `https://github.com/sigworld/will/releases/download/v${dmgVersio
     justify-content: center;
     font-size: var(--text-body);
   }
+  .step-body {
+    flex: 1;
+    min-width: 0;
+  }
   .step-body h3 {
     font-size: var(--text-body-l);
     font-weight: var(--weight-heading);
@@ -169,13 +176,27 @@ const dmgHref = `https://github.com/sigworld/will/releases/download/v${dmgVersio
   .step-body p {
     color: var(--text-secondary);
     line-height: var(--leading-body);
+    max-width: none;
+  }
+
+  .dl-footer-section {
+    padding: var(--s-4) 0 var(--s-9);
   }
   .dl-footnote {
-    margin-top: var(--s-5);
+    max-width: var(--prose-max);
+    margin: 0 auto;
     padding-top: var(--s-4);
     border-top: 1px solid var(--border-subtle);
     font-size: var(--text-body-s);
     color: var(--text-secondary);
     font-style: italic;
+    text-align: center;
+  }
+
+  @media (max-width: 900px) {
+    .dl-shell {
+      grid-template-columns: 1fr;
+      row-gap: var(--s-7);
+    }
   }
 </style>

@@ -11,7 +11,13 @@ html, body {
    overscroll color so the rubber-band area at the top and bottom edges
    (iOS/Mac trackpad pull) reveals brand blue instead of white. Light mode
    gets full Signal Blue; dark mode gets the dimmer hover shade. */
-body { background: var(--bg-primary); }
+body {
+  background: var(--bg-primary);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+body > main { flex: 1 0 auto; }
 html { background: var(--bg-overscroll); }
 
 /* Smooth in-page anchor navigation (hero "Feel WiLL" ↓ chevron, plus any

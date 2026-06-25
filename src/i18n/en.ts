@@ -235,6 +235,12 @@ export const en: Copy = {
       { label: 'Pricing', href: '/pricing' },
       { label: 'Download', href: '/download' },
     ],
+    companyItems: [
+      { label: 'About', href: '/about' },
+      { label: 'Privacy', href: '/privacy' },
+      { label: 'Privacy Policy', href: '/privacy-policy' },
+      { label: 'Terms', href: '/terms' },
+    ],
     copyright: '© 2026 WiLL.',
   },
   pages: {
@@ -696,14 +702,9 @@ export const en: Copy = {
       paragraphs: [
         'WiLL started from a single observation: typing on a Mac in 2026 feels exactly the same as it did in 2014. The keyboard hasn’t changed. The mouse hasn’t changed. The input layer has been untouched while everything above it — the apps, the models, the work — has been rewritten. That’s the gap WiLL closes.',
         'We build for two kinds of users at once: people who want to type less, and people who want to be understood across languages. Most products serve one or the other. We think they’re the same problem.',
-        'In Chinese, WiLL is 如义 — literally "as you mean." Same product, same idea.',
       ],
-      builtBy: 'WiLL is built by a small team in San Francisco and Shenzhen.',
+      contactPrefix: 'Contact us at: ',
       contactEmail: 'legal@will.sigworld.io',
-      linksLabel: 'Elsewhere',
-      links: [
-        { label: 'Privacy', href: '/privacy' },
-      ],
     },
   },
 };

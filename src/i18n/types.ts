@@ -169,6 +169,7 @@ export interface Copy {
   footer: {
     formula: string;
     productItems: NavItem[];
+    companyItems: NavItem[];
     copyright: string;
   };
   /** Page-level copy for the secondary routes. Shape mirrors planning/05-other-pages.md. */
@@ -241,10 +242,8 @@ export interface Copy {
     about: {
       title: string;
       paragraphs: string[];
-      builtBy: string;
+      contactPrefix: string;
       contactEmail: string;
-      linksLabel: string;
-      links: NavItem[];
     };
   };
 }
