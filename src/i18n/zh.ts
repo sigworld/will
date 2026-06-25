@@ -639,7 +639,7 @@ export const zh: Copy = {
     download: {
       title: '下载如义',
       lede: 'macOS 14 或更高，Apple Silicon 与 Intel 都能装，免费下载',
-      button: '下载如义 1.0.4（macOS）',
+      button: '下载如义 1.0.5（macOS）',
       buttonAvailability: '现已发布',
       fileMeta: 'macOS 14+ · Universal (Apple Silicon 与 Intel) · 60.9 MB · 免费',
       checksumLabel: 'SHA-256: 23b213b3750aada461c5d1196cf5807643b6961a1ed2d7864350cc5f9bb2241a',
