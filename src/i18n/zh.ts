@@ -641,7 +641,7 @@ export const zh: Copy = {
       lede: 'macOS 13 或更高，Apple Silicon 与 Intel 都能装，免费下载',
       button: '下载如义 1.0.8（macOS）',
       buttonAvailability: '现已发布',
-      fileMeta: 'macOS 13+ · Universal (Apple Silicon 与 Intel) · 17.9 MB · 免费',
+      fileMeta: 'macOS 13+ · Universal (Apple Silicon 与 Intel) · 17.1 MB · 免费',
       checksumLabel: 'SHA-256: d1bb0f9b425ece7c39083837dbf9036fac9414e9c570d72462b67b1869b059cf',
       requirementsTitle: '系统要求',
       requirements: [
