@@ -3,7 +3,7 @@ import type { Copy } from './types';
 export const en: Copy = {
   meta: {
     title: 'WiLL — Voice and keyboard input for macOS',
-    description: 'WiLL is a voice and keyboard input method for macOS. Speak in any app. Type with local completions. Free for macOS 14+.',
+    description: 'WiLL is a voice and keyboard input method for macOS. Speak in any app. Type with local completions. Free for macOS 13+.',
   },
   nav: {
     features: 'Features',
@@ -675,14 +675,14 @@ export const en: Copy = {
     },
     download: {
       title: 'Download WiLL',
-      lede: 'macOS 14 or later. Apple Silicon and Intel. Free to download.',
-      button: 'Download WiLL 1.0.7 for macOS',
+      lede: 'macOS 13 or later. Apple Silicon and Intel. Free to download.',
+      button: 'Download WiLL 1.0.8 for macOS',
       buttonAvailability: 'Now available',
-      fileMeta: 'macOS 14+ · Universal (Apple Silicon & Intel) · 17.1 MB · Free',
-      checksumLabel: 'SHA-256: 9866ef23fe997480f7305d8667ac5ef2feff29acb6ae94b9080311bdf9e512de',
+      fileMeta: 'macOS 13+ · Universal (Apple Silicon & Intel) · 17.9 MB · Free',
+      checksumLabel: 'SHA-256: d1bb0f9b425ece7c39083837dbf9036fac9414e9c570d72462b67b1869b059cf',
       requirementsTitle: 'System requirements',
       requirements: [
-        'macOS 14 (Sonoma) or later',
+        'macOS 13 (Ventura) or later',
         'Apple Silicon or Intel Mac',
         '~80 MB disk space after install',
         'Microphone access for voice dictation',
