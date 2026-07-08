@@ -676,10 +676,10 @@ export const en: Copy = {
     download: {
       title: 'Download WiLL',
       lede: 'macOS 13 or later. Apple Silicon and Intel. Free to download.',
-      button: 'Download WiLL 1.0.9 for macOS',
+      button: 'Download WiLL 1.1.0 for macOS',
       buttonAvailability: 'Now available',
-      fileMeta: 'macOS 13+ · Universal (Apple Silicon & Intel) · 17.1 MB · Free',
-      checksumLabel: 'SHA-256: 4e3b920b1516c81d4dc442582a692ce512aa73b5a6bea6d4204c3fc2d58561f6',
+      fileMeta: 'macOS 13+ · Universal (Apple Silicon & Intel) · 20.3 MB · Free',
+      checksumLabel: 'SHA-256: 6b549cd70816d87b3a93252508da9d48d8bdc6ca155cf2f2c1e76b5459bcf6db',
       requirementsTitle: 'System requirements',
       requirements: [
         'macOS 13 (Ventura) or later',
